@@ -1,9 +1,8 @@
-import datetime
 from django.test import TestCase
-from django.utils import timezone
 from django.urls import reverse
 from .. import helpers
 
+# this is really an integration test. How to test just the view?
 class TestQuestionIndexView(TestCase):
     def test_no_questions(self):
         response = self.client.get(reverse('polls:index'))
