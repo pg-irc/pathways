@@ -16,8 +16,26 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+# v1/polls/
+#   GET
+#   POST
+# v1/polls/<id>/
+#   GET
+#   PUT
+#   DELETE
+# v1/polls/<id>/choices/
+#   GET
+#   POST
+# v1/polls/<id>/choices/<id>/
+#   GET
+#   PUT
+#   DELETE
+# v1/polls/<id>/choices/<id>/vote/
+#   POST
+
 # pylint: disable=invalid-name
 urlpatterns = [
-    url(r'^polls/', include('polls.urls')),
+    url(r'^v1/forms/polls/', include('polls.urls')),
+    url(r'^v1/', include('polls.api')),
     url(r'^admin/', admin.site.urls),
 ]
