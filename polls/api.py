@@ -1,11 +1,21 @@
-from django.conf.urls import url, include
 from rest_framework import routers
 from . import views
 
-router = routers.DefaultRouter()
-router.register(r'questions', views.QuestionViewSet)
+def build_api_router():
+    router = routers.DefaultRouter()
+    register_question_views(router)
+    register_choice_views(router)
+    return router
+
+def register_question_views(router):
+    pattern = r'^questions'
+    view_set = views.QuestionViewSet
+    router.register(pattern, view_set)
+
+def register_choice_views(router):
+    pattern = r'^questions/(?P<question_id>[0-9]+)/choices'
+    view_set = views.ChoiceViewSet
+    router.register(pattern, view_set, base_name='choice')
 
 # pylint: disable=invalid-name
-urlpatterns = [
-    url(r'^', include(router.urls))
-]
+urlpatterns = build_api_router().urls

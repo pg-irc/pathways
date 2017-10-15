@@ -37,5 +37,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^v1/forms/polls/', include('polls.urls')),
     url(r'^v1/', include('polls.api')),
-    url(r'^admin/', admin.site.urls),
+    url(r'^v1/admin/', admin.site.urls),
 ]

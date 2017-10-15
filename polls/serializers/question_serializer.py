@@ -1,8 +1,8 @@
-from .. import models
 from rest_framework import serializers
+from .. import models
 
 
 class QuestionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Question
-        fields = ('question_text', 'pub_date')
+        fields = ('pk', 'question_text', 'pub_date')
