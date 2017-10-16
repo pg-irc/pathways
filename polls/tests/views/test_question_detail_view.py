@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from .. import helpers
+from polls.tests import helpers
 
 class TestQuestionDetailView(TestCase):
     def test_future_question(self):

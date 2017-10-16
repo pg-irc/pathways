@@ -2,7 +2,7 @@ from unittest.mock import Mock
 from unittest.mock import MagicMock
 from django.http import Http404
 from django.test import TestCase
-from ... import controllers
+from polls import controllers
 
 class TestVoteController(TestCase):
     def setUp(self):

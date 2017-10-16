@@ -1,6 +1,6 @@
 from django.views import generic
 from django.utils import timezone
-from .. import models
+from polls import models
 
 # pylint: disable=too-many-ancestors
 class IndexView(generic.ListView):

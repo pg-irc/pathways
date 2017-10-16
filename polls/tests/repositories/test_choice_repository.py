@@ -1,7 +1,7 @@
 from django.test import TestCase
-from ... import models
-from ... import repositories
-from .. import helpers
+from polls import models
+from polls import repositories
+from polls.tests import helpers
 
 class TestChoiceRepository(TestCase):
     def setUp(self):

@@ -1,4 +1,4 @@
-from .. import models
+from polls import models
 
 class ChoiceRepository:
     @staticmethod

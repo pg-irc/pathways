@@ -1,5 +1,5 @@
 from django.views import generic
-from .. import models
+from polls import models
 
 # pylint: disable=too-many-ancestors
 class ResultsView(generic.DetailView):

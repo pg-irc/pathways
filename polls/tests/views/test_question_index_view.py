@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from .. import helpers
+from polls.tests import helpers
 
 # this is really an integration test. How to test just the view?
 class TestQuestionIndexView(TestCase):

@@ -1,7 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from .. import controllers
-from .. import repositories
+from polls import controllers
+from polls import repositories
 
 def vote(request, question_id):
     choice_id = request.POST['choice']

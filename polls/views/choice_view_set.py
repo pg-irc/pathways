@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .. import models
-from .. import serializers
+from polls import models
+from polls import serializers
 
 
 class ChoiceViewSet(viewsets.ModelViewSet):

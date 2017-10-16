@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .. import models
+from polls import models
 
 
 class ChoiceSerializer(serializers.HyperlinkedModelSerializer):
