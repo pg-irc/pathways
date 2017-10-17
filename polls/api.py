@@ -1,21 +1,21 @@
 from rest_framework import routers
 from polls import views
 
-def build_api_router():
+def build_url_patterns():
     router = routers.DefaultRouter()
-    register_question_views(router)
-    register_choice_views(router)
-    return router
+    register_question(router)
+    register_choice(router)
+    return router.urls
 
-def register_question_views(router):
+def register_question(router):
     pattern = r'^questions'
-    view_set = views.QuestionViewSet
-    router.register(pattern, view_set)
+    question_view_set = views.QuestionViewSet
+    router.register(pattern, question_view_set)
 
-def register_choice_views(router):
-    pattern = r'^questions/(?P<question_id>[0-9]+)/choices'
-    view_set = views.ChoiceViewSet
-    router.register(pattern, view_set, base_name='choice')
+def register_choice(router):
+    pattern_capturing_id = r'^questions/(?P<question_id>[0-9]+)/choices'
+    choice_view_set = views.ChoiceViewSet
+    router.register(pattern_capturing_id, choice_view_set, base_name='choice')
 
 # pylint: disable=invalid-name
-urlpatterns = build_api_router().urls
+urlpatterns = build_url_patterns()
