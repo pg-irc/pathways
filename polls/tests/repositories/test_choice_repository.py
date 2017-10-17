@@ -8,7 +8,7 @@ class TestChoiceRepository(TestCase):
         self.votes = 34
         self.choice_text = "bar"
         self.question = helpers.create_question(question_text="foo", days=-30)
-        self.choice = self.question.choice_set.create(choice_text=self.choice_text, \
+        self.choice = self.question.choices.create(choice_text=self.choice_text, \
                                                       votes=self.votes)
         self.repository = repositories.ChoiceRepository()
 
@@ -36,5 +36,5 @@ class TestChoiceRepository(TestCase):
 
         self.repository.save_choice(self.choice)
 
-        choice_from_database = self.question.choice_set.get(pk=self.choice.id)
+        choice_from_database = self.question.choices.get(pk=self.choice.id)
         self.assertEqual(choice_from_database.votes, 342)

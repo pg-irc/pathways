@@ -10,3 +10,7 @@ class ChoiceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         question_id = self.kwargs['question_id']
         return models.Choice.objects.filter(question=question_id)
+
+    def perform_create(self, serializer):
+        question_id = self.kwargs['question_id']
+        serializer.save(question_id=question_id)
