@@ -1,2 +1,0 @@
-from .question_serializer import QuestionSerializer
-from .choice_serializer import ChoiceSerializer

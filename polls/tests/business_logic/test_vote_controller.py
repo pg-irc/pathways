@@ -2,7 +2,7 @@ from unittest.mock import Mock
 from unittest.mock import MagicMock
 from django.http import Http404
 from django.test import TestCase
-from polls import controllers
+from polls import business_logic
 
 class TestVoteController(TestCase):
     def setUp(self):
@@ -14,7 +14,7 @@ class TestVoteController(TestCase):
         self.choice.votes = self.initial_vote_count
 
         self.mock_repository = Mock()
-        self.controller = controllers.VoteController(self.mock_repository)
+        self.controller = business_logic.VoteController(self.mock_repository)
 
     def test_calling_vote_retrieves_choice_from_repository(self):
         self.mock_repository.get_choice_by_question_id_and_choice_id = MagicMock()
