@@ -1,3 +1,4 @@
+import unittest
 from rest_framework import test as rest_test
 
 def create_question_entity(client):
@@ -69,17 +70,17 @@ class ChoiceEntityTests(rest_test.APITestCase):
         get_response = self.client.get(self.url)
         self.assertEqual(get_response.status_code, 404)
 
-    # TODO this test is not really passing yet
+    @unittest.expectedFailure
     def test_can_vote_on_choice(self):
         get_response = self.client.get(self.url)
         self.assertEqual(get_response.json()['votes'], 3)
         vote_url = '/v1/questions/{0}/choices/{1}/vote'.format(self.parent_key, self.child_key)
-        post_response = self.client.post(vote_url)
+        post_response = self.client.post(vote_url, content_type='application/json')
         # TODO not sure if 301 is the right response here, watch for missing /
         self.assertEqual(post_response.status_code, 301)
-        #self.assertEqual(post_response.json()['votes'], 4)
+        self.assertEqual(post_response.json()['votes'], 4)
         get_response = self.client.get(self.url)
-        #self.assertEqual(get_response.json()['votes'], 4)
+        self.assertEqual(get_response.json()['votes'], 4)
 
 
 class QuestionChoiceEntityTests(rest_test.APITestCase):
