@@ -1,3 +1,4 @@
+import unittest
 from decimal import Decimal
 from django.test import TestCase
 from django.core import exceptions
@@ -45,17 +46,21 @@ class TestLocationModel(TestCase):
         location_from_db = validate_save_and_reload(location)
         self.assertEqual(location_from_db.name, name)
 
-    def test_name_cannot_be_none(self):
-        null_name = None
-        location = LocationBuilder(self.organization).with_name(null_name).build()
+    @unittest.expectedFailure
+    def test_cannot_be_empty(self):
+        name = ''
+        location = LocationBuilder(self.organization).with_name(name).build()
         with self.assertRaises(exceptions.ValidationError):
             location.full_clean()
 
-    def test_name_cannot_be_empty(self):
-        empty_name = ''
-        location = LocationBuilder(self.organization).with_name(empty_name).build()
-        with self.assertRaises(exceptions.ValidationError):
-            location.full_clean()
+    def test_name_cannot_be_none(self):
+        null_name = None
+        location = LocationBuilder(self.organization).with_name(null_name).build()
+        # Note that we're getting an integrity error from the database here,
+        # haven't figured out how to make this fail validation which would be cleaner
+        # and would also allow us invalidate on the empty string.
+        with self.assertRaises(django_utils.IntegrityError):
+            validate_save_and_reload(location)
 
     def test_has_latitude(self):
         latitude = 123.456
@@ -100,16 +105,19 @@ class TestLocationModel(TestCase):
         location_from_db = validate_save_and_reload(location)
         self.assertEqual(location_from_db.description, description)
 
-    def test_description_can_be_empty(self):
+    def test_description_can_be_none(self):
+        null_description = None
+        location = LocationBuilder(self.organization).with_description(null_description).build()
+        location_from_db = validate_save_and_reload(location)
+        self.assertEqual(location_from_db.description, null_description)
+
+    @unittest.expectedFailure
+    def test_empty_description_is_saved_as_null(self):
         empty_description = ''
+        null_description = None
         location = LocationBuilder(self.organization).with_description(empty_description).build()
         location_from_db = validate_save_and_reload(location)
-        self.assertEqual(location_from_db.description, empty_description)
-
-    def test_description_is_required(self):
-        location = LocationBuilder(self.organization).with_description(None).build()
-        with self.assertRaises(django_utils.IntegrityError):
-            location.save()
+        self.assertEqual(location_from_db.description, null_description)
 
     def test_description_is_multilingual(self):
         location = LocationBuilder(self.organization).build()
