@@ -1,13 +1,14 @@
 from django.conf.urls import url, include
 from django.contrib import admin
-from organizations import viewsets as organizations_viewsets
-from locations import viewsets as locations_viewsets
+from organizations.viewsets import OrganizationViewSet
+from locations.viewsets import LocationViewSet, LocationViewSetUnderOrganizations
 from rest_framework import routers
 
 def build_router():
     router = routers.DefaultRouter()
-    router.register(r'^organizations', organizations_viewsets.OrganizationViewSet)
-    router.register(r'^locations', locations_viewsets.LocationViewSet)
+    router.register(r'^organizations', OrganizationViewSet)
+    router.register(r'^organizations/(?P<organization_id>[0-9a-zA-Z_]+)/locations', LocationViewSetUnderOrganizations, 'location')
+    router.register(r'^locations', LocationViewSet, 'location')
     return router
 
 # pylint: disable=invalid-name
