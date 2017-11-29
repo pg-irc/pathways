@@ -1,5 +1,4 @@
 import unittest
-from decimal import Decimal
 from django.test import TestCase
 from django.core import exceptions
 from django.db import utils as django_utils

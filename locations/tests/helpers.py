@@ -1,4 +1,3 @@
-from decimal import Decimal
 from locations import models
 
 class LocationBuilder:
@@ -6,8 +5,8 @@ class LocationBuilder:
         self.id = 'the_default_id'
         self.organization = organization
         self.name = 'default name'
-        self.latitude = Decimal('0.0')
-        self.longitude = Decimal('0.0')
+        self.latitude = 0.0
+        self.longitude = 0.0
         self.description = 'default description'
 
     def with_id(self, id):
