@@ -74,6 +74,29 @@ class OrganizationParserTests(unittest.TestCase):
         self.assertEqual(self.from_real_data.website, 'http://www.langleycdc.com')
         self.assertEqual(self.from_minimal_data.website, 'http://www.the-agency.org')
 
+    def test_website_without_prefix_parsed_as_http(self):
+        xml = self.data_set_with_website('www.the-agency.org')
+        website = self.get_website_as_parsed(xml)
+        self.assertEqual(website, 'http://www.the-agency.org')
+
+    def test_website_with_http_prefix_parsed_as_http(self):
+        xml = self.data_set_with_website('http://www.the-agency.org')
+        website = self.get_website_as_parsed(xml)
+        self.assertEqual(website, 'http://www.the-agency.org')
+
+    def test_website_with_https_prefix_parsed_as_https(self):
+        xml = self.data_set_with_website('https://www.the-agency.org')
+        website = self.get_website_as_parsed(xml)
+        self.assertEqual(website, 'https://www.the-agency.org')
+
+    def data_set_with_website(self, website):
+        return MINIMAL_211_DATA_SET.replace('http://www.the-agency.org', website)
+
+    def get_website_as_parsed(self, xml):
+        root = etree.fromstring(xml)
+        organization = parser.parse_agency(root.find('Agency'))
+        return organization.website
+
     def test_can_parse_email(self):
         self.assertEqual(self.from_real_data.email, 'info@langleycdc.com')
         self.assertEqual(self.from_minimal_data.email, 'info@the-agency.org')
