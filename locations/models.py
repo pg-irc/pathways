@@ -2,9 +2,9 @@ from django.db import models
 from django.core import exceptions
 from parler.models import TranslatableModel, TranslatedFields
 from organizations.models import Organization
-from common.models import ValidatingModel, RequiredCharField, contains_no_spaces
+from common.models import ValidateOnSaveMixin, RequiredCharField, contains_no_spaces
 
-class Location(ValidatingModel):
+class Location(ValidateOnSaveMixin, TranslatableModel):
     id = RequiredCharField(primary_key=True, max_length=200, validators=[contains_no_spaces()])
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     latitude = models.FloatField(blank=True, null=True)
@@ -19,7 +19,7 @@ class Location(ValidatingModel):
 
     def clean(self):
         self.validate_latitude_and_longitude()
-        super(ValidatingModel, self).clean()
+        super(Location, self).clean()
 
     def validate_latitude_and_longitude(self):
         latitude_is_null = self.latitude is None

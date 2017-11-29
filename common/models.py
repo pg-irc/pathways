@@ -6,21 +6,19 @@ def contains_no_spaces():
     return validators.RegexValidator(regex=r'^[^ ]+$')
 
 
-class ValidatingModel(TranslatableModel):
+class ValidateOnSaveMixin(object):
     """Database model class which calls full_clean() from save(), to help
     ensure that no invalid data gets into the database. full_clean() replaces
     all empty values (including '') with None, which are saves as NULL,so there
     should be no empty strings in the database."""
-    class Meta:
-        abstract = True
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        return super(ValidatingModel, self).save(*args, **kwargs)
+        return super(ValidateOnSaveMixin, self).save(*args, **kwargs)
 
     def clean(self):
         self.set_empty_fields_to_null()
-        super(ValidatingModel, self).clean()
+        super(ValidateOnSaveMixin, self).clean()
 
     def set_empty_fields_to_null(self):
         for field in self.all_fields():
