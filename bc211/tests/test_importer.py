@@ -1,4 +1,3 @@
-import unittest
 import logging
 from django.test import TestCase
 from bc211.parser import read_records_from_file

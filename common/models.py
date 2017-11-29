@@ -1,15 +1,14 @@
 from django.db import models
 from django.core import validators
-from parler.models import TranslatableModel
 
 def contains_no_spaces():
     return validators.RegexValidator(regex=r'^[^ ]+$')
 
 
 class ValidateOnSaveMixin(object):
-    """Database model class which calls full_clean() from save(), to help
+    """Database model mixin which calls full_clean() from save(), to help
     ensure that no invalid data gets into the database. full_clean() replaces
-    all empty values (including '') with None, which are saves as NULL,so there
+    all empty values (including '') with None, which are saved as NULL, so there
     should be no empty strings in the database."""
 
     def save(self, *args, **kwargs):
