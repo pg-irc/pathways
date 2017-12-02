@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'behave_django',
     'parler',
+    'pathways.users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -143,6 +144,27 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# AUTHENTICATION CONFIGURATION
+# ------------------------------------------------------------------------------
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Some really nice defaults
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
+ACCOUNT_ALLOW_REGISTRATION = False
+ACCOUNT_ADAPTER = 'pathways.users.adapters.AccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'pathways.users.adapters.SocialAccountAdapter'
+
+# Custom user app defaults
+# Select the correct user model
+AUTH_USER_MODEL = 'users.User'
+LOGIN_REDIRECT_URL = 'users:redirect'
+LOGIN_URL = 'account_login'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

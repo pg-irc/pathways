@@ -1,6 +1,9 @@
 # Local development dependencies go here
 -r base.txt
 
+docker==2.6.1
+docker-compose==1.17.1
+
 coverage==4.4.2
 django-coverage-plugin==1.5.0
 

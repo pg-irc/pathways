@@ -49,13 +49,19 @@ THIRD_PARTY_APPS = [
     'allauth',  # registration
     'allauth.account',  # registration
     'allauth.socialaccount',  # registration
+    'corsheaders',
+    'rest_framework',
+    'behave_django',
+    'parler',
 ]
 
 # Apps specific for this project go here.
 LOCAL_APPS = [
     # custom users app
+    'polls.apps.PollsConfig',
+    'locations.apps.LocationsConfig',
+    'organizations.apps.OrganizationsConfig',
     'pathways.users.apps.UsersConfig',
-    # Your stuff: custom apps go here
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -66,6 +72,8 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -83,6 +91,8 @@ MIGRATION_MODULES = {
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool('DJANGO_DEBUG', False)
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 # FIXTURE CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -208,6 +218,58 @@ MEDIA_URL = '/media/'
 # URL Configuration
 # ------------------------------------------------------------------------------
 ROOT_URLCONF = 'config.urls'
+
+# Logging
+# ------------------------------------------------------------------------------
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose-format': {
+            'format': '%(levelname)s %(module)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'verbose-console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose-format'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'bc211': {
+            'handlers': ['verbose-console'],
+            'level': 'DEBUG',
+        },
+        'polls': {
+            'handlers': ['verbose-console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+
+# Multilingual dynamic content
+# ------------------------------------------------------------------------------
+PARLER_DEFAULT_LANGUAGE_CODE = 'en'
+PARLER_LANGUAGES = {
+    1: (
+        {'code': 'en',},
+        {'code': 'fr',},
+        {'code': 'nl',},
+    ),
+    'default': {
+        'fallbacks': ['en'],          # defaults to PARLER_DEFAULT_LANGUAGE_CODE
+        'hide_untranslated': False,   # the default; let .active_translations() return fallbacks too.
+    }
+}
+
+
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = 'config.wsgi.application'
