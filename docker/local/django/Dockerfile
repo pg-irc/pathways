@@ -6,19 +6,19 @@ ENV PYTHONUNBUFFERED 1
 COPY ./requirements /requirements
 RUN pip install -r /requirements/local.txt
 
-COPY ./compose/production/django/entrypoint.sh /entrypoint.sh
+COPY ./docker/production/django/entrypoint.sh /entrypoint.sh
 RUN sed -i 's/\r//' /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-COPY ./compose/local/django/start.sh /start.sh
+COPY ./docker/local/django/start.sh /start.sh
 RUN sed -i 's/\r//' /start.sh
 RUN chmod +x /start.sh
 
-COPY ./compose/local/django/celery/worker/start.sh /start-celeryworker.sh
+COPY ./docker/local/django/celery/worker/start.sh /start-celeryworker.sh
 RUN sed -i 's/\r//' /start-celeryworker.sh
 RUN chmod +x /start-celeryworker.sh
 
-COPY ./compose/local/django/celery/beat/start.sh /start-celerybeat.sh
+COPY ./docker/local/django/celery/beat/start.sh /start-celerybeat.sh
 RUN sed -i 's/\r//' /start-celerybeat.sh
 RUN chmod +x /start-celerybeat.sh
 

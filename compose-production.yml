@@ -9,7 +9,7 @@ services:
   django:
     build:
       context: .
-      dockerfile: ./compose/production/django/Dockerfile
+      dockerfile: ./docker/production/django/Dockerfile
     depends_on:
       - postgres
       - redis
@@ -19,7 +19,7 @@ services:
   postgres:
     build:
       context: .
-      dockerfile: ./compose/production/postgres/Dockerfile
+      dockerfile: ./docker/production/postgres/Dockerfile
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - postgres_backup:/backups
@@ -28,7 +28,7 @@ services:
   caddy:
     build:
       context: .
-      dockerfile: ./compose/production/caddy/Dockerfile
+      dockerfile: ./docker/production/caddy/Dockerfile
     depends_on:
       - django
     volumes:
