@@ -41,6 +41,18 @@ CACHES = {
     }
 }
 
+# DATABASE
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
 MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
@@ -50,7 +62,6 @@ INTERNAL_IPS = ['127.0.0.1', '10.0.2.2', ]
 
 
 import socket
-import os
 # tricks to have debug toolbar when developing with docker
 if os.environ.get('USE_DOCKER') == 'yes':
     ip = socket.gethostbyname(socket.gethostname())
