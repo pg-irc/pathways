@@ -1,5 +1,5 @@
 [run]
-include = pathways/*
+include = main/*
 omit = *migrations*, *tests*
 plugins =
     django_coverage_plugin
