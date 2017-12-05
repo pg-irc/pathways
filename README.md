@@ -36,18 +36,18 @@ Run the unit tests
 
 `python manage.py test`
 
-Start the server
+Start the API server
 
 `python manage.py runserver`
 
 You should now be able to access the server at http://127.0.0.1:8000/v1/. The Django admin tool is at http://127.0.0.1:8000/v1/admin/, and the question and choice entities are available at http://127.0.0.1:8000/v1/questions/ and http://127.0.0.1:8000/v1/questions/1/choices/.
 
-## Architecture
+## Development
 
-An important goal of this architecture is to isolate business logic from the framework. The benefits of this is to make it easier to make changes to the framework we're using, e.g. a major version upgrade of the framework should have very limited impact on the business logic implementation. It also makes the business logic easier to test, since few or no framework components need to be brought into the testing code.
+### Null and django blank
 
-The code base is therefore separated into three, web containing the django code related to presenting a web interface to the model, storage containg the model and query code, divided into repositories, and finally the business logic which is currently just a file but this will likely evolve into a folder or folder structure.
+Required string fields should never be null and never be the empty string. Optional string fields should never be the empty string. To achieve this, `blank` parameters to field definitions should always be the same as the `null` parameter, e.g. either `null=True, blank=True` or `null=False, blank=False`, the latter being the default values for both fields, which can therefore be omitted.
 
-The organization of the test code in a parallel directory structure is a little awkward and I will be looking to improve this as the number of tests increases.
+### Commit messages
 
-While for the moment, the server does serve up some very simple HTML forms as well as JSON, the plan is for the server to provide JSON only (other than the administration portal and API documentation). This change will remove the templates directory and simplify the url specification files. I also don't know whether we will be using namespaces in our url definition files, so the inconsistency around that will be resolved once we understand the implications of that choice.
+All commits are labelled with the issue they are being done under. This ensures that we don't do work that is not tracked, and history of why every change is made is maintained. Most front end and back end work is tracked by issues in their respective repositories, in which case the commit message should start with "Issue #N", e.g. "Issue #13". Occasionally, front end work may be tracked under backend issues, in which case each commits message should start with "Issue pg-irc/pathways-backend#13".

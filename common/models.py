@@ -1,28 +1,31 @@
 from django.db import models
-from parler.models import TranslatableModel
+from django.core import validators
 
-class ValidatingModel(TranslatableModel):
-    class Meta:
-        abstract = True
+def contains_no_spaces():
+    return validators.RegexValidator(regex=r'^[^ ]+$')
+
+
+class ValidateOnSaveMixin(object):
+    """Database model mixin which calls full_clean() from save(), to help
+    ensure that no invalid data gets into the database. full_clean() replaces
+    all empty values (including '') with None, which are saved as NULL, so there
+    should be no empty strings in the database."""
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        return super(ValidatingModel, self).save(*args, **kwargs)
+        return super(ValidateOnSaveMixin, self).save(*args, **kwargs)
 
     def clean(self):
         self.set_empty_fields_to_null()
-        super(ValidatingModel, self).clean()
+        super(ValidateOnSaveMixin, self).clean()
 
     def set_empty_fields_to_null(self):
         for field in self.all_fields():
-            if self.can_be_null(field) and self.is_empty(field):
+            if self.is_empty(field):
                 self.set_to_null(field)
 
     def all_fields(self):
         return self._meta.fields
-
-    def can_be_null(self, field):
-        return field.null
 
     def is_empty(self, field):
         value = getattr(self, field.attname)
