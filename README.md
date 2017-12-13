@@ -59,6 +59,22 @@ python manage.py import_bc211_data ~/path/to/AIRSXML_2252_Export_20170109050136_
 
 ```
 
+## Getting started with Heroku
+
+Create a Heroku instance with these environment variables:
+
+* DATABASE_URL
+* DJANGO_AWS_ACCESS_KEY_ID
+* DJANGO_AWS_SECRET_ACCESS_KEY
+* DJANGO_AWS_STORAGE_BUCKET_NAME = peacegeeks-pathways-static
+* DJANGO_SECRET_KEY
+* DJANGO_SENTRY_DSN (should not be needed)
+* DJANGO_SETTINGS_MODULE = config.settings.production
+
+Update ALLOWED_HOSTS production settig to include the name of the heroku instance
+
+% heroku run python manage.py migrate
+
 ## Getting started with docker
 
 Create and launch the docker containers for local development
