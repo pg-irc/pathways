@@ -116,17 +116,6 @@ ADMINS = [
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 
-# DATABASE CONFIGURATION
-# ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-# Uses django-environ to accept uri format
-# See: https://django-environ.readthedocs.io/en/latest/#supported-types
-DATABASES = {
-    'default': env.db('DATABASE_URL', default='postgres:///pathways'),
-}
-DATABASES['default']['ATOMIC_REQUESTS'] = True
-
-
 # GENERAL CONFIGURATION
 # ------------------------------------------------------------------------------
 # Local time zone for this installation. Choices can be found here:

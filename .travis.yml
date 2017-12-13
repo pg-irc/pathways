@@ -12,13 +12,15 @@ python:
 services:
   - postgresql
 env:
-  - DJANGO_SETTINGS_MODULE=config.settings.production
+  - DJANGO_SETTINGS_MODULE=config.settings.test
     DATABASE_URL=postgres://postgres@localhost/test_db
     DJANGO_AWS_STORAGE_BUCKET_NAME=peacegeeks-pathways-static
     DJANGO_AWS_ACCESS_KEY_ID=Foo
     DJANGO_AWS_SECRET_ACCESS_KEY=Bar
     DJANGO_SECRET_KEY=Baz
     DJANGO_SENTRY_DSN=Ban
+install:
+  - pip install -r requirements/test.txt
 before_script:
   - psql -c 'create database test_db;' -U postgres
 script:

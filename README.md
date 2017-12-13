@@ -15,14 +15,14 @@ git@github.com:pg-irc/pathways-backend.git
 Set up and activate a python v3 environment
 
 ```
-python3 -m venv cookies_env
-source cookies_env/bin/activate
+cd pathways-backend/
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
 Install the required python libraries for local development
 
 ```
-cd pathways-backend/
 pip install -r requirements/local.txt
 ```
 
@@ -57,6 +57,18 @@ Import BC-211 data
 ```
 python manage.py import_bc211_data ~/path/to/AIRSXML_2252_Export_20170109050136__211.xml
 
+```
+
+## Using different settings
+
+By default the local settings are used. To use other settings, use the environment variable `DJANGO_SETTINGS_MODULE`, valid values are `config.settings.local`, `config.settings.test` and `config.settings.production`.
+
+## Running tests on Travis and locally
+
+Travis runs the tests using the settings in `config.settings.test`, against postgres using the accont "postgres" with empty password, creating a database called "test_db". To run the same tests locally, create a postgres user and a database called "test_db" owned by that user, and specify the postgres account using environment variables `POSTGRES_USER` and `POSTGRES_PASSWORD`, e.g. as follows:
+
+```
+DJANGO_SETTINGS_MODULE=config.settings.test POSTGRES_USER=test_user POSTGRES_PASSWORD='the_password' python manage.py test
 ```
 
 ## Getting started with Heroku
