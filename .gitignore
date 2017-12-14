@@ -304,7 +304,8 @@ tags
 pyvenv.cfg
 pip-selfcheck.json
 
-
+# Generated files
+main/static/css/
 
 
 main/media/

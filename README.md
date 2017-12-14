@@ -9,7 +9,7 @@ At this stage, our focus is on establishing the server architecture and testing 
 Clone the repository
 
 ```
-git@github.com:pg-irc/pathways-backend.git
+git clone git@github.com:pg-irc/pathways-backend.git
 ```
 
 Set up and activate a python v3 environment
@@ -97,14 +97,12 @@ docker-compose -f compose-local.yml build
 
 Set up the database inside the container
 
-
 ```
 docker-compose -f compose-local.yml run django python manage.py migrate
 docker-compose -f compose-local.yml run django python manage.py createsuperuser
 ```
 
 Launch the container
-
 
 ```
 docker-compose -f compose-local.yml up
