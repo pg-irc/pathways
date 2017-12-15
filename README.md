@@ -6,41 +6,106 @@ At this stage, our focus is on establishing the server architecture and testing 
 
 ## Getting started
 
+Clone the repository
+
+```
+git clone git@github.com:pg-irc/pathways-backend.git
+```
+
 Set up and activate a python v3 environment
 
 ```
-python3 -m venv PW
-source ./PW/bin/activate
-```
-
-Clone the repository:
-
-```
-git clone https://github.com/pg-irc/pathways-backend.git
 cd pathways-backend/
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-Install required libraries in the python environment created above:
+Install the required python libraries for local development
 
-`pip install -r requirements.txt`
+```
+pip install -r requirements/local.txt
+```
 
-Create database tables -- note that we are using SqlLite for now, the plan is to deploy on Postgres:
+Create the database tables. For local development, sqlite is the database implementation, for production, postgres is used.
 
-`python manage.py migrate`
+```
+python manage.py migrate
+```
 
 Create the django administration account:
 
-`python manage.py createsuperuser`
+```
+python manage.py createsuperuser
+```
 
 Run the unit tests
 
-`python manage.py test`
+```
+python manage.py test
+```
 
 Start the API server
 
-`python manage.py runserver`
+```
+python manage.py runserver
+```
 
 You should now be able to access the server at http://127.0.0.1:8000/v1/. The Django admin tool is at http://127.0.0.1:8000/v1/admin/, and the question and choice entities are available at http://127.0.0.1:8000/v1/questions/ and http://127.0.0.1:8000/v1/questions/1/choices/.
+
+Import BC-211 data
+
+```
+python manage.py import_bc211_data ~/path/to/AIRSXML_2252_Export_20170109050136__211.xml
+
+```
+
+## Using different settings
+
+By default the local settings are used. To use other settings, use the environment variable `DJANGO_SETTINGS_MODULE`, valid values are `config.settings.local`, `config.settings.test` and `config.settings.production`.
+
+## Running tests on Travis and locally
+
+Travis runs the tests using the settings in `config.settings.test`, against postgres using the accont "postgres" with empty password, creating a database called "test_db". To run the same tests locally, create a postgres user and a database called "test_db" owned by that user, and specify the postgres account using environment variables `POSTGRES_USER` and `POSTGRES_PASSWORD`, e.g. as follows:
+
+```
+DJANGO_SETTINGS_MODULE=config.settings.test POSTGRES_USER=test_user POSTGRES_PASSWORD='the_password' python manage.py test
+```
+
+## Getting started with Heroku
+
+Create a Heroku instance with these environment variables:
+
+* DATABASE_URL (managed by Heroku)
+* DJANGO_AWS_STORAGE_BUCKET_NAME = peacegeeks-pathways-static
+* DJANGO_SECRET_KEY
+* DJANGO_SETTINGS_MODULE = config.settings.production
+
+Update ALLOWED_HOSTS production settig to include the name of the heroku instance
+
+% heroku run python manage.py migrate
+
+## Getting started with docker
+
+Create and launch the docker containers for local development
+
+```
+docker-compose -f compose-local.yml build
+```
+
+Set up the database inside the container
+
+```
+docker-compose -f compose-local.yml run django python manage.py migrate
+docker-compose -f compose-local.yml run django python manage.py createsuperuser
+```
+
+Launch the container
+
+```
+docker-compose -f compose-local.yml up
+```
+
+and check out http://localhost:8000/ to see if it worked. See https://cookiecutter-django.readthedocs.io/en/latest/developing-locally-docker.html for more details.
 
 ## Development
 
