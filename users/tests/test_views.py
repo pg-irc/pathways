@@ -1,6 +1,6 @@
 from django.test import RequestFactory
 from test_plus.test import TestCase
-from main.users.views import UserRedirectView, UserUpdateView
+from users.views import UserRedirectView, UserUpdateView
 
 
 class BaseUserTestCase(TestCase):

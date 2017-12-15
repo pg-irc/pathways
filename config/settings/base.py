@@ -40,7 +40,7 @@ LOCAL_APPS = [
     'locations.apps.LocationsConfig',
     'organizations.apps.OrganizationsConfig',
     'search.apps.SearchConfig',
-    'main.users.apps.UsersConfig',
+    'users.apps.UsersConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -204,8 +204,8 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 ACCOUNT_ALLOW_REGISTRATION = env.bool('DJANGO_ACCOUNT_ALLOW_REGISTRATION', True)
-ACCOUNT_ADAPTER = 'main.users.adapters.AccountAdapter'
-SOCIALACCOUNT_ADAPTER = 'main.users.adapters.SocialAccountAdapter'
+ACCOUNT_ADAPTER = 'users.adapters.AccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'users.adapters.SocialAccountAdapter'
 
 AUTH_USER_MODEL = 'users.User'
 LOGIN_REDIRECT_URL = 'users:redirect'

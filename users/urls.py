@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from main.users import views
+from users import views
 
 urlpatterns = [
     url(
