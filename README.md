@@ -80,7 +80,6 @@ Create a Heroku instance with these environment variables:
 * DJANGO_AWS_SECRET_ACCESS_KEY
 * DJANGO_AWS_STORAGE_BUCKET_NAME = peacegeeks-pathways-static
 * DJANGO_SECRET_KEY
-* DJANGO_SENTRY_DSN (should not be needed)
 * DJANGO_SETTINGS_MODULE = config.settings.production
 
 Update ALLOWED_HOSTS production settig to include the name of the heroku instance

@@ -18,7 +18,6 @@ env:
     DJANGO_AWS_ACCESS_KEY_ID=Not_in_use
     DJANGO_AWS_SECRET_ACCESS_KEY=Not_in_use
     DJANGO_SECRET_KEY=Not_in_use
-    DJANGO_SENTRY_DSN=Not_in_use
 install:
   - pip install -r requirements/test.txt
 before_script:
