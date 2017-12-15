@@ -75,9 +75,7 @@ DJANGO_SETTINGS_MODULE=config.settings.test POSTGRES_USER=test_user POSTGRES_PAS
 
 Create a Heroku instance with these environment variables:
 
-* DATABASE_URL
-* DJANGO_AWS_ACCESS_KEY_ID
-* DJANGO_AWS_SECRET_ACCESS_KEY
+* DATABASE_URL (managed by Heroku)
 * DJANGO_AWS_STORAGE_BUCKET_NAME = peacegeeks-pathways-static
 * DJANGO_SECRET_KEY
 * DJANGO_SETTINGS_MODULE = config.settings.production
