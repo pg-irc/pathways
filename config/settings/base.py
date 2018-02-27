@@ -26,6 +26,22 @@ DJANGO_APPS = [
     'django.contrib.admin',
 ]
 
+WAGTAIL_APPS = [
+    'wagtail.wagtailforms',
+    'wagtail.wagtailredirects',
+    'wagtail.wagtailembeds',
+    'wagtail.wagtailsites',
+    'wagtail.wagtailusers',
+    'wagtail.wagtailsnippets',
+    'wagtail.wagtaildocs',
+    'wagtail.wagtailimages',
+    'wagtail.wagtailsearch',
+    'wagtail.wagtailadmin',
+    'wagtail.wagtailcore',
+    'modelcluster',
+    'taggit',
+]
+
 THIRD_PARTY_APPS = [
     'crispy_forms',  # Form layouts
     'allauth',  # registration
@@ -49,7 +65,7 @@ LOCAL_APPS = [
     'translation.apps.ContentTranslationToolsConfig',
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+INSTALLED_APPS = DJANGO_APPS + WAGTAIL_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'common.view.Pagination',
@@ -68,6 +84,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'wagtail.wagtailcore.middleware.SiteMiddleware',
+    'wagtail.wagtailredirects.middleware.RedirectMiddleware',
 ]
 
 MIGRATION_MODULES = {
@@ -87,6 +105,7 @@ ADMINS = [
     ("""PeaceGeeks""", 'rasmus@peacegeeks.org'),
 ]
 
+WAGTAIL_SITE_NAME = 'Wagtail - Pathways'
 MANAGERS = ADMINS
 TIME_ZONE = 'UTC'
 LANGUAGE_CODE = 'en-us'

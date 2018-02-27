@@ -4,6 +4,9 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
+from wagtail.wagtailadmin import urls as wagtailadmin_urls
+from wagtail.wagtaildocs import urls as wagtaildocs_urls
+from wagtail.wagtailcore import urls as wagtail_urls
 from human_services.organizations.viewsets import OrganizationViewSet
 from human_services.locations.viewsets import LocationViewSet, LocationViewSetUnderOrganizations
 from human_services.services.viewsets import ServiceViewSet
@@ -42,6 +45,11 @@ urlpatterns = [
     url(r'^swagger(?P<format>.json|.yaml)$', SCHEMA_VIEW.without_ui(cache_timeout=None), name='schema-json'),
     url(r'^swagger/$', SCHEMA_VIEW.with_ui('swagger', cache_timeout=None), name='schema-swagger-ui'),
     url(r'^redoc/$', SCHEMA_VIEW.with_ui('redoc', cache_timeout=None), name='schema-redoc'),
+
+    # wagtail
+    url(r'^cms/', include(wagtailadmin_urls)),
+    url(r'^documents/', include(wagtaildocs_urls)),
+    url(r'^pages/', include(wagtail_urls)), # Ultimately we'll probably want url(r'', include(wagtail_urls)), here
 
     url(r'^v1/', include(build_router().urls)),
 
