@@ -61,6 +61,7 @@ LOCAL_APPS = [
     'human_services.services.apps.ServicesConfig',
     'human_services.taxonomies.apps.TaxonomiesConfig',
     'human_services.addresses.apps.AddressesConfig',
+    'content.blog.apps.BlogConfig',
     'users.apps.UsersConfig',
     'translation.apps.ContentTranslationToolsConfig',
 ]
@@ -119,6 +120,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             str(APPS_DIR.path('templates')),
+            str(ROOT_DIR.path('content/templates/')),
         ],
         'OPTIONS': {
             'debug': DEBUG,

@@ -1,0 +1,5 @@
+<div>Index page title {{ page.title }}</div>
+
+{% for entry in blog_entries %}
+    <div>Child page: <a href="{{entry.url_path}}">{{ entry.title }}</a></div>
+{% endfor %}
