@@ -4,9 +4,9 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
-from wagtail.wagtailadmin import urls as blog_admin_urls
-from wagtail.wagtaildocs import urls as blog_documentation_urls
-from wagtail.wagtailcore import urls as blog_urls
+from wagtail.wagtailadmin import urls as content_admin_urls
+from wagtail.wagtaildocs import urls as content_documentation_urls
+from wagtail.wagtailcore import urls as content_urls
 
 from wagtail.api.v2.router import WagtailAPIRouter
 from wagtail.api.v2.endpoints import PagesAPIEndpoint
@@ -55,17 +55,17 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
 
     # api docs
-    url(r'^swagger(?P<format>.json|.yaml)$', SCHEMA_VIEW.without_ui(cache_timeout=None), name='schema-json'),
-    url(r'^swagger/$', SCHEMA_VIEW.with_ui('swagger', cache_timeout=None), name='schema-swagger-ui'),
-    url(r'^redoc/$', SCHEMA_VIEW.with_ui('redoc', cache_timeout=None), name='schema-redoc'),
+    url(r'^documentation/swagger(?P<format>.json|.yaml)$', SCHEMA_VIEW.without_ui(cache_timeout=None), name='schema-json'),
+    url(r'^documentation/swagger/$', SCHEMA_VIEW.with_ui('swagger', cache_timeout=None), name='schema-swagger-ui'),
+    url(r'^documentation/redoc/$', SCHEMA_VIEW.with_ui('redoc', cache_timeout=None), name='schema-redoc'),
 
-    # blog
-    url(r'^blog/admin/', include(blog_admin_urls)),
-    url(r'^blog/docs/', include(blog_documentation_urls)),
-    url(r'^blog/', include(blog_urls)),
+    # content
+    url(r'^content/admin/', include(content_admin_urls)),
+    url(r'^content/documentation/', include(content_documentation_urls)), # this is not working
+    url(r'^content/', include(content_urls)),
 
     # api
-    url(r'^v1/blog/', build_cms_router().urls),
+    url(r'^v1/content/', build_cms_router().urls),
     url(r'^v1/', include(build_api_router().urls)),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
