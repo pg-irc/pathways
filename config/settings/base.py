@@ -62,8 +62,8 @@ LOCAL_APPS = [
     'human_services.taxonomies.apps.TaxonomiesConfig',
     'human_services.addresses.apps.AddressesConfig',
     'content.home_page.apps.HomePageConfig',
+    'content.blog_index_page.apps.BlogIndexPageConfig',
     'content.blog_page.apps.BlogPageConfig',
-    'content.blog.apps.BlogConfig',
     'users.apps.UsersConfig',
     'translation.apps.ContentTranslationToolsConfig',
 ]
