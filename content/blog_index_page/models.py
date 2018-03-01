@@ -1,15 +1,10 @@
-from django.db import models
-from modelcluster.fields import ParentalKey
-from wagtail.wagtailadmin.edit_handlers import FieldPanel, MultiFieldPanel, InlinePanel, StreamFieldPanel
-from wagtail.wagtailcore import blocks
+from wagtail.wagtailadmin.edit_handlers import FieldPanel
 from wagtail.wagtailcore.models import Page
-from wagtail.wagtailcore.fields import RichTextField, StreamField
-from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
-from wagtail.wagtailimages.blocks import ImageChooserBlock
-from wagtail.wagtailsearch import index
+from wagtail.wagtailcore.fields import RichTextField
 from content.blog_page.models import BlogPage
 
 
+# pylint: disable=too-many-ancestors
 class BlogIndexPage(Page):
     intro = RichTextField(blank=True)
 
@@ -17,7 +12,7 @@ class BlogIndexPage(Page):
         FieldPanel('intro', classname="full")
     ]
 
-    def get_context(self, request):
-        context = super(BlogIndexPage, self).get_context(request)
+    def get_context(self, request, *args, **kwargs):
+        context = super(BlogIndexPage, self).get_context(request, args, kwargs)
         context['blog_entries'] = BlogPage.objects.child_of(self).live()
         return context
