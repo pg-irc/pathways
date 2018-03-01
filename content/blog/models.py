@@ -9,13 +9,6 @@ from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.wagtailsearch import index
 
 
-class HomePage(Page):
-    body = RichTextField(blank=True)
-    content_panels = Page.content_panels + [
-        FieldPanel('body', classname='full'),
-    ]
-
-
 class BlogIndexPage(Page):
     intro = RichTextField(blank=True)
 
