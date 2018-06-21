@@ -28,6 +28,6 @@ class Command(BaseCommand):
                     content = file.read()
                     data.append([path, content])
 
-        with open('buildTasksFixture.ts', 'w') as file:
+        with open('tasks.ts', 'w') as file:
             fixture = generate_task_fixture.generate_task_fixture(data)
             file.write(fixture)
