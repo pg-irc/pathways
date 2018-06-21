@@ -1,5 +1,5 @@
 import json
-from newcomers_guide import process_files
+from newcomers_guide.process_files import process_all_task_files
 
 
 def generate_task_fixture(files):
@@ -16,7 +16,7 @@ def generate_task_fixture(files):
               '    }\n'
               '}')
 
-    tasks = process_files.process_all_task_files(files)
+    tasks = process_all_task_files(files)
     tasks_as_json = json.dumps(tasks, ensure_ascii=False, sort_keys=True, indent=4)
 
     return header + tasks_as_json + footer

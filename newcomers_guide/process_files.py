@@ -1,13 +1,15 @@
-from newcomers_guide import parse_file_path, data_cleanup, task_builder
+from newcomers_guide.parse_file_path import parse_file_path
+from newcomers_guide.task_builder import TaskBuilder
+from newcomers_guide.data_cleanup import clean_up_links, clean_up_newlines
 
 
 def process_all_task_files(file_specs):
     builders = {}
     for spec in file_specs:
         path = spec[0]
-        description = clean_text(spec[1])
-        parsed_path = parse_file_path.parse_file_path(path)
+        parsed_path = parse_file_path(path)
         task_id = parsed_path.id
+        description = clean_text(spec[1])
 
         if parsed_path.type == 'tasks':
             if task_id in builders:
@@ -19,15 +21,15 @@ def process_all_task_files(file_specs):
 
 
 def clean_text(text):
-    text = data_cleanup.clean_up_newlines(text)
-    text = data_cleanup.clean_up_links(text)
+    text = clean_up_newlines(text)
+    text = clean_up_links(text)
     return text
 
 
 def create_builder(parsed_path, description):
     task_id = parsed_path.id
     locale = parsed_path.locale
-    builder = task_builder.TaskBuilder()
+    builder = TaskBuilder()
     builder.set_id(task_id)
     builder.set_title_in_locale(locale, parsed_path.title)
     builder.set_description_in_locale(locale, description)

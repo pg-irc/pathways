@@ -7,7 +7,7 @@ def parse_file_path(path):
                                               ['chapter', 'type', 'id', 'locale', 'title'])
     split_path = path.split(os.sep)
     length = len(split_path)
-    if length < 4:
+    if length < 5:
         raise Exception(path + ': path is too short')
     name = split_path[length-1]
     split_name = name.split('.')

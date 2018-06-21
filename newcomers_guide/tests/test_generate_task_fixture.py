@@ -1,5 +1,5 @@
 from django.test import TestCase
-from newcomers_guide import generate_task_fixture
+from newcomers_guide.generate_task_fixture import generate_task_fixture
 
 
 class GenerateFixtureTest(TestCase):
@@ -9,7 +9,7 @@ class GenerateFixtureTest(TestCase):
 
     def test_include_content_id_from_path(self):
         self.maxDiff = None
-        result = generate_task_fixture.generate_task_fixture([[self.english_path, self.content]])
+        result = generate_task_fixture([[self.english_path, self.content]])
         expected = ('export const buildTasksFixture = (): Store => {\n'
                     '    return {\n'
                     '        taskMap: {\n'
