@@ -19,6 +19,10 @@ class CleanUpNewlinesTest(TestCase):
         text = 'abc\n\ndef'
         self.assertEqual(clean_up_newlines(text), 'abc\ndef')
 
+    def test_replaces_tripple_newline_with_newline(self):
+        text = 'abc\n\n\ndef'
+        self.assertEqual(clean_up_newlines(text), 'abc\ndef')
+
     def test_replaces_double_newline_carriage_return_with_newline(self):
         text = 'abc\n\r\n\rdef'
         self.assertEqual(clean_up_newlines(text), 'abc\ndef')

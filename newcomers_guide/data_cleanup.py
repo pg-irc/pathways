@@ -5,7 +5,7 @@ def clean_up_newlines(text):
     single_newline = r'\b[ \t\r]*\n[ \t\r]*\b'
     text = re.sub(single_newline, ' ', text)
 
-    double_newline = r'\b[ \t\r]*\n[ \t\r]*\n[ \t\r]*\b'
+    double_newline = r'\b[ \t\r]*\n([ \t\r]*\n)+[ \t\r]*\b'
     text = re.sub(double_newline, '\n', text)
     return text
 

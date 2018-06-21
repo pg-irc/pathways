@@ -10,7 +10,12 @@ class GenerateFixtureTest(TestCase):
     def test_include_content_id_from_path(self):
         self.maxDiff = None
         result = generate_task_fixture([[self.english_path, self.content]])
-        expected = ('export const buildTasksFixture = (): Store => {\n'
+        expected = ('// intended to be located at pathways-frontend/src/fixtures/tasks.ts\n'
+                    '\n'
+                    'import { Store } from \'./types/tasks\';\n'
+                    'export { Id, Task, TaskUserSettings, TaskMap, TaskUserSettingsMap, TaskList, Store } from \'./types/tasks\';\n'
+                    '\n'
+                    'export const buildTasksFixture = (): Store => {\n'
                     '    return {\n'
                     '        taskMap: {\n'
                     '    "To_learn_english": {\n'
