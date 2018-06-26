@@ -3,7 +3,7 @@ from newcomers_guide.process_files import process_all_task_files
 from common.testhelpers.random_test_values import a_string
 
 
-class ProcessMultipleFileTest(TestCase):
+class ProcessAllTaskFilesTests(TestCase):
     def setUp(self):
         self.english_path = 'some/path/chapter/tasks/To_learn_english/en.Learn_english.txt'
 
@@ -51,12 +51,11 @@ class ProcessMultipleFileTest(TestCase):
         self.assertEqual(result['To_learn_english']['description']['fr'], french_description)
 
     def test_combine_files_for_different_content(self):
-        secondary_path = 'some/path/chapter/tasks/Registering_your_child_in_a_public_school/en.Registering_your_child_in_a_public_school.txt'
+        secondary_path = 'some/path/chapter/tasks/Registering_your_child/en.Registering_your_child.txt'
         result = process_all_task_files([[self.english_path, a_string()],
                                          [secondary_path, a_string()]])
         self.assertEqual(result['To_learn_english']['title']['en'], 'Learn_english')
-        self.assertEqual(result['Registering_your_child_in_a_public_school']['title']
-                         ['en'], 'Registering_your_child_in_a_public_school')
+        self.assertEqual(result['Registering_your_child']['title']['en'], 'Registering_your_child')
 
     def test_exclude_nontask_content(self):
         task_path = 'some/path/chapter/tasks/To_learn_english/en.Learn_english.txt'
