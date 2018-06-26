@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.core import exceptions
-from newcomers_guide.parse_taxonomy_file import parse_taxonomy_file
+from newcomers_guide.process_all_taxonomy_files import parse_taxonomy_file
 
 
 class ParseTaxonomyFileTests(TestCase):

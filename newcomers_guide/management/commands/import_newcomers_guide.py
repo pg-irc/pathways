@@ -1,6 +1,7 @@
 import os
 from django.core.management.base import BaseCommand
 from newcomers_guide import generate_task_fixture
+from newcomers_guide.process_all_taxonomy_files import process_all_taxonomy_files
 
 # invoke as follows:
 # python manage.py import_newcomers_guide path/to/newcomers/root/directory
@@ -23,7 +24,9 @@ class Command(BaseCommand):
         tasks_fixture = generate_task_fixture.generate_task_fixture(task_data)
 
         taxonomy_data = self.get_taxonomy_data(root_folder)
-        taxonomy_fixture = generate_task_fixture.generate_taxonomy_fixture(taxonomy_data)
+        taxonomies = process_all_taxonomy_files(taxonomy_data)
+
+        # TODO tag all tasks with taxonomies
 
         with open('tasks.ts', 'w') as file:
             file.write(tasks_fixture)
