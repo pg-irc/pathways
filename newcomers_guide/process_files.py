@@ -7,15 +7,14 @@ def process_all_task_files(file_specs):
     builders = {}
     for spec in file_specs:
         path = spec[0]
-        parsed_path = parse_file_path(path)
-        task_id = parsed_path.id
         description = clean_text(spec[1])
 
+        parsed_path = parse_file_path(path)
+        task_id = parsed_path.id
+
         if parsed_path.type == 'tasks':
-            if task_id in builders:
-                add_to_existing_builder(builders[task_id], parsed_path, description)
-            else:
-                builders[task_id] = create_builder(parsed_path, description)
+            ensure_builder_exists_for_task(builders, task_id)
+            add_properties_for_locale(builders[task_id], parsed_path, description)
 
     return make_task_map(builders)
 
@@ -26,17 +25,13 @@ def clean_text(text):
     return text
 
 
-def create_builder(parsed_path, description):
-    task_id = parsed_path.id
-    locale = parsed_path.locale
-    builder = TaskBuilder()
-    builder.set_id(task_id)
-    builder.set_title_in_locale(locale, parsed_path.title)
-    builder.set_description_in_locale(locale, description)
-    return builder
+def ensure_builder_exists_for_task(builders, task_id):
+    if task_id not in builders:
+        builders[task_id] = TaskBuilder()
+        builders[task_id].set_id(task_id)
 
 
-def add_to_existing_builder(builder, parsed_path, description):
+def add_properties_for_locale(builder, parsed_path, description):
     locale = parsed_path.locale
     builder.set_title_in_locale(locale, parsed_path.title)
     builder.set_description_in_locale(locale, description)
