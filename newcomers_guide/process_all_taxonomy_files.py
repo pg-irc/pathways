@@ -17,13 +17,14 @@ def process_all_taxonomy_files(file_specs):
         path = spec[0]
         file_content = spec[1]
         parsed_path = parse_file_path(path)
-        task_id = parsed_path.id
+        content_id = parsed_path.id
+        content_type = parsed_path.type
         parsed_terms = parse_taxonomy_file(file_content)
         for term in parsed_terms:
             result.append(TaxonomyTermReference(taxonomy_id=term.taxonomy_id,
                                                 taxonomy_term_id=term.taxonomy_term_id,
-                                                content_type='task',
-                                                content_id=task_id))
+                                                content_type=content_type,
+                                                content_id=content_id))
     return result
 
 
