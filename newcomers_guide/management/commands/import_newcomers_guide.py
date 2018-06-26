@@ -19,15 +19,43 @@ class Command(BaseCommand):
 
         self.stdout.write('Reading Newcomers Guide data from {}'.format(root_folder))
 
-        data = []
+        task_data = self.get_task_data(root_folder)
+        tasks_fixture = generate_task_fixture.generate_task_fixture(task_data)
+
+        taxonomy_data = self.get_taxonomy_data(root_folder)
+        taxonomy_fixture = generate_task_fixture.generate_taxonomy_fixture(taxonomy_data)
+
+        with open('tasks.ts', 'w') as file:
+            file.write(tasks_fixture)
+
+    def get_task_data(self, root_folder):
+        task_data = []
         for root, _, filenames in os.walk(root_folder, topdown=False):
             for filename in filenames:
                 path = os.path.join(root, filename)
-                with open(path, 'r') as file:
-                    self.stdout.write('Reading {}...'.format(path))
-                    content = file.read()
-                    data.append([path, content])
+                if self.is_task_file(path):
+                    task_data.append([path, self.get_file_content(path)])
+        return task_data
 
-        with open('tasks.ts', 'w') as file:
-            fixture = generate_task_fixture.generate_task_fixture(data)
-            file.write(fixture)
+    def is_task_file(self, path):
+        sep = os.sep
+        return path.find(sep + 'tasks' + sep) > 0 and not self.is_taxonomy_file(path)
+
+    def get_taxonomy_data(self, root_folder):
+        taxonomy_data = []
+        for root, _, filenames in os.walk(root_folder, topdown=False):
+            for filename in filenames:
+                path = os.path.join(root, filename)
+                if self.is_taxonomy_file(path):
+                    taxonomy_data.append([path, self.get_file_content(path)])
+        return taxonomy_data
+
+    def is_taxonomy_file(self, path):
+        sep = os.sep
+        return path.find(sep + 'taxonomy.txt') > 0
+
+    def get_file_content(self, path):
+        with open(path, 'r') as file:
+            self.stdout.write('Reading {}...'.format(path))
+            content = file.read()
+            return content
