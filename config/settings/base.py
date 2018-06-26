@@ -38,6 +38,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     'common.apps.CommonConfig',
     'bc211.apps.Bc211Config',
+    'newcomers_guide.apps.NewcomersGuideConfig',
     'human_services.locations.apps.LocationsConfig',
     'human_services.organizations.apps.OrganizationsConfig',
     'human_services.services.apps.ServicesConfig',
@@ -53,7 +54,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'common.view.Pagination',
     'PAGE_SIZE': 30,
     'ORDERING_PARAM': 'sort_by',
-    'DEFAULT_FILTER_BACKENDS' : ['common.filters.SearchFilter', 'common.filters.MultiFieldOrderingFilter', ],
+    'DEFAULT_FILTER_BACKENDS': ['common.filters.SearchFilter', 'common.filters.MultiFieldOrderingFilter', ],
 }
 
 MIDDLEWARE = [
@@ -172,9 +173,9 @@ LOGGING = {
 PARLER_DEFAULT_LANGUAGE_CODE = 'en'
 PARLER_LANGUAGES = {
     1: (
-        {'code': 'en',},
-        {'code': 'fr',},
-        {'code': 'nl',},
+        {'code': 'en', },
+        {'code': 'fr', },
+        {'code': 'nl', },
     ),
     'default': {
         'fallbacks': ['en'],
