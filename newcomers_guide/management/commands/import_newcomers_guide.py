@@ -4,6 +4,7 @@ from newcomers_guide.generate_task_fixture import generate_task_fixture
 from newcomers_guide.process_files import process_all_task_files
 from newcomers_guide.process_all_taxonomy_files import process_all_taxonomy_files, set_taxonomies_on_tasks
 
+
 # invoke as follows:
 # python manage.py import_newcomers_guide path/to/newcomers/root/directory
 
@@ -26,7 +27,7 @@ class Command(BaseCommand):
 
         taxonomy_data = self.get_taxonomy_data(root_folder)
         taxonomies = process_all_taxonomy_files(taxonomy_data)
-        # TODO set_taxonomies_on_tasks(taxonomies, tasks)
+        set_taxonomies_on_tasks(taxonomies, tasks)
 
         with open('tasks.ts', 'w') as file:
             file.write(generate_task_fixture(tasks))

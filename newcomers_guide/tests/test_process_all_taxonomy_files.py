@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.core import exceptions
-from newcomers_guide.process_all_taxonomy_files import parse_taxonomy_file, process_all_taxonomy_files
+from newcomers_guide.process_all_taxonomy_files import parse_taxonomy_file, process_all_taxonomy_files, TaxonomyTermReference, set_taxonomies_on_tasks
 
 
 class ParseTaxonomyFileTests(TestCase):
@@ -58,3 +58,55 @@ class ProcessAllTaxonomyFilesTests(TestCase):
             [['some/path/tasks/TaskId/en.name.txt', 'FooTaxId:FooTaxTermId, BarTaxId:BarTaxTermId']])
         self.assertEqual(self.references[0].content_id, 'TaskId')
         self.assertEqual(self.references[1].content_id, 'TaskId')
+
+
+class SetTaxonomiesOnTasksTests(TestCase):
+    def test_adds_taxonomy_term_reference_collection_on_task(self):
+        taxonomyReference = TaxonomyTermReference('taxId', 'taxTermId', 'contentType', 'contentId')
+        content = {'contentId': {'id': 'contentId'}}
+        set_taxonomies_on_tasks([taxonomyReference], content)
+        self.assertEqual(content['contentId']['taxonomyTerms'], [
+                         {
+                             'taxonomyId': 'taxId',
+                             'taxonomyTermId': 'taxTermId'
+                         }])
+
+    def test_appends_taxonomy_term_references_to_existing_collection_on_task(self):
+        taxonomyReference = TaxonomyTermReference('taxId', 'taxTermId', 'contentType', 'contentId')
+        content = {'contentId': {'id': 'contentId',
+                                 'taxonomyTerms': [{
+                                     'taxonomyId': 'fooTaxId',
+                                     'taxonomyTermId': 'fooTaxTermId'
+                                 }]}}
+        set_taxonomies_on_tasks([taxonomyReference], content)
+        self.assertEqual(content['contentId']['taxonomyTerms'], [
+            {
+                'taxonomyId': 'fooTaxId',
+                'taxonomyTermId': 'fooTaxTermId'
+            },
+            {
+                'taxonomyId': 'taxId',
+                'taxonomyTermId': 'taxTermId'
+            }])
+
+    def test_appends_multiple_taxonomy_term_references_to_collection_on_task(self):
+        first_taxonomy_reference = TaxonomyTermReference('taxId', 'taxTermId', 'contentType', 'contentId')
+        second_taxonomy_reference = TaxonomyTermReference('fooTaxId', 'fooTaxTermId', 'contentType', 'contentId')
+        content = {'contentId': {'id': 'contentId'}}
+        set_taxonomies_on_tasks([first_taxonomy_reference, second_taxonomy_reference], content)
+        self.assertEqual(content['contentId']['taxonomyTerms'], [
+            {
+                'taxonomyId': 'taxId',
+                'taxonomyTermId': 'taxTermId'
+            },
+            {
+                'taxonomyId': 'fooTaxId',
+                'taxonomyTermId': 'fooTaxTermId'
+            }
+        ])
+
+    def test_does_not_change_task_with_different_id(self):
+        taxonomyReference = TaxonomyTermReference('taxId', 'taxTermId', 'contentType', 'differentContentId')
+        content = {'contentId': {'id': 'contentId'}}
+        set_taxonomies_on_tasks([taxonomyReference], content)
+        self.assertTrue('taxonomyTerms' not in content['contentId'])
