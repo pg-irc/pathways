@@ -13,6 +13,6 @@ def parse_file_path(path):
     split_name = name.split('.')
     return parsed_file_path(chapter=split_path[length - 4],
                             type=split_path[length - 3],
-                            id=split_path[length-2],
+                            id=split_path[length - 2],
                             title=split_name[1],
                             locale=split_name[0])
