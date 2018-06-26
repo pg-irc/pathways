@@ -9,7 +9,17 @@ class GenerateFixtureTest(TestCase):
 
     def test_include_content_id_from_path(self):
         self.maxDiff = None
-        result = generate_task_fixture([[self.english_path, self.content]])
+        data = {
+            'To_learn_english': {
+                'id': 'To_learn_english',
+                'title': {
+                    'en': 'Learn_english'
+                },
+                'description': {
+                    'en': 'the content in English'
+                }
+            }
+        }
         expected = ('// intended to be located at pathways-frontend/src/fixtures/tasks.ts\n'
                     '\n'
                     'import { Store } from \'./types/tasks\';\n'
@@ -30,4 +40,4 @@ class GenerateFixtureTest(TestCase):
                     '        }\n'
                     '    }\n'
                     '}')
-        self.assertEqual(result, expected)
+        self.assertEqual(generate_task_fixture(data), expected)

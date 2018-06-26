@@ -1,7 +1,8 @@
 import os
 from django.core.management.base import BaseCommand
-from newcomers_guide import generate_task_fixture
-from newcomers_guide.process_all_taxonomy_files import process_all_taxonomy_files
+from newcomers_guide.generate_task_fixture import generate_task_fixture
+from newcomers_guide.process_files import process_all_task_files
+from newcomers_guide.process_all_taxonomy_files import process_all_taxonomy_files, set_taxonomies_on_tasks
 
 # invoke as follows:
 # python manage.py import_newcomers_guide path/to/newcomers/root/directory
@@ -21,15 +22,14 @@ class Command(BaseCommand):
         self.stdout.write('Reading Newcomers Guide data from {}'.format(root_folder))
 
         task_data = self.get_task_data(root_folder)
-        tasks_fixture = generate_task_fixture.generate_task_fixture(task_data)
+        tasks = process_all_task_files(task_data)
 
         taxonomy_data = self.get_taxonomy_data(root_folder)
         taxonomies = process_all_taxonomy_files(taxonomy_data)
-
-        # TODO tag all tasks with taxonomies
+        # TODO set_taxonomies_on_tasks(taxonomies, tasks)
 
         with open('tasks.ts', 'w') as file:
-            file.write(tasks_fixture)
+            file.write(generate_task_fixture(tasks))
 
     def get_task_data(self, root_folder):
         task_data = []
