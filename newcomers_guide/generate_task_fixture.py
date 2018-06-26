@@ -19,4 +19,8 @@ def generate_task_fixture(files):
     tasks = process_all_task_files(files)
     tasks_as_json = json.dumps(tasks, ensure_ascii=False, sort_keys=True, indent=4)
 
-    return header + tasks_as_json + footer
+    json_lines = tasks_as_json.split('\n')
+    json_lines_with_spaces = map(lambda line: 8*' ' + line, json_lines)
+    joined_json_lines = '\n'.join(json_lines_with_spaces)
+
+    return header + joined_json_lines + footer
