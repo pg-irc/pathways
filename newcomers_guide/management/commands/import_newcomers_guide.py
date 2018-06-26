@@ -1,6 +1,6 @@
 import os
 from django.core.management.base import BaseCommand
-from newcomers_guide.generate_task_fixture import generate_task_fixture
+from newcomers_guide.generate_task_fixture import generate_task_fixture, generate_taxonomy_fixture
 from newcomers_guide.process_files import process_all_task_files
 from newcomers_guide.process_all_taxonomy_files import process_all_taxonomy_files, set_taxonomies_on_tasks
 
@@ -31,6 +31,9 @@ class Command(BaseCommand):
 
         with open('tasks.ts', 'w') as file:
             file.write(generate_task_fixture(tasks))
+
+        with open('taxonomies.ts', 'w') as file:
+            file.write(generate_taxonomy_fixture(taxonomies))
 
     def get_task_data(self, root_folder):
         task_data = []
