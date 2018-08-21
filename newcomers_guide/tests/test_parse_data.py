@@ -1,14 +1,15 @@
 from django.core import exceptions
 from django.test import TestCase
 from common.testhelpers.random_test_values import a_string
-from newcomers_guide.parse_data import (parse_taxonomy_terms, parse_taxonomy_files, parse_article_files,
-                                        parse_task_files, parse_file_path, TaxonomyTermReference)
+from newcomers_guide.parse_data import (parse_taxonomy_terms, parse_taxonomy_files,
+                                        parse_article_files, parse_task_files, parse_file_path,
+                                        TaxonomyTermReference)
 from newcomers_guide.generate_fixtures import set_taxonomy_term_references_on_content
 
 
 class FilePathParseTests(TestCase):
     def setUp(self):
-        self.path = 'some/path/chapter_6_education/tasks/To_learn_english/fr.Apprendre_l_anglais.txt'
+        self.path = 'some/path/chapter_6_education/tasks/To_learn_english/fr.Apprendre l\'anglais.md'
         self.parsed_path = parse_file_path(self.path)
 
     def test_can_extract_chapter(self):
@@ -24,7 +25,12 @@ class FilePathParseTests(TestCase):
         self.assertEqual(self.parsed_path.locale, 'fr')
 
     def test_can_extract_localized_content_title(self):
-        self.assertEqual(self.parsed_path.title, 'Apprendre_l_anglais')
+        self.assertEqual(self.parsed_path.title, 'Apprendre l\'anglais')
+
+    def test_can_handle_titles_with_period(self):
+        path = 'some/path/Chapter 5 - Health Care/articles/B.C. health/en.B.C. health.md'
+        parsed_path = parse_file_path(path)
+        self.assertEqual(parsed_path.title, 'B.C. health')
 
 
 class ProcessTaskFilesTests(TestCase):
