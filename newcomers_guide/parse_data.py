@@ -47,12 +47,26 @@ def parse_file_path(path):
     if length < 5:
         raise Exception(path + ': path is too short')
     name = split_path[length-1]
-    split_name = name.split('.')
+    title = get_title_from_file_name(name)
+    locale = get_locale_from_file_name(name)
     return parsed_file_path(chapter=split_path[length - 4],
                             type=split_path[length - 3],
                             id=split_path[length - 2],
-                            title=split_name[1],
-                            locale=split_name[0])
+                            title=title,
+                            locale=locale)
+
+
+def get_title_from_file_name(file_name):
+    begin = file_name.find('.') + 1
+    end = file_name.rfind('.')
+    if (begin <= 0 or end <= 0):
+        raise Exception(file_name +
+                        ': Invalid file name, should contain at least two "." characters')
+    return file_name[begin:end]
+
+
+def get_locale_from_file_name(file_name):
+    return file_name.split('.')[0]
 
 
 def ensure_builder_exists_for_task(builders, task_id):
