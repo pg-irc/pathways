@@ -1,8 +1,10 @@
+from django.core.exceptions import ValidationError
 import itertools
 import logging
 import re
 import xml.etree.ElementTree as etree
 from urllib import parse as urlparse
+from phonenumber_field.validators import validate_international_phonenumber
 
 from bc211 import dtos
 from bc211.exceptions import MissingRequiredFieldXmlParseException
@@ -76,14 +78,15 @@ def parse_site(site, organization_id):
     name = parse_site_name(site)
     description = parse_site_description(site)
     spatial_location = parse_spatial_location_if_defined(site)
-    services = parse_services(site, organization_id, id)
+    services = parse_service_list(site, organization_id, id)
     physical_address = parse_physical_address(site, id, name)
     postal_address = parse_postal_address(site, id, name)
+    phone_numbers = parse_site_phone_number_list(site, id)
     LOGGER.debug('Location: %s %s', id, name)
     return dtos.Location(id=id, name=name, organization_id=organization_id,
                          description=description, spatial_location=spatial_location,
                          services=services, physical_address=physical_address,
-                         postal_address=postal_address)
+                         postal_address=postal_address, phone_numbers=phone_numbers)
 
 def parse_site_id(site):
     return parse_required_field(site, 'Key')
@@ -101,9 +104,9 @@ def parse_spatial_location_if_defined(site):
         return None
     return dtos.SpatialLocation(latitude=latitude, longitude=longitude)
 
-def parse_services(site, organization_id, site_id):
+def parse_service_list(site, organization_id, site_id):
     services = site.findall('SiteService')
-    return map(ServiceParser(organization_id, site_id), services)
+    return list(map(ServiceParser(organization_id, site_id), services))
 
 class ServiceParser:
     def __init__(self, organization_id, site_id):
@@ -181,7 +184,7 @@ def parse_address_and_handle_errors(address, site_id, site_name, address_type_id
     try:
         return parse_address(address, site_id, address_type_id)
     except MissingRequiredFieldXmlParseException as error:
-        LOGGER.warning('Failed to import address for\n\tlocation %s (%s):\n\t%s',
+        LOGGER.warning('Failed to parse address for\n\tlocation %s (%s):\n\t%s',
                        site_id, site_name, error)
     return None
 
@@ -226,3 +229,44 @@ def parse_state_province(address):
 
 def parse_postal_code(address):
     return parse_optional_field(address, 'ZipCode')
+
+def parse_site_phone_number_list(site, site_id):
+    valid_phones = filter(phone_has_valid_number_and_type, site.findall('Phone'))
+    return [parse_site_phone(phone, site_id) for phone in valid_phones]
+
+def parse_site_phone(phone, site_id):
+    location_id = site_id
+    phone_number_type_id = convert_phone_type_to_type_id(phone.find('Type').text)
+    phone_number = convert_bc_phone_number_to_international(phone.find('PhoneNumber').text)
+    return dtos.PhoneNumber(
+        location_id=location_id,
+        phone_number_type_id=phone_number_type_id,
+        phone_number=phone_number
+    )
+
+def phone_has_valid_number_and_type(phone):
+    phone_number = parse_optional_field(phone, 'PhoneNumber')
+    phone_number_type = parse_optional_field(phone, 'Type')
+    if not (phone_number and phone_number_type):
+        return False
+    return is_valid_phone_number(phone_number)
+
+def is_valid_phone_number(phone_number):
+    try:
+        intl_phone_number = convert_bc_phone_number_to_international(phone_number)
+    except ValueError:
+        LOGGER.warning('Failed to parse value: "%s" for phone number.', phone_number)
+        return False
+    try:
+        validate_international_phonenumber(intl_phone_number)
+    except ValidationError:
+        LOGGER.warning('Failed to parse value: "%s" for international phone number.', intl_phone_number)
+        return False
+    return True
+
+def convert_phone_type_to_type_id(phone_type):
+    return phone_type.lower().replace(' ', '_')
+
+def convert_bc_phone_number_to_international(bc_phone_number):
+    dashes_replaced = bc_phone_number.replace('-', '')
+    return int(dashes_replaced) if dashes_replaced[0] == '1' else int('1' + dashes_replaced)

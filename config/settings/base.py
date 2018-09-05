@@ -33,6 +33,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'drf_yasg',
     'parler',
+    'phonenumber_field',
 ]
 
 LOCAL_APPS = [
@@ -43,6 +44,7 @@ LOCAL_APPS = [
     'human_services.organizations.apps.OrganizationsConfig',
     'human_services.services.apps.ServicesConfig',
     'human_services.addresses.apps.AddressesConfig',
+    'human_services.phone_numbers.apps.PhoneNumbersConfig',
     'users.apps.UsersConfig',
     'taxonomies.apps.TaxonomiesConfig',
     'translation.apps.ContentTranslationToolsConfig',

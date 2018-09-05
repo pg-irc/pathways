@@ -11,6 +11,7 @@ django-model-utils==3.0.0
 django-cors-headers==2.1.0
 django-parler==1.9.1
 djangorestframework==3.7.7
+django-phonenumber-field==2.0.1
 drf_yasg==1.4.0
 awesome-slugify==1.6.5
 polib==1.1.0

@@ -98,7 +98,6 @@ class AddressTypeTests(TestCase):
         self.assertCountEqual(AddressType.objects.all(), expected_address_types)
 
 class FullDataImportTests(TestCase):
-    
     def setUp(self):
         file = open(MULTI_AGENCY_FIXTURE, 'r')
         self.return_value = save_records_to_database(read_records_from_file(file))
@@ -115,3 +114,5 @@ class FullDataImportTests(TestCase):
         self.assertEqual(self.return_value.location_count, 40)
         self.assertEqual(self.return_value.taxonomy_term_count, 134)
         self.assertEqual(self.return_value.address_count, 32)
+        self.assertEqual(self.return_value.phone_number_types_count, 5)
+        self.assertEqual(self.return_value.phone_numbers_count, 69)

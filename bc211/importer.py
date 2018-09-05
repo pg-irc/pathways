@@ -4,6 +4,7 @@ from human_services.locations.models import Location, ServiceAtLocation, Locatio
 from human_services.organizations.models import Organization
 from human_services.services.models import Service
 from human_services.addresses.models import Address, AddressType
+from human_services.phone_numbers.models import PhoneNumberType, PhoneNumber
 from django.contrib.gis.geos import Point
 from taxonomies.models import TaxonomyTerm
 
@@ -16,6 +17,8 @@ class ImportCounters:
         self.service_count = 0
         self.taxonomy_term_count = 0
         self.address_count = 0
+        self.phone_number_types_count = 0
+        self.phone_numbers_count = 0
 
     def count_organization(self):
         self.organization_count += 1
@@ -31,6 +34,12 @@ class ImportCounters:
 
     def count_address(self):
         self.address_count += 1
+
+    def count_phone_number_types(self):
+        self.phone_number_types_count += 1
+
+    def count_phone_numbers(self):
+        self.phone_numbers_count += 1
 
 def save_records_to_database(organizations):
     translation.activate('en')
@@ -61,11 +70,14 @@ def save_locations(locations, counters):
         active_record.save()
         counters.count_location()
         LOGGER.debug('Location "%s" "%s"', location.id, location.name)
-        save_services(location.services, counters)
+        if location.services:
+            save_services(location.services, counters)
         if location.physical_address:
             create_address_for_location(active_record, location.physical_address, counters)
         if location.postal_address:
             create_address_for_location(active_record, location.postal_address, counters)
+        if location.phone_numbers:
+            create_phone_numbers_for_location(active_record, location.phone_numbers, counters)
 
 def build_location_active_record(record):
     active_record = Location()
@@ -154,3 +166,19 @@ def create_location_address(location, address, address_type):
                                     address_type=address_type).save()
     LOGGER.debug('Location address')
     return active_record
+
+def create_phone_numbers_for_location(location, phone_number_dtos, counters):
+    for dto in phone_number_dtos:
+        phone_number_type, created = PhoneNumberType.objects.get_or_create(
+            id=dto.phone_number_type_id
+        )
+        if created:
+            counters.count_phone_number_types()
+            LOGGER.debug('PhoneNumberType: "%s"', phone_number_type.id)
+        number = PhoneNumber.objects.create(
+            location=location,
+            phone_number_type=phone_number_type,
+            phone_number='+' + str(dto.phone_number)
+        )
+        counters.count_phone_numbers()
+        LOGGER.debug('PhoneNumber: "%s" "%s"', number.id, number.phone_number)

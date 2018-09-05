@@ -13,3 +13,7 @@ class InvalidNestedObjectXmlParseException(Exception):
 class MissingRequiredFieldXmlParseException(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
+
+class InvalidTypeXmlParseException(Exception):
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)

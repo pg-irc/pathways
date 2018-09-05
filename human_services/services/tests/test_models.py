@@ -6,11 +6,8 @@ from human_services.services.tests.helpers import ServiceBuilder
 from human_services.organizations.tests.helpers import OrganizationBuilder
 from human_services.locations.tests.helpers import LocationBuilder
 from human_services.locations.models import ServiceAtLocation
+from common.testhelpers.database import validate_save_and_reload
 
-def validate_save_and_reload(instance):
-    instance.save()
-    instance.refresh_from_db()
-    return instance
 
 class TestServiceModel(TestCase):
     def setUp(self):

@@ -5,12 +5,7 @@ from django.db import utils as django_utils
 from human_services.locations.tests.helpers import LocationBuilder
 from human_services.organizations.tests.helpers import OrganizationBuilder
 from common.testhelpers.random_test_values import a_float
-
-
-def validate_save_and_reload(instance):
-    instance.save()
-    instance.refresh_from_db()
-    return instance
+from common.testhelpers.database import validate_save_and_reload
 
 
 class TestLocationModel(TestCase):

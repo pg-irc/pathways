@@ -1,11 +1,8 @@
 from django.test import TestCase
 from django.core import exceptions
-from human_services.organizations import models
 from human_services.organizations.tests.helpers import OrganizationBuilder
+from common.testhelpers.database import validate_save_and_reload
 
-def validate_save_and_reload(organization):
-    organization.save()
-    return models.Organization.objects.get()
 
 # pylint: disable=too-many-public-methods
 class TestOrganizationModel(TestCase):

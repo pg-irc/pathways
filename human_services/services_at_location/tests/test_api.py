@@ -48,10 +48,10 @@ class ServicesAtLocationApiTests(rest_test.APITestCase):
 
         response = self.client.get(at_second_location_services_url)
         json = response.json()
-        self.assertEqual(json[0]['location_name'], second_location.name)
-        self.assertEqual(json[1]['location_name'], first_location.name)
-        self.assertEqual(json[2]['location_name'], third_location.name)
-        self.assertEqual(json[3]['location_name'], fourth_location.name)
+        self.assertEqual(json[0]['location']['name'], second_location.name)
+        self.assertEqual(json[1]['location']['name'], first_location.name)
+        self.assertEqual(json[2]['location']['name'], third_location.name)
+        self.assertEqual(json[3]['location']['name'], fourth_location.name)
 
     def test_can_full_text_search(self):
         service_at_locations = ServiceAtLocationBuilder().create_many()
@@ -61,8 +61,8 @@ class ServicesAtLocationApiTests(rest_test.APITestCase):
         response = (self.client.get('/v1/services_at_location/?search={0}'.format(service_name)))
         json = response.json()
         self.assertEqual(len(json), 1)
-        self.assertEqual(json[0]['location_name'], location_name)
-        self.assertEqual(json[0]['service_name'], service_name)
+        self.assertEqual(json[0]['location']['name'], location_name)
+        self.assertEqual(json[0]['service']['name'], service_name)
 
     def test_can_filter_by_location_id(self):
         service_at_locations = ServiceAtLocationBuilder().create_many()
@@ -72,8 +72,8 @@ class ServicesAtLocationApiTests(rest_test.APITestCase):
                                     .format(location_id)))
         json = response.json()
         self.assertEqual(len(json), 1)
-        self.assertEqual(json[0]['location_name'], expected_service_at_location.location.name)
-        self.assertEqual(json[0]['service_name'], expected_service_at_location.service.name)
+        self.assertEqual(json[0]['location']['name'], expected_service_at_location.location.name)
+        self.assertEqual(json[0]['service']['name'], expected_service_at_location.service.name)
 
     def test_can_filter_by_location_id_and_service_id(self):
         service_at_locations = ServiceAtLocationBuilder().create_many()
@@ -84,8 +84,8 @@ class ServicesAtLocationApiTests(rest_test.APITestCase):
                                     .format(location_id, service_id)))
         json = response.json()
         self.assertEqual(len(json), 1)
-        self.assertEqual(json[0]['location_name'], expected_service_at_location.location.name)
-        self.assertEqual(json[0]['service_name'], expected_service_at_location.service.name)
+        self.assertEqual(json[0]['location']['name'], expected_service_at_location.location.name)
+        self.assertEqual(json[0]['service']['name'], expected_service_at_location.service.name)
 
     def test_can_filter_by_service_id(self):
         service_at_locations = ServiceAtLocationBuilder().create_many()
@@ -95,8 +95,8 @@ class ServicesAtLocationApiTests(rest_test.APITestCase):
                                     .format(service_id)))
         json = response.json()
         self.assertEqual(len(json), 1)
-        self.assertEqual(json[0]['location_name'], expected_service_at_location.location.name)
-        self.assertEqual(json[0]['service_name'], expected_service_at_location.service.name)
+        self.assertEqual(json[0]['location']['name'], expected_service_at_location.location.name)
+        self.assertEqual(json[0]['service']['name'], expected_service_at_location.service.name)
 
     def test_can_filter_by_service_id_and_location_id(self):
         service_at_locations = ServiceAtLocationBuilder().create_many()
@@ -107,8 +107,8 @@ class ServicesAtLocationApiTests(rest_test.APITestCase):
                                     .format(service_id, location_id)))
         json = response.json()
         self.assertEqual(len(json), 1)
-        self.assertEqual(json[0]['location_name'], expected_service_at_location.location.name)
-        self.assertEqual(json[0]['service_name'], expected_service_at_location.service.name)
+        self.assertEqual(json[0]['location']['name'], expected_service_at_location.location.name)
+        self.assertEqual(json[0]['service']['name'], expected_service_at_location.service.name)
 
     def test_can_page(self):
         ServiceAtLocationBuilder().create_many(count=30)
@@ -126,5 +126,5 @@ class ServicesAtLocationApiTests(rest_test.APITestCase):
                                     .format(taxonomy_terms[0].taxonomy_id, taxonomy_terms[0].name)))
         json = response.json()
         self.assertEqual(len(json), 1)
-        self.assertEqual(json[0]['location_name'], expected_service_at_location.location.name)
-        self.assertEqual(json[0]['service_name'], expected_service_at_location.service.name)
+        self.assertEqual(json[0]['location']['name'], expected_service_at_location.location.name)
+        self.assertEqual(json[0]['service']['name'], expected_service_at_location.service.name)
