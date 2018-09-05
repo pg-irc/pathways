@@ -1,4 +1,4 @@
-from common.testhelpers.random_test_values import a_string
+from common.testhelpers.random_test_values import a_string, an_integer
 from human_services.phone_numbers.models import PhoneNumberType, PhoneNumber
 from human_services.locations.tests.helpers import LocationBuilder
 from human_services.organizations.tests.helpers import OrganizationBuilder
@@ -21,7 +21,7 @@ class PhoneNumberBuilder:
     def __init__(self):
         self.location = LocationBuilder(OrganizationBuilder().build()).build()
         self.phone_number_type = PhoneNumberTypeBuilder().build()
-        self.phone_number = a_string()
+        self.phone_number = '+1' + str(an_integer())
 
     def with_location(self, location):
         self.location = location
@@ -41,3 +41,10 @@ class PhoneNumberBuilder:
         phone_number.phone_number_type = self.phone_number_type
         phone_number.phone_number = self.phone_number
         return phone_number
+
+    def create(self):
+        self.location.save()
+        self.phone_number_type.save()
+        result = self.build()
+        result.save()
+        return result

@@ -5,6 +5,7 @@ from human_services.locations.models import Location, LocationAddress
 from human_services.organizations.tests.helpers import OrganizationBuilder
 from human_services.addresses.tests.helpers import AddressBuilder
 from human_services.addresses.models import Address, AddressType
+from human_services.phone_numbers.tests.helpers import PhoneNumberTypeBuilder, PhoneNumberBuilder
 from common.testhelpers.random_test_values import a_float
 
 
@@ -100,7 +101,7 @@ class LocationsApiTests(rest_test.APITestCase):
         ).save()
         url = '/v1/locations/'
         response = self.client.get(url)
-        location_addresses = response.json()[0]['location_addresses']
+        location_addresses = response.json()[0]['addresses']
         self.assertEqual(location_addresses[0]['address_type'], address_type_id)
 
     def test_has_physical_address(self):
@@ -115,3 +116,12 @@ class LocationsApiTests(rest_test.APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.json()[0]['latitude'], location.point.x)
         self.assertEqual(response.json()[0]['longitude'], location.point.y)
+
+    def test_has_phone_numbers(self):
+        location = LocationBuilder(self.organization).create()
+        phone_number = PhoneNumberBuilder().with_location(location).create()
+        url = '/v1/locations/'
+        response = self.client.get(url)
+        self.assertEqual(response.json()[0]['phone_numbers'][0]['phone_number_type'], phone_number.phone_number_type.id)
+        self.assertEqual(response.json()[0]['phone_numbers'][0]['phone_number'], phone_number.phone_number.raw_input)
+

@@ -8,6 +8,6 @@ class PhoneNumberType(models.Model):
     id = RequiredCharField(primary_key=True, max_length=200)
 
 class PhoneNumber(models.Model):
-    location = models.ForeignKey(Location)
+    location = models.ForeignKey(Location, related_name='phone_numbers')
     phone_number_type = models.ForeignKey(PhoneNumberType)
     phone_number = PhoneNumberField()
