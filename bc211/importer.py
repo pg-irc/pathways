@@ -11,19 +11,17 @@ from bc211.exceptions import XmlParseException
 
 LOGGER = logging.getLogger(__name__)
 
-
 def save_records_to_database(organizations, counters):
-    translation.activate('en')
-    save_organizations(organizations, counters)
-
-
-def save_organizations(organizations, counters):
     for organization in handle_parser_errors(organizations):
-        active_record = build_organization_active_record(organization)
-        active_record.save()
-        counters.count_organization()
-        LOGGER.debug('Organization "%s" "%s"', organization.id, organization.name)
-        save_locations(organization.locations, counters)
+        save_organization(organization, counters)
+
+def save_organization(organization, counters):
+    translation.activate('en')
+    active_record = build_organization_active_record(organization)
+    active_record.save()
+    counters.count_organization()
+    LOGGER.debug('Organization "%s" "%s"', organization.id, organization.name)
+    save_locations(organization.locations, counters)
 
 
 def handle_parser_errors(generator):
