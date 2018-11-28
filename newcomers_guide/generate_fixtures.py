@@ -76,9 +76,3 @@ def set_taxonomy_term_references_on_content(taxonomy_references, content_fixture
                 content['taxonomyTerms'] = []
             content['taxonomyTerms'].append({'taxonomyId': reference.taxonomy_id,
                                              'taxonomyTermId': reference.taxonomy_term_id})
-
-
-def set_service_query_on_content(service_query_data, content_fixtures):
-    for query in service_query_data:
-        if query.content_id in content_fixtures:
-            content_fixtures[query.content_id]['serviceQuery'] = query.service_query
