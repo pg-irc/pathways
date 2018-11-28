@@ -189,11 +189,20 @@ To connect to the heroku instance over SSH:
 heroku ps:exec
 ```
 
-To retrieve and import the BC-211 dataset:
+### Deployment on Heroku
+
+To deploy on Heroku from an empty production database: First prepare the deployment
+files locally using the `utility/prepare_deploy.sh` script. It should be called with three
+arguments
+
+  * Path to the XML file containing the BC211 data
+  * Path to the folder containing the Newcomers Guide content
+  * Path to the output file to generate, must end in `.json`
+
+Upload the json file to AWS so that it can be accessed from Heroku. Then log into heroku
+using `ps:exec`, set the environment variables including the correct DB URL
 
 ```
-wget https://s3.ca-central-1.amazonaws.com/peacegeeks-pathways-static/bc211data.xml
-
 export DJANGO_SETTINGS_MODULE=config.settings.production
 export DJANGO_SECRET_KEY='the key'
 export DJANGO_AWS_STORAGE_BUCKET_NAME=peacegeeks-pathways-static
@@ -201,9 +210,14 @@ export DJANGO_MAILGUN_API_KEY='the key'
 export MAILGUN_SENDER_DOMAIN='the domain'
 export DATABASE_URL='the database url from heroku settings'
 export DJANGO_READ_DOT_ENV_FILE=False
+```
 
-./manage.py import_bc211_data bc211data.xml
-
+and load the data into the empty database
+```
+./manage.py reset_db
+./manage.py migrate
+wget https://path/to/amazon/s3/storage/deploy_data.json
+./manage.py loaddata deploy_data.json
 ```
 
 ## Getting started with docker
