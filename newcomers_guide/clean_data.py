@@ -117,6 +117,6 @@ def clean_text(text):
 
 def add_hashtag_to_headings(text):
     heading_at_text_start = r'^([#]+)'
-    text = re.sub(heading_at_text_start, r'#\1', text)
+    text = re.sub(heading_at_text_start, r'\1#', text)
     heading_at_line_start = r'(\n[#]+)'
     return re.sub(heading_at_line_start, r'\1#', text)
