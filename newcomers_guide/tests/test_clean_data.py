@@ -1,6 +1,6 @@
 from django.test import TestCase
 from newcomers_guide.clean_data import (clean_up_http_links, clean_up_email_links,
-                                        clean_up_newlines, replace_unicode_newlines)
+                                        clean_up_newlines, replace_unicode_newlines, add_hashtag_to_headings)
 
 # Need to replace single newlines with space, except when the line before
 # and/or after is a list item or heading. This is because the markdown
@@ -290,3 +290,17 @@ class CleanUpMailtoLinksTest(TestCase):
     def test_excludes_trailing_closing_parenthesis(self):
         text = 'abc foo@bar.com) def'
         self.assertEqual(clean_up_email_links(text), 'abc [email](mailto:foo@bar.com)) def')
+
+
+class CleanUpHeadingsTest(TestCase):
+    def test_adds_hashtag_to_heading(self):
+        text = '# abc'
+        self.assertEqual(add_hashtag_to_headings(text), '## abc')
+
+    def test_adds_hashtag_to_newline_heading(self):
+        text = '\n## abc'
+        self.assertEqual(add_hashtag_to_headings(text), '\n### abc')
+
+    def test_does_not_add_hashtag_to_middle(self):
+        text = 'abc # def'
+        self.assertEqual(add_hashtag_to_headings(text), 'abc # def')

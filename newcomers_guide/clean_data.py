@@ -112,4 +112,11 @@ def clean_text(text):
     text = clean_up_newlines(text)
     text = clean_up_http_links(text)
     text = clean_up_email_links(text)
+    text = add_hashtag_to_headings(text)
     return text
+
+def add_hashtag_to_headings(text):
+    heading_at_text_start = r'^([#]+)'
+    text = re.sub(heading_at_text_start, r'#\1', text)
+    heading_at_line_start = r'(\n[#]+)'
+    return re.sub(heading_at_line_start, r'\1#', text)
