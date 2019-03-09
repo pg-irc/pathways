@@ -7,6 +7,9 @@ from django.contrib.gis.measure import Distance as DistanceMeasure
 from common.filter_parameter_parsers import ProximityParser, TaxonomyParser
 from human_services.locations.models import ServiceAtLocation
 from human_services.services.models import Service
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 
 class MultiFieldOrderingFilter(filters.OrderingFilter):
@@ -89,6 +92,8 @@ class ServiceSimilarityFilter(filters.BaseFilterBackend):
         task_id = request.query_params.get('related_to_task', None)
         if not task_id:
             return queryset
+
+        LOGGER.warning('Task id "%s"', task_id)
 
         return (queryset.
                 annotate(score=F('service__taskservicesimilarityscore__similarity_score')).
