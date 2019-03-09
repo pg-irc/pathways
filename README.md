@@ -218,7 +218,14 @@ export DJANGO_MAILGUN_API_KEY="the key"
 export DATABASE_URL="value from Settings"
 ```
 * Use wget to get the database dump file from AWS-S3
-* Load the data
+```
+wget *url to database dump saved on AWS*
+```
+* Flush the database to DELETE ALL EXISTING DATA IN THE DATABASE
+```
+./manage.py flush
+```
+* Load the data from the file downloaded from AWS
 ```
 ./manage.py loaddata *file.json*
 ```
