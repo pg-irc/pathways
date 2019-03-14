@@ -22,11 +22,12 @@ class ServiceAtLocationViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.ServiceAtLocationSerializer
     search_fields = ('location__translations__name', 'location__translations__description',
                      'service__translations__name', 'service__translations__description')
-    filter_backends = (ProximityFilter,
-                       ProximityCutoffFilter,
+    filter_backends = (ServiceSimilarityFilter,
                        SearchFilter,
                        LocationIdFilter,
+                       ProximityFilter,
+                       ProximityCutoffFilter,
                        ServiceIdFilter,
                        TaxonomyFilter,
-                       ServiceSimilarityFilter,
+
                        )
