@@ -1,5 +1,7 @@
 # Pathways backend
 
+Bla
+
 This repository contains the server for providing access to data about services for refugees and immigrants to BC.
 
 We can import and serve up read-only services data from the BC-211 dataset, using the [HSDS](http://openreferral.readthedocs.io/en/latest/hsds/reference/) data format and [HSDA API](http://docs.openreferral.org/en/latest/) format.
