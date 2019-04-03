@@ -1,22 +1,22 @@
 -r test.txt
 
 # Code analysis tools
-coverage==4.5.2
+coverage==4.5.3
 django-coverage-plugin==1.6.0
-flake8==3.6.0 # pyup: != 2.6.0
-pylint==2.2.2
+flake8==3.7.7 # pyup: != 2.6.0
+pylint==2.3.1
 mccabe==0.6.1
 
 # Debug tools
-django-extensions==2.1.4
+django-extensions==2.1.6
 django-debug-toolbar==1.11
-ipdb==0.11
-Werkzeug==0.14.1
+ipdb==0.12
+Werkzeug==0.15.2
 
 # Build and code maintenance tools
-docker==3.6.0
-docker-compose==1.23.2
+docker==3.7.2
+docker-compose==1.24.0
 pur==5.2.1
 
 # documentation, TODO remove
-Sphinx==1.8.2
+Sphinx==2.0.0
