@@ -1,6 +1,6 @@
 import os
 from newcomers_guide import exceptions
-
+from glob import glob 
 
 def read_task_data(root_folder):
     task_data = []
@@ -13,6 +13,9 @@ def read_task_data(root_folder):
 
 
 def read_taxonomy_data(root_folder):
+    if not check_if_taxonomy_file_is_missing(root_folder):
+       raise Exception('There is a taxonomy file missing in the Newcomers Guide.')
+    
     taxonomy_data = []
     for root, _, filenames in os.walk(root_folder, topdown=False):
         for filename in filenames:
@@ -20,7 +23,7 @@ def read_taxonomy_data(root_folder):
             if is_taxonomy_file(path):
                 taxonomy_data.append([path, read_file_content(path)])
     return taxonomy_data
-
+    
 
 def read_file_content(path):
     with open(path, 'r') as file:
@@ -43,3 +46,19 @@ def is_content_file(path):
 def is_taxonomy_file(path):
     sep = os.sep
     return path.endswith(sep + 'taxonomy.txt')
+
+
+def check_if_taxonomy_file_is_missing(root_folder):
+    paths = build_paths(root_folder)
+    existing = True
+    for path in paths:
+        for sub_path, _, filenames in os.walk(path, topdown=False):
+            exists = os.path.isfile(sub_path + '/taxonomy.txt')
+            if not exists:
+                existing = False
+    return existing
+
+def build_paths(root_folder):
+    return glob(root_folder + '*/'+ 'topics/' + '*/')
+    
+    

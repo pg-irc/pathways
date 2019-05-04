@@ -25,7 +25,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         root_folder = options['path']
         is_updating_db = options['save_topics_to_db']
-
+        
         self.stdout.write('Reading Newcomers Guide data from {}'.format(root_folder))
 
         taxonomy_data = read_taxonomy_data(root_folder)
