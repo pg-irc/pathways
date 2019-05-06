@@ -50,14 +50,14 @@ def is_taxonomy_file(path):
 
 def check_if_taxonomy_file_is_missing(root_folder):
     paths = build_paths_to_taxonomy_files(root_folder)
-    existing = True
+    taxonomy_files_exist = True
     for path in paths:
         for sub_path, _, filenames in os.walk(path, topdown=False):
             exists = os.path.isfile(sub_path + '/taxonomy.txt')
             if not exists:
-                existing = False
+                taxonomy_files_exist = False
                 break
-    return existing
+    return taxonomy_files_exist
 
 def build_paths_to_taxonomy_files(root_folder):
     return glob(root_folder + '*/'+ 'topics/' + '*/')   
