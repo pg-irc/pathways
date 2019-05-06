@@ -8,5 +8,6 @@
 main/media/
 main/static/css/
 staticfiles/
+.DS_STORE
 # don't commit generated fixture files
 *.ts
