@@ -17,7 +17,6 @@ def read_taxonomy_data(root_folder):
         raise Exception('There is a taxonomy file missing in the Newcomers Guide')
     
     taxonomy_data = []
-    
     for root, _, filenames in os.walk(root_folder, topdown=False):
         for filename in filenames:
             path = os.path.join(root, filename)
