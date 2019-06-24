@@ -85,7 +85,7 @@ class ProcessTaskFilesTests(TestCase):
     def test_clean_up_content_links(self):
         result = parse_topic_files([[self.english_path, 'abc http://example.com def']])
         description = result['taskMap']['to_learn_english']['description']['en']
-        self.assertEqual(description, 'abc Web: [http://example.com](http://example.com) def')
+        self.assertEqual(description, 'abc Web: <a href="http://example.com">http://example.com</a> def')
 
     def test_handle_localized_titles_when_processing_the_same_content_in_different_locales(self):
         french_path = 'some/path/chapter/topics/To_learn_english/fr.Apprendre_l_anglais.txt'

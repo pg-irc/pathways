@@ -107,24 +107,34 @@ def clean_up_http_links(text):
 def clean_up_email_links(text):
     return re.sub(r'([a-zA-Z]+@[^@\s]+\.[^@\s]+[a-zA-Z])', r'Email: [\1](mailto:\1)', text)
 
+def check_and_escape_amperstand(text):
+    if "&" in text:
+        return re.sub(r'[\&]','&amp;',text)
+    else:
+        return text
+
+def assemble_html(anchoredlink,visiblelink):
+    return 'Web: <a href="%s">%s</a>'%(check_and_escape_amperstand(anchoredlink), check_and_escape_amperstand(visiblelink))
 
 def check_length_of_http_links(matchobj):
     http_link = matchobj.group(0)
     if len(http_link) <= 28:
-        return 'Web: [%s](%s)'%(http_link, http_link)
-        
-    return truncate_http_links(http_link)
+        return assemble_html(http_link, http_link)
+    else:
+        return truncate_http_links(http_link)
     
-
 def truncate_http_links(link):
     tuple_of_link = urlparse(link)
     if len(tuple_of_link.netloc) >= 21:
-        long_http_link_without_path = tuple_of_link.scheme + '://'+ tuple_of_link.netloc
-        return 'Web: [%s...](%s)'%(long_http_link_without_path, link)
+        long_http_link_without_path = tuple_of_link.scheme + '://'+ tuple_of_link.netloc +'...'
+        return assemble_html(link,long_http_link_without_path)
     else:
         truncated_http_link = link[:28]+'...'
-        return 'Web: [%s](%s)'%( truncated_http_link, link)
+        return assemble_html(link,truncated_http_link)
 
+def clean_up_link_to_html(link):
+    newHtml = re.sub(r'(https?://[^\s/][^\s]*[a-zA-Z0-9/])', check_length_of_http_links, link)
+    return '<p>'+ newHtml + '</p>'
 
 def clean_text(text):
     text = clean_up_newlines(text)
