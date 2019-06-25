@@ -1,4 +1,5 @@
 import re
+import markdown2
 from urllib.parse import urlparse
 
 def clean_up_newlines(text):
@@ -130,4 +131,9 @@ def clean_text(text):
     text = clean_up_newlines(text)
     text = clean_up_http_links(text)
     text = clean_up_email_links(text)
+    text = mark_down_to_html(text)
     return text
+
+def mark_down_to_html(text):
+    decoded_string = bytes(text, "utf-8").decode("unicode_escape")
+    return markdown2.markdown(decoded_string).strip()

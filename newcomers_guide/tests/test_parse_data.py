@@ -6,6 +6,7 @@ from newcomers_guide.parse_data import (parse_taxonomy_terms, parse_taxonomy_fil
 from newcomers_guide.generate_fixtures import set_taxonomy_term_references_on_content
 from search.models import TaskSimilarityScore
 from newcomers_guide.tests.helpers import create_topics
+import markdown2
 
 
 class FilePathParseTests(TestCase):
@@ -75,17 +76,17 @@ class ProcessTaskFilesTests(TestCase):
         self.assertEqual(self.result['taskMap']['the_id']['title']['fr'], "Système_d'éducation")
 
     def test_include_localzed_content(self):
-        self.assertEqual(self.result['taskMap']['to_learn_english']['description']['en'], self.content)
+        self.assertEqual(self.result['taskMap']['to_learn_english']['description']['en'], markdown2.markdown(self.content).strip())
 
     def test_clean_up_content_linebreaks(self):
         result = parse_topic_files([[self.english_path, 'abc\ndef']])
         description = result['taskMap']['to_learn_english']['description']['en']
-        self.assertEqual(description, 'abc def')
+        self.assertEqual(description, '<p>abc def</p>')
 
     def test_clean_up_content_links(self):
         result = parse_topic_files([[self.english_path, 'abc http://example.com def']])
         description = result['taskMap']['to_learn_english']['description']['en']
-        self.assertEqual(description, 'abc Web: [http://example.com](http://example.com) def')
+        self.assertEqual(description, '<p>abc Web: <a href="http://example.com">http://example.com</a> def</p>')
 
     def test_handle_localized_titles_when_processing_the_same_content_in_different_locales(self):
         french_path = 'some/path/chapter/topics/To_learn_english/fr.Apprendre_l_anglais.txt'
@@ -100,8 +101,8 @@ class ProcessTaskFilesTests(TestCase):
         french_description = a_string()
         result = parse_topic_files([[self.english_path, english_description],
                                    [french_path, french_description]])
-        self.assertEqual(result['taskMap']['to_learn_english']['description']['en'], english_description)
-        self.assertEqual(result['taskMap']['to_learn_english']['description']['fr'], french_description)
+        self.assertEqual(result['taskMap']['to_learn_english']['description']['en'], markdown2.markdown(english_description).strip())
+        self.assertEqual(result['taskMap']['to_learn_english']['description']['fr'], markdown2.markdown(french_description).strip())
 
     def test_includes_related_topics_from_database_in_order_of_declining_similarity_score(self):
         topic_id = a_string()
