@@ -116,6 +116,10 @@ def check_and_escape_amperstand(text):
 def assemble_html(anchoredlink,visiblelink):
     return 'Web: <a href="%s">%s</a>'%(check_and_escape_amperstand(anchoredlink), check_and_escape_amperstand(visiblelink))
 
+def assemble_email(matchobj):
+    email = matchobj.group(0)
+    return 'Email: <a href="mailto:%s">%s</a>'%(email,email)
+
 def check_length_of_http_links(matchobj):
     http_link = matchobj.group(0)
     if len(http_link) <= 28:
@@ -134,6 +138,10 @@ def truncate_http_links(link):
 
 def clean_up_link_to_html(link):
     newHtml = re.sub(r'(https?://[^\s/][^\s]*[a-zA-Z0-9/])', check_length_of_http_links, link)
+    return '<p>'+ newHtml + '</p>'
+
+def clean_up_email_to_html(link):
+    newHtml = re.sub(r'([a-zA-Z]+@[^@\s]+\.[^@\s]+[a-zA-Z])', assemble_email, link)
     return '<p>'+ newHtml + '</p>'
 
 def clean_text(text):

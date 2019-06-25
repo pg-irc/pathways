@@ -1,6 +1,6 @@
 from django.test import TestCase
 from newcomers_guide.clean_data import (clean_up_http_links, clean_up_email_links,
-                                        clean_up_newlines, replace_unicode_newlines,clean_up_link_to_html)
+                                        clean_up_newlines, replace_unicode_newlines,clean_up_link_to_html,clean_up_email_to_html)
 
 # Need to replace single newlines with space, except when the line before
 # and/or after is a list item or heading. This is because the markdown
@@ -313,28 +313,28 @@ class CleanUpNewlinesTest(TestCase):
 #         text = 'abc http://excessivelylonghostname.com/search def'
 #         self.assertEqual(clean_up_http_links(text), 'abc Web: [http://excessivelylonghostname.com...](http://excessivelylonghostname.com/search) def')
 
-class CleanUpMailtoLinksTest(TestCase):
-    def test_replaces_email_link_with_markdown(self):
-        text = 'abc foo@bar.com def'
-        self.assertEqual(clean_up_email_links(text), 'abc Email: [foo@bar.com](mailto:foo@bar.com) def')
+# class CleanUpMailtoLinksTest(TestCase):
+#     def test_replaces_email_link_with_markdown(self):
+#         text = 'abc foo@bar.com def'
+#         self.assertEqual(clean_up_email_links(text), 'abc Email: [foo@bar.com](mailto:foo@bar.com) def')
 
-    def test_excludes_leading_opening_parenthesis(self):
-        text = 'abc (foo@bar.com def'
-        self.assertEqual(clean_up_email_links(text), 'abc (Email: [foo@bar.com](mailto:foo@bar.com) def')
+#     def test_excludes_leading_opening_parenthesis(self):
+#         text = 'abc (foo@bar.com def'
+#         self.assertEqual(clean_up_email_links(text), 'abc (Email: [foo@bar.com](mailto:foo@bar.com) def')
 
-    def test_excludes_trailing_dot_from_link(self):
-        text = 'abc foo@bar.com. Def'
-        self.assertEqual(clean_up_email_links(text), 'abc Email: [foo@bar.com](mailto:foo@bar.com). Def')
+#     def test_excludes_trailing_dot_from_link(self):
+#         text = 'abc foo@bar.com. Def'
+#         self.assertEqual(clean_up_email_links(text), 'abc Email: [foo@bar.com](mailto:foo@bar.com). Def')
 
-    def test_excludes_trailing_comma_from_link(self):
-        text = 'abc foo@bar.com, def'
-        self.assertEqual(clean_up_email_links(text), 'abc Email: [foo@bar.com](mailto:foo@bar.com), def')
+#     def test_excludes_trailing_comma_from_link(self):
+#         text = 'abc foo@bar.com, def'
+#         self.assertEqual(clean_up_email_links(text), 'abc Email: [foo@bar.com](mailto:foo@bar.com), def')
 
-    def test_excludes_trailing_closing_parenthesis(self):
-        text = 'abc foo@bar.com) def'
-        self.assertEqual(clean_up_email_links(text), 'abc Email: [foo@bar.com](mailto:foo@bar.com)) def')
+#     def test_excludes_trailing_closing_parenthesis(self):
+#         text = 'abc foo@bar.com) def'
+#         self.assertEqual(clean_up_email_links(text), 'abc Email: [foo@bar.com](mailto:foo@bar.com)) def')
 
-class ConvertMarkDownLinksToHMTLTest(TestCase):
+class CleanUpUrlLinksToHTMLTest(TestCase):
     def test_replaces_http_link_with_html(self):
         text = 'abc http://example.com def'
         self.assertEqual(clean_up_link_to_html(text), '<p>abc Web: <a href="http://example.com">http://example.com</a> def</p>')
@@ -408,3 +408,24 @@ class ConvertMarkDownLinksToHMTLTest(TestCase):
     def test_http_link_does_not_truncate_long_host_name(self):
         text = 'abc http://excessivelylonghostname.com/search def'
         self.assertEqual(clean_up_link_to_html(text), '<p>abc Web: <a href="http://excessivelylonghostname.com/search">http://excessivelylonghostname.com...</a> def</p>')
+
+class CleanUpMailtoLinksTest(TestCase):
+    def test_replaces_email_link_with_html(self):
+        text = 'abc foo@bar.com def'
+        self.assertEqual(clean_up_email_to_html(text), '<p>abc Email: <a href="mailto:foo@bar.com">foo@bar.com</a> def</p>')
+
+    def test_excludes_leading_opening_parenthesis(self):
+        text = 'abc (foo@bar.com def'
+        self.assertEqual(clean_up_email_to_html(text), '<p>abc (Email: <a href="mailto:foo@bar.com">foo@bar.com</a> def</p>')
+
+    def test_excludes_trailing_dot_from_link(self):
+        text = 'abc foo@bar.com. Def'
+        self.assertEqual(clean_up_email_to_html(text), '<p>abc Email: <a href="mailto:foo@bar.com">foo@bar.com</a>. Def</p>')
+
+    def test_excludes_trailing_comma_from_link(self):
+        text = 'abc foo@bar.com, def'
+        self.assertEqual(clean_up_email_to_html(text), '<p>abc Email: <a href="mailto:foo@bar.com">foo@bar.com</a>, def</p>')
+
+    def test_excludes_trailing_closing_parenthesis(self):
+        text = 'abc foo@bar.com) def'
+        self.assertEqual(clean_up_email_to_html(text), '<p>abc Email: <a href="mailto:foo@bar.com">foo@bar.com</a>) def</p>')
