@@ -328,3 +328,40 @@ class CleanUpMailtoLinksTest(TestCase):
     def test_excludes_trailing_closing_parenthesis(self):
         text = 'abc foo@bar.com) def'
         self.assertEqual(clean_text(text), '<p>abc Email: <a href="mailto:foo@bar.com">foo@bar.com</a>) def</p>')
+
+class CharactersNotBrokenTest(TestCase):
+    def test_ar_characters(self):
+        text = 'تقديم طلب الحصول على رقم الضمان الإجتماعي (SIN)'
+        self.assertEqual(clean_text(text), '<p>تقديم طلب الحصول على رقم الضمان الإجتماعي (SIN)</p>')
+    
+    def test_en_characters(self):
+        text = 'Apply for a Social Insurance Number (SIN)'
+        self.assertEqual(clean_text(text), '<p>Apply for a Social Insurance Number (SIN)</p>')
+
+    def test_fr_characters(self):
+        text = 'Demandez un numéro d’assurance sociale (NAS)'
+        self.assertEqual(clean_text(text), '<p>Demandez un numéro d’assurance sociale (NAS)</p>')
+    
+    def test_ko_characters(self):
+        text = '사회 보험 번호'
+        self.assertEqual(clean_text(text), '<p>사회 보험 번호</p>')
+    
+    def test_pa_characters(self):
+        text = 'ਸੋਸ਼ਲ ਇੰਸ਼ੋਰੈਂਸ ਨੰਬਰ (SIN) ਲਈ ਅਰਜ਼ੀ ਦੇਣੀ'
+        self.assertEqual(clean_text(text), '<p>ਸੋਸ਼ਲ ਇੰਸ਼ੋਰੈਂਸ ਨੰਬਰ (SIN) ਲਈ ਅਰਜ਼ੀ ਦੇਣੀ</p>')
+
+    def test_tl_characters(self):
+        text = 'Social Insurance Number'
+        self.assertEqual(clean_text(text), '<p>Social Insurance Number</p>')
+
+    def test_zh_CN_characters(self):
+        text = '社会保险号码'
+        self.assertEqual(clean_text(text), '<p>社会保险号码</p>')
+    
+    def test_zh_TW_characters(self):
+        text = '社會保險號碼'
+        self.assertEqual(clean_text(text), '<p>社會保險號碼</p>')
+
+    def test_special_characters(self):
+        text = '\''
+        self.assertEqual(clean_text(text), '<p>\'</p>')
