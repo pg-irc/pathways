@@ -135,5 +135,4 @@ def clean_text(text):
     return text
 
 def mark_down_to_html(text):
-    decoded_string = bytes(text, "utf-8").decode("unicode_escape")
-    return markdown2.markdown(decoded_string).strip()
+    return markdown2.markdown(text).strip()
