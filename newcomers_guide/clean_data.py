@@ -128,10 +128,10 @@ def truncate_http_links(link):
 
 
 def clean_text(text):
-    text = clean_up_newlines(text)
     text = clean_up_http_links(text)
     text = clean_up_email_links(text)
     text = mark_down_to_html(text)
+    text = clean_up_newlines(text)
     return text
 
 def mark_down_to_html(text):

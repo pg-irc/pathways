@@ -36,7 +36,7 @@ class CleanUpNewlinesTest(TestCase):
 
     def test_removes_carriage_returns(self):
         text = 'abc\rdef'
-        self.assertEqual(clean_text(text), '<p>abcdef</p>')
+        self.assertEqual(clean_text(text), '<p>abc def</p>')
 
     def test_removes_duplicate_spaces(self):
         text = 'abc  def'
@@ -52,7 +52,7 @@ class CleanUpNewlinesTest(TestCase):
 
     def test_leaves_whitespace_before_newline_unchanged(self):
         text = 'abc\t \ndef'
-        self.assertEqual(clean_text(text), '<p>abc <br />\ndef</p>')
+        self.assertEqual(clean_text(text), '<p>abc <br /> def</p>')
 
     def test_replaces_single_newline_with_space(self):
         text = 'abc\ndef'
@@ -100,7 +100,7 @@ class CleanUpNewlinesTest(TestCase):
         text = 'abc\n* def\nghi'
         self.assertEqual(clean_text(text), '<p>abc\n* def ghi</p>')
         text = '* def\nghi'
-        self.assertEqual(clean_text(text), '<ul>\n<li>def ghi</li>\n</ul>')
+        self.assertEqual(clean_text(text), '<ul> <li>def ghi</li> </ul>')
 
     def test_leaves_newline_unchanged_before_plus_bullet(self):
         text = 'abc\n+ def'
@@ -110,7 +110,7 @@ class CleanUpNewlinesTest(TestCase):
         text = 'abc\n+ def\nghi'
         self.assertEqual(clean_text(text), '<p>abc\n+ def ghi</p>')
         text = '+ def\nghi'
-        self.assertEqual(clean_text(text), '<ul>\n<li>def ghi</li>\n</ul>')
+        self.assertEqual(clean_text(text), '<ul> <li>def ghi</li> </ul>')
 
     def test_leaves_newline_unchanged_before_dash_bullet(self):
         text = 'abc\n- def'
@@ -120,7 +120,7 @@ class CleanUpNewlinesTest(TestCase):
         text = 'abc\n- def\nghi'
         self.assertEqual(clean_text(text), '<p>abc\n- def ghi</p>')
         text = '- def\nghi'
-        self.assertEqual(clean_text(text), '<ul>\n<li>def ghi</li>\n</ul>')
+        self.assertEqual(clean_text(text), '<ul> <li>def ghi</li> </ul>')
 
     def test_leaves_double_newline_after_bullet_list_unchanged(self):
         self.maxDiff = None
@@ -160,7 +160,7 @@ class CleanUpNewlinesTest(TestCase):
         text = 'abc\n def\nghi'
         self.assertEqual(clean_text(text), '<p>abc\n def\nghi</p>')
         text = ' def\nghi'
-        self.assertEqual(clean_text(text), '<p>def\nghi</p>')
+        self.assertEqual(clean_text(text), '<p>def ghi</p>')
 
     def test_leaves_newline_unchanged_before_line_starting_with_tab(self):
         text = 'abc\n\tdef'
@@ -170,7 +170,7 @@ class CleanUpNewlinesTest(TestCase):
         text = 'abc\n\tdef\nghi'
         self.assertEqual(clean_text(text), '<p>abc\n    def\nghi</p>')
         text = '\tdef\nghi'
-        self.assertEqual(clean_text(text), '<pre><code>def\n</code></pre>\n\n<p>ghi</p>')
+        self.assertEqual(clean_text(text), '<pre><code>def </code></pre>\n\n<p>ghi</p>')
 
     def test_leaves_newline_unchanged_before_numbered_list_item_with_period(self):
         text = 'abc\n123. def'
@@ -180,7 +180,7 @@ class CleanUpNewlinesTest(TestCase):
         text = 'abc\n123. def\nefg'
         self.assertEqual(clean_text(text), '<p>abc\n123. def efg</p>')
         text = '123. def\nefg'
-        self.assertEqual(clean_text(text), '<ol>\n<li>def efg</li>\n</ol>')
+        self.assertEqual(clean_text(text), '<ol> <li>def efg</li> </ol>')
 
     def test_leaves_newline_unchanged_before_numbered_list_item_with_bracket(self):
         text = 'abc\n123) def'
@@ -207,7 +207,7 @@ class CleanUpNewlinesTest(TestCase):
 
     def test_leaves_newline_after_heading_unchanged(self):
         text = 'previous paragraph.\n\n# Heading\nBody text.'
-        self.assertEqual(clean_text(text), '<p>previous paragraph. </p>\n\n<h1>Heading</h1>\n\n<p>Body text.</p>')
+        self.assertEqual(clean_text(text), '<p>previous paragraph.</p>\n\n<h1>Heading</h1>\n\n<p>Body text.</p>')
 
     def test_leaves_newline_after_heading_at_the_start_of_string_unchanged(self):
         text = '# Heading\nBody text.'
