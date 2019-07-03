@@ -48,11 +48,11 @@ class CleanUpNewlinesTest(TestCase):
 
     def test_removes_whitespace_between_newlines(self):
         text = 'abc\n\t\r \ndef'
-        self.assertEqual(clean_text(text), '<p>abc</p>\n\n<p>def</p>')
+        self.assertEqual(clean_text(text), '<p>abc</p> <p>def</p>')
 
     def test_leaves_whitespace_before_newline_unchanged(self):
         text = 'abc\t \ndef'
-        self.assertEqual(clean_text(text), '<p>abc <br /> def</p>')
+        self.assertEqual(clean_text(text), '<p>abc<br /> def</p>')
 
     def test_replaces_single_newline_with_space(self):
         text = 'abc\ndef'
@@ -64,41 +64,41 @@ class CleanUpNewlinesTest(TestCase):
 
     def test_leaves_double_newline_unchanged(self):
         text = 'abc\n\ndef'
-        self.assertEqual(clean_text(text), '<p>abc</p>\n\n<p>def</p>')
+        self.assertEqual(clean_text(text), '<p>abc</p> <p>def</p>')
 
     def test_leaves_double_newline_unchanged_after_inline_bullet_character(self):
         text = ('a*bc\n\ndef')
-        self.assertEqual(clean_text(text), '<p>a*bc</p>\n\n<p>def</p>')
+        self.assertEqual(clean_text(text), '<p>a*bc</p> <p>def</p>')
 
     def test_leaves_double_newline_unchanged_after_inline_number(self):
         text = ('a1.bc\n\ndef')
-        self.assertEqual(clean_text(text), '<p>a1.bc</p>\n\n<p>def</p>')
+        self.assertEqual(clean_text(text), '<p>a1.bc</p> <p>def</p>')
 
     def test_replaces_tripple_newline_with_double_newline(self):
         text = 'abc\n\n\ndef'
-        self.assertEqual(clean_text(text), '<p>abc</p>\n\n<p>def</p>')
+        self.assertEqual(clean_text(text), '<p>abc</p> <p>def</p>')
 
     def test_replaces_four_newlines_with_double_newline(self):
         text = 'abc\n\n\n\ndef'
-        self.assertEqual(clean_text(text), '<p>abc</p>\n\n<p>def</p>')
+        self.assertEqual(clean_text(text), '<p>abc</p> <p>def</p>')
 
     def test_leaves_newline_unchanged_before_heading(self):
         text = 'abc\n# def'
-        self.assertEqual(clean_text(text), '<p>abc</p>\n\n<h1>def</h1>')
+        self.assertEqual(clean_text(text), '<p>abc</p> <h1>def</h1>')
 
     def test_leaves_newline_unchanged_after_heading(self):
         text = 'abc\n# def\nghi'
-        self.assertEqual(clean_text(text), '<p>abc</p>\n\n<h1>def</h1>\n\n<p>ghi</p>')
+        self.assertEqual(clean_text(text), '<p>abc</p> <h1>def</h1> <p>ghi</p>')
         text = '# def\nghi'
-        self.assertEqual(clean_text(text), '<h1>def</h1>\n\n<p>ghi</p>')
+        self.assertEqual(clean_text(text), '<h1>def</h1> <p>ghi</p>')
 
     def test_leaves_newline_unchanged_before_star_bullet(self):
         text = 'abc\n* def'
-        self.assertEqual(clean_text(text), '<p>abc\n* def</p>')
+        self.assertEqual(clean_text(text), '<p>abc</p> <ul> <li>def</li> </ul>')
 
     def test_replaces_newline_with_space_after_star_bullet(self):
         text = 'abc\n* def\nghi'
-        self.assertEqual(clean_text(text), '<p>abc\n* def ghi</p>')
+        self.assertEqual(clean_text(text), '<p>abc</p> <ul> <li>def ghi</li> </ul>')
         text = '* def\nghi'
         self.assertEqual(clean_text(text), '<ul> <li>def ghi</li> </ul>')
 
@@ -131,10 +131,32 @@ class CleanUpNewlinesTest(TestCase):
                 'continues here.\n'
                 '\n'
                 'After list.')
-        expected = ('<p>Before list.\n'
-                    '* First item continues here.\n'
-                    '* Second item continues here.</p>\n\n'
+        expected = ('<p>Before list.</p> '
+                    '<ul> '
+                    '<li> <p>First item continues here.</p> </li> '
+                    '<li> <p>Second item continues here.</p> </li> '
+                    '</ul> '
                     '<p>After list.</p>')
+        self.assertEqual(clean_text(text), expected)
+
+    def test_space_before_asteriks_should_be_list_item(self):
+        self.maxDiff = None
+        text = ('Before list.\n'
+                '  * First item\n'
+                'continues here.\n'
+                '\n'
+                'After list.')
+        expected = ('<p>Before list.</p> '
+                    '<ul> '
+                    '<li>First item continues here.</li> '
+                    '</ul> '
+                    '<p>After list.</p>')
+        self.assertEqual(clean_text(text), expected)
+
+    def two_asterisks_should_be_emphasis_tag(self):
+        self.maxDiff = None
+        text = ('*I am Important*')
+        expected = ('<p><em>I am Important</em></p>')
         self.assertEqual(clean_text(text), expected)
 
     def test_leaves_double_newline_after_numbered_list_unchanged(self):
@@ -148,7 +170,7 @@ class CleanUpNewlinesTest(TestCase):
                 'After list.')
         expected = ('<p>Before list.\n'
                     '1. First item continues here.\n'
-                    '1. Second item continues here.</p>\n\n'
+                    '1. Second item continues here.</p> '
                     '<p>After list.</p>')
         self.assertEqual(clean_text(text), expected)
 
@@ -170,7 +192,7 @@ class CleanUpNewlinesTest(TestCase):
         text = 'abc\n\tdef\nghi'
         self.assertEqual(clean_text(text), '<p>abc\n    def\nghi</p>')
         text = '\tdef\nghi'
-        self.assertEqual(clean_text(text), '<pre><code>def </code></pre>\n\n<p>ghi</p>')
+        self.assertEqual(clean_text(text), '<pre><code>def </code></pre> <p>ghi</p>')
 
     def test_leaves_newline_unchanged_before_numbered_list_item_with_period(self):
         text = 'abc\n123. def'
@@ -198,7 +220,7 @@ class CleanUpNewlinesTest(TestCase):
 
     def test_handles_newlines_after_punctuation(self):
         text = 'abc,\r\n\r\ndef.\r\n\r\nghi)\r\n\r\njkl'
-        self.assertEqual(clean_text(text), '<p>abc,</p>\n\n<p>def.</p>\n\n<p>ghi)</p>\n\n<p>jkl</p>')
+        self.assertEqual(clean_text(text), '<p>abc,</p> <p>def.</p> <p>ghi)</p> <p>jkl</p>')
 
     # What to do with bullets, throw an error?
     def ignore_test_replaces_bullet_character_with_star(self):
@@ -207,11 +229,11 @@ class CleanUpNewlinesTest(TestCase):
 
     def test_leaves_newline_after_heading_unchanged(self):
         text = 'previous paragraph.\n\n# Heading\nBody text.'
-        self.assertEqual(clean_text(text), '<p>previous paragraph.</p>\n\n<h1>Heading</h1>\n\n<p>Body text.</p>')
+        self.assertEqual(clean_text(text), '<p>previous paragraph.</p> <h1>Heading</h1> <p>Body text.</p>')
 
     def test_leaves_newline_after_heading_at_the_start_of_string_unchanged(self):
         text = '# Heading\nBody text.'
-        self.assertEqual(clean_text(text), '<h1>Heading</h1>\n\n<p>Body text.</p>')
+        self.assertEqual(clean_text(text), '<h1>Heading</h1> <p>Body text.</p>')
 
     def test_realistic_example(self):
         self.maxDiff = None
@@ -224,7 +246,7 @@ class CleanUpNewlinesTest(TestCase):
                 '2. item two\n'
                 '   - sublist\n'
                 '   - sublist\n')
-        expected = ('<h2>Try CommonMark</h2>\n\n'
+        expected = ('<h2>Try CommonMark</h2> '
                     '<p>You can try CommonMark here. This dingus is powered by <a href="Web: [https://github.com/jgm/commo...](https://github.com/jgm/commonmark.js)">commonmark.js</a>, the JavaScript reference implementation.\n'
                     '1. item one\n'
                     '2. item two\n'

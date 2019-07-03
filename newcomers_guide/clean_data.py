@@ -1,5 +1,5 @@
 import re
-import markdown2
+import markdown
 from urllib.parse import urlparse
 
 def clean_up_newlines(text):
@@ -124,15 +124,24 @@ def truncate_http_links(link):
         return 'Web: [%s...](%s)'%(long_http_link_without_path, link)
     else:
         truncated_http_link = link[:28]+'...'
-        return 'Web: [%s](%s)'%( truncated_http_link, link)
+        return 'Web: [%s](%s)'%(truncated_http_link, link)
 
 
 def clean_text(text):
     text = clean_up_http_links(text)
     text = clean_up_email_links(text)
+    text = add_new_line_before_li_items(text)
     text = mark_down_to_html(text)
     text = clean_up_newlines(text)
     return text
 
 def mark_down_to_html(text):
-    return markdown2.markdown(text).strip()
+    return markdown.markdown(text).strip()
+
+def add_new_line_before_li_items(text):
+    mark_down_list_item = r'\n[ \t]*\*'
+    return re.sub(mark_down_list_item, add_new_lines, text)
+
+def add_new_lines(matchobj):
+    astericks = matchobj.group(0)
+    return '\n%s'%(astericks)
