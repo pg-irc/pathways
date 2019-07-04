@@ -14,7 +14,8 @@ def clean_up_newlines(text):
     text = protect_newlines_around_numbered_list_items(text)
     text = protect_multiple_newlines(text)
     text = replace_newlines_with_space(text)
-    return unprotect_newlines(text)
+    text = unprotect_newlines(text)
+    return clean_up_html_lists(text)
 
 
 def replace_unicode_newlines(text):
@@ -130,7 +131,7 @@ def truncate_http_links(link):
 def clean_text(text):
     text = clean_up_http_links(text)
     text = clean_up_email_links(text)
-    text = add_new_line_before_li_items(text)
+    text = clean_up_li_items(text)
     text = mark_down_to_html(text)
     text = clean_up_newlines(text)
     return text
@@ -138,10 +139,11 @@ def clean_text(text):
 def mark_down_to_html(text):
     return markdown.markdown(text).strip()
 
-def add_new_line_before_li_items(text):
+def clean_up_li_items(text):
     mark_down_list_item = r'\n[ \t]*\*'
-    return re.sub(mark_down_list_item, add_new_lines, text)
+    return re.sub(mark_down_list_item, r'\n \g<0>', text)
 
-def add_new_lines(matchobj):
-    astericks = matchobj.group(0)
-    return '\n%s'%(astericks)
+def clean_up_html_lists(text):
+    list_items = r'\</li\>'
+    list_item_on_new_line = re.sub(list_items, '<br></li>', text)
+    return list_item_on_new_line

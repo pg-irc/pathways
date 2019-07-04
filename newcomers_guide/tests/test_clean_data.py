@@ -125,16 +125,16 @@ class CleanUpNewlinesTest(TestCase):
     def test_leaves_double_newline_after_bullet_list_unchanged(self):
         self.maxDiff = None
         text = ('Before list.\n'
-                '* First item\n'
+                '* First item hello\n'
                 'continues here.\n'
-                '* Second item\n'
+                '* Second item world\n'
                 'continues here.\n'
                 '\n'
                 'After list.')
         expected = ('<p>Before list.</p> '
                     '<ul> '
-                    '<li> <p>First item continues here.</p> </li> '
-                    '<li> <p>Second item continues here.</p> </li> '
+                    '<li> <p>First item hello continues here.</p> </li> \n'
+                    '<li> <p>Second item world continues here.</p> </li> '
                     '</ul> '
                     '<p>After list.</p>')
         self.assertEqual(clean_text(text), expected)
