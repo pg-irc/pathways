@@ -23,13 +23,13 @@ if [ ! -d $NewcomersGuidePath ]; then
     exit
 fi
 
-if [ ! -f $TopicsToRemove ]; then
-    echo "$TopicsToRemove: topics to remove not found"
+if [ ! -f $ManualRecommendations ]; then
+    echo "$ManualRecommendations: Manual recommendations not found"
     exit
 fi
 
-if [ ! -f $ManualRecommendations ]; then
-    echo "$ManualRecommendations: Manual recommendations not found"
+if [ ! -f $TopicsToRemove ]; then
+    echo "$TopicsToRemove: topics to remove not found"
     exit
 fi
 
@@ -79,13 +79,13 @@ echo "computing similarity scores ..."
 ./manage.py compute_text_similarity_scores --related_topics 3 --related_services 100 $NewcomersGuidePath
 checkForSuccess "compute similarity scores"
 
-echo "removing invalid similarity scores ..."
-./manage.py remove_recommendations_for_topics $TopicsToRemove
-checkForSuccess "remove similarity scores"
-
 echo "adding manual similarity scores ..."
 ./manage.py set_manual_similarity_scores $ManualRecommendations
 checkForSuccess "add manual similarity scores"
+
+echo "removing invalid similarity scores ..."
+./manage.py remove_recommendations_for_topics $TopicsToRemove
+checkForSuccess "remove similarity scores"
 
 ./manage.py dumpdata --natural-foreign --exclude auth.permission --exclude contenttypes --indent 4 > $OutputFile
 
