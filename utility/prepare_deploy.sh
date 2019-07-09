@@ -8,8 +8,8 @@ fi
 
 BC211Path=$1
 NewcomersGuidePath=$2
-TopicsToRemove=$3
-ManualRecommendations=$4
+ManualRecommendations=$3
+TopicsToRemove=$4
 CurrentDate=`date '+%Y'-'%m'-'%d'`
 OutputFile=$5/$CurrentDate.json
 
@@ -46,8 +46,8 @@ fi
 echo "About to reinitialize database with data from:"
 echo "BC211 data at:           $BC211Path"
 echo "Newcomers data at:       $NewcomersGuidePath"
-echo "Topics to not recommend: $TopicsToRemove"
 echo "Manual recommendations:  $ManualRecommendations"
+echo "Topics to not recommend: $TopicsToRemove"
 echo "Path to place output file eg ../build/ : $OutputFile"
 read -p "Enter to continue, Ctrl-C to abort "
 
