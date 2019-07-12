@@ -1,6 +1,7 @@
 from django.test import TestCase
 from newcomers_guide.clean_data import (clean_up_http_links, clean_up_email_links,
-                                        clean_up_newlines, replace_unicode_newlines)
+                                        clean_up_newlines, replace_unicode_newlines,
+                                        add_https_to_somelinks)
 
 # Need to replace single newlines with space, except when the line before
 # and/or after is a list item or heading. This is because the markdown
@@ -312,6 +313,18 @@ class CleanUpUrlLinksTest(TestCase):
     def test_http_link_does_not_truncate_long_host_name(self):
         text = 'abc http://excessivelylonghostname.com/search def'
         self.assertEqual(clean_up_http_links(text), 'abc Web: [http://excessivelylonghostname.com...](http://excessivelylonghostname.com/search) def')
+    
+    def test_valid_link_without_http(self):
+        text = 'abc www.example.com def'
+        self.assertEqual(clean_up_http_links(text), 'abc Web: [https://www.example.com](https://www.example.com) def')
+
+    def test_valid_link_without_http_new_line(self):
+        text = 'abc\nwww.example.com def'
+        self.assertEqual(clean_up_http_links(text), 'abc\nWeb: [https://www.example.com](https://www.example.com) def')
+
+    def test_invalid_link_without_http(self):
+        text = 'abc example.com def'
+        self.assertEqual(clean_up_http_links(text), 'abc example.com def')
 
 class CleanUpMailtoLinksTest(TestCase):
     def test_replaces_email_link_with_markdown(self):
