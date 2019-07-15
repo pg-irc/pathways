@@ -314,15 +314,23 @@ class CleanUpUrlLinksTest(TestCase):
         text = 'abc http://excessivelylonghostname.com/search def'
         self.assertEqual(clean_up_http_links(text), 'abc Web: [http://excessivelylonghostname.com...](http://excessivelylonghostname.com/search) def')
     
-    def test_valid_link_without_http(self):
+    def test_link_with_www_but_not_https_is_valid(self):
         text = 'abc www.example.com def'
         self.assertEqual(clean_up_http_links(text), 'abc Web: [https://www.example.com](https://www.example.com) def')
 
-    def test_valid_link_without_http_new_line(self):
+    def test_link_with_www_but_not_https_is_valid_separate_by_newline(self):
         text = 'abc\nwww.example.com def'
         self.assertEqual(clean_up_http_links(text), 'abc\nWeb: [https://www.example.com](https://www.example.com) def')
 
-    def test_invalid_link_without_http(self):
+    def test_link_with_www_but_not_https_is_valid_no_space_in_front(self):
+        text = 'abcwww.example.com def'
+        self.assertEqual(clean_up_http_links(text), 'abcWeb: [https://www.example.com](https://www.example.com) def')
+
+    def test_link_with_www_but_not_https_is_valid_no_space_after(self):
+        text = 'abcwww.example.comdef'
+        self.assertEqual(clean_up_http_links(text), 'abcWeb: [https://www.example.comdef](https://www.example.comdef)')
+
+    def test_link_without_https_or_www_prefix_is_invalid(self):
         text = 'abc example.com def'
         self.assertEqual(clean_up_http_links(text), 'abc example.com def')
 

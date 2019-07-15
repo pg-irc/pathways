@@ -110,8 +110,9 @@ def clean_up_email_links(text):
 
 
 def add_https_to_somelinks(text):
-    if re.search(r'([^/])([w]{3})', text):
-        text = re.sub(r'([^/])([w]{3})', r'\1https://\2', text)
+    www_links_without_https = r'([^https?://])(www)'
+    if re.search(www_links_without_https, text):
+        text = re.sub(www_links_without_https, r'\1https://\2', text)
     return text
 
 def check_length_of_http_links(matchobj):
