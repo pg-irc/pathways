@@ -8,6 +8,17 @@ This is a log of changes to the Arrival Advisor app and related infrastructure t
 
 ### Bug fixes
 
+## 1.3.4
+
+### New features
+
+* Integration test suite 
+
+### Bug fixes
+
+* Remove find related services near me functionality from specific topics
+
+
 ## 1.3.3
 
 ### Bug fixes
