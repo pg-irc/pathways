@@ -61,7 +61,7 @@ def parse_agency_name(agency):
 
 
 def parse_agency_description(agency):
-    return parse_required_field(agency, 'AgencyDescription')
+    return parse_optional_field(agency, 'AgencyDescription')
 
 
 def parse_agency_email(agency):

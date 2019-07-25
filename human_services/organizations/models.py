@@ -9,7 +9,7 @@ class Organization(ValidateOnSaveMixin, TranslatableModel):
     email = OptionalCharField(max_length=200, validators=[validators.EmailValidator()])
     translations = TranslatedFields(
         name=models.CharField(blank=False, max_length=200),
-        description=models.TextField(blank=True)
+        description=models.TextField(blank=True, null=True)
     )
 
     class Meta:

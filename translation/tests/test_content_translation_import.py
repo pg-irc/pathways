@@ -63,7 +63,7 @@ class ContentTranslationToolsImportTestsWithBaseTranslations(TestCase):
         translation = master.get_translation('fr')
         translation.refresh_from_db()
         self.assertEqual(translation.name, 'organization_one_translation_name_msgstr_fr')
-        self.assertEqual(translation.description, '')
+        self.assertEqual(translation.description, None)
 
         master = self.translatable_objects[1]
         translation = master.get_translation('fr')
@@ -103,7 +103,7 @@ class ContentTranslationToolsImportTestsWithBaseTranslations(TestCase):
         translation = master.get_translation('fr')
         translation.refresh_from_db()
         self.assertEqual(translation.name, 'organization_one_translation_name_msgstr_fr')
-        self.assertEqual(translation.description, '')
+        self.assertEqual(translation.description, None)
 
         master = self.translatable_objects[1]
         translation = master.get_translation('fr')
@@ -115,7 +115,7 @@ class ContentTranslationToolsImportTestsWithBaseTranslations(TestCase):
         translation = master.get_translation('fr')
         translation.refresh_from_db()
         self.assertEqual(translation.name, 'organization_three_translation_name_msgstr_fr')
-        self.assertEqual(translation.description, '')
+        self.assertEqual(translation.description, None)
 
     def test_import_po_file_with_new_language(self):
         self._import_po_entries('es', [
@@ -130,7 +130,7 @@ class ContentTranslationToolsImportTestsWithBaseTranslations(TestCase):
         translation = master.get_translation('es')
         translation.refresh_from_db()
         self.assertEqual(translation.name, 'organization_one_translation_name_msgstr_es')
-        self.assertEqual(translation.description, '')
+        self.assertEqual(translation.description, None)
 
         master = self.translatable_objects[1]
         with self.assertRaises(master.translations.model.DoesNotExist):
@@ -153,7 +153,7 @@ class ContentTranslationToolsImportTestsWithBaseTranslations(TestCase):
         translation = master.get_translation('fr')
         translation.refresh_from_db()
         self.assertEqual(translation.name, 'organization_one_translation_name_msgstr_fr')
-        self.assertEqual(translation.description, '')
+        self.assertEqual(translation.description, None)
 
     def test_import_po_file_skips_errors(self):
         self._import_po_entries('fr', [
