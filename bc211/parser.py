@@ -162,7 +162,7 @@ def parse_service_name(service):
 
 
 def parse_service_description(service):
-    return parse_required_field(service, 'Description')
+    return parse_optional_field(service, 'Description')
 
 
 def parse_service_taxonomy_terms(service, service_id):

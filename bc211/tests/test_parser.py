@@ -234,6 +234,29 @@ class ServiceParserTests(unittest.TestCase):
         self.assertEqual(self.from_minimal_data.site_id,
                          self.site_id_passed_to_parser)
 
+    def test_site_service_description_is_optional(self):
+        organization_id = a_string()
+        xml_site = '''
+        <Site>
+            <Key>the site key</Key>
+            <Name>the site name</Name>
+            <SiteDescription>the site description</SiteDescription>
+            <SpatialLocation>
+                <Latitude>123.456</Latitude>
+                <Longitude>-154.321</Longitude>
+            </SpatialLocation>
+            <SiteService>
+                <Key>the service key</Key>
+                <Name>the service without description</Name>
+            </SiteService>
+        </Site>
+        '''
+        root = etree.fromstring(xml_site)
+        try:
+            parser.parse_site(root, organization_id)
+        except MissingRequiredFieldXmlParseException:
+            self.fail('MissingRequiredFieldXmlParseException raised unexpectedly')
+
 
 class AddressParserTests(unittest.TestCase):
     def test_parses_physical_address(self):
