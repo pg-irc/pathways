@@ -290,15 +290,23 @@ def parse_site_phone(phone, site_id):
     )
 
 def clean_phone_number(phone_number):
-    if re.search(r'[a-zA-Z]', phone_number):
-        phone_number_format = r'(\d-)?\(?[\d]{3}\)?-[\d]{3}-[\d]{4}'
-        match = re.search(phone_number_format, phone_number)
-        if match:
-            return match[0]
-        else:
-            return re.sub(r'[A-Za-z\(\) ]', '', phone_number)
-    else:
+    phone_number_format = r'(\d[- ]?)?\(?[\d]{3}\)?[- ]?[\d]{3}[- ]?[\d]{4}'
+    if re.search(r'(Local)|(Ext)|(local)|(ext)|(or)', phone_number):
+        return re.search(phone_number_format, phone_number)[0]
+    elif re.search(r'[a-zA-Z]', phone_number):
+        phone_number = re.sub(r'[a-cA-C]', '2', phone_number)
+        phone_number = re.sub(r'[d-fD-F]', '3', phone_number)
+        phone_number = re.sub(r'[g-iG-I]', '4', phone_number)
+        phone_number = re.sub(r'[j-lJ-L]', '5', phone_number)
+        phone_number = re.sub(r'[m-oM-O]', '6', phone_number)
+        phone_number = re.sub(r'[p-sP-S]', '7', phone_number)
+        phone_number = re.sub(r'[t-vT-V]', '8', phone_number)
+        phone_number = re.sub(r'[w-zW-Z]', '9', phone_number)
+        phone_number = re.sub(r'\(.*\)', '', phone_number)
+        phone_number = re.sub(r' ', '', phone_number)
         return phone_number
+    else:
+        return re.search(phone_number_format, phone_number)[0]
 
 def phone_has_number_and_type(phone):
     return parse_optional_field(phone, 'PhoneNumber') and parse_optional_field(phone, 'Type')
