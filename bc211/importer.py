@@ -18,6 +18,8 @@ def save_records_to_database(organizations, counters):
 
 
 def save_organization(organization, counters):
+    if is_inactive(organization):
+        return
     translation.activate('en')
     active_record = build_organization_active_record(organization)
     active_record.save()

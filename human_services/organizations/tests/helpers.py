@@ -1,5 +1,7 @@
+from bc211 import dtos
 from human_services.organizations import models
 from common.testhelpers.random_test_values import a_string, a_website_address, an_email_address
+
 
 class OrganizationBuilder:
     def __init__(self):
@@ -37,6 +39,14 @@ class OrganizationBuilder:
         result.website = self.website
         result.email = self.email
         return result
+
+    def build_dto(self):
+        return dtos.Organization(id=self.organization_id,
+                                 name=self.name,
+                                 description=self.description,
+                                 website=self.website,
+                                 email=self.email,
+                                 locations=[])
 
     def create(self):
         result = self.build()

@@ -42,6 +42,19 @@ class LocationImportTests(TestCase):
 
 
 class InactiveDataImportTests(TestCase):
+
+    def test_do_not_import_inactive_organization(self):
+        inactive_description = 'DEL ' + a_string()
+        inactive_organization = OrganizationBuilder().with_description(inactive_description).build_dto()
+        active_organization = OrganizationBuilder().build_dto()
+
+        organizations = iter([inactive_organization, active_organization])
+        save_records_to_database(organizations, ImportCounters())
+        all_records_from_database = Organization.objects.all()
+
+        self.assertEqual(len(all_records_from_database), 1)
+        self.assertEqual(all_records_from_database[0].id, active_organization.id)
+
     def test_do_not_import_inactive_location(self):
         inactive_description = 'DEL ' + a_string()
         organization = OrganizationBuilder().create()
