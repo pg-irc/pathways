@@ -52,6 +52,8 @@ def build_organization_active_record(record):
 
 def save_locations(locations, counters):
     for location in locations:
+        if location.description.startswith('DEL'):
+            continue
         active_record = build_location_active_record(location)
         active_record.save()
         counters.count_location()

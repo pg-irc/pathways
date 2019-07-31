@@ -1,10 +1,13 @@
 import logging
-from bc211.importer import save_records_to_database
+from bc211.importer import save_records_to_database, save_locations
 from bc211.parser import read_records_from_file
 from bc211.import_counters import ImportCounters
+from common.testhelpers.random_test_values import a_string
 from django.test import TestCase
 from human_services.locations.models import Location
+from human_services.locations.tests.helpers import LocationBuilder
 from human_services.organizations.models import Organization
+from human_services.organizations.tests.helpers import OrganizationBuilder
 from human_services.services.models import Service
 from human_services.addresses.models import Address, AddressType
 from taxonomies.models import TaxonomyTerm
@@ -36,6 +39,20 @@ class LocationImportTests(TestCase):
 
     def test_can_import_longitude(self):
         self.assertAlmostEqual(self.location.point.x, -122.607918)
+
+
+class InactiveDataImportTests(TestCase):
+    def test_do_not_import_inactive_location(self):
+        inactive_description = 'DEL ' + a_string()
+        organization = OrganizationBuilder().create()
+        inactive_location = LocationBuilder(organization).with_description(inactive_description).build_dto()
+        active_location = LocationBuilder(organization).build_dto()
+
+        save_locations([inactive_location, active_location], ImportCounters())
+        all_records_from_database = Location.objects.all()
+
+        self.assertEqual(len(all_records_from_database), 1)
+        self.assertEqual(all_records_from_database[0].id, active_location.id)
 
 
 class OrganizationImportTests(TestCase):

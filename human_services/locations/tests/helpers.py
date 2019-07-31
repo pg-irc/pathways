@@ -1,3 +1,4 @@
+from bc211 import dtos
 from common.testhelpers.random_test_values import a_string, a_point
 from django.contrib.gis.geos import Point
 from human_services.locations.models import Location
@@ -39,6 +40,17 @@ class LocationBuilder:
         result.point = self.point
         result.description = self.description
         return result
+
+    def build_dto(self):
+        return dtos.Location(id=self.location_id,
+                             name=self.name,
+                             organization_id=self.organization.id,
+                             description=self.description,
+                             spatial_location=None,
+                             services=[],
+                             physical_address=None,
+                             postal_address=None,
+                             phone_numbers=[])
 
     def create(self):
         result = self.build()
