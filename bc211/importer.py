@@ -52,7 +52,7 @@ def build_organization_active_record(record):
 
 def save_locations(locations, counters):
     for location in locations:
-        if location.description.startswith('DEL'):
+        if is_inactive(location):
             continue
         active_record = build_location_active_record(location)
         active_record.save()
@@ -66,6 +66,10 @@ def save_locations(locations, counters):
             create_address_for_location(active_record, location.postal_address, counters)
         if location.phone_numbers:
             create_phone_numbers_for_location(active_record, location.phone_numbers, counters)
+
+
+def is_inactive(record):
+    return record.description.startswith('DEL')
 
 
 def build_location_active_record(record):
