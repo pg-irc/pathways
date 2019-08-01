@@ -72,7 +72,7 @@ def save_locations(locations, counters):
 
 def is_inactive(record):
     # This is BC211's convention for marking records as inactive
-    return record.description.startswith('DEL')
+    return record.description and record.description.startswith('DEL')
 
 
 def build_location_active_record(record):
