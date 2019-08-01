@@ -105,13 +105,14 @@ def build_service_at_location_active_record(record):
 
 def save_services(services, counters):
     for service in services:
-        if not is_inactive(service) and not service_already_exists(service):
-            active_record = build_service_active_record(service)
-            active_record.save()
-            counters.count_service()
-            LOGGER.debug('Service "%s" "%s"', service.id, service.name)
-            save_service_at_location(service)
-            save_service_taxonomy_terms(service.taxonomy_terms, active_record, counters)
+        if is_inactive(service) or service_already_exists(service):
+            continue
+        active_record = build_service_active_record(service)
+        active_record.save()
+        counters.count_service()
+        LOGGER.debug('Service "%s" "%s"', service.id, service.name)
+        save_service_at_location(service)
+        save_service_taxonomy_terms(service.taxonomy_terms, active_record, counters)
 
 
 def service_already_exists(service):
