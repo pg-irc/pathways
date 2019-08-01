@@ -1,5 +1,5 @@
 import logging
-from bc211.importer import save_records_to_database, save_locations
+from bc211.importer import save_records_to_database, save_locations, save_services
 from bc211.parser import read_records_from_file
 from bc211.import_counters import ImportCounters
 from common.testhelpers.random_test_values import a_string
@@ -9,6 +9,7 @@ from human_services.locations.tests.helpers import LocationBuilder
 from human_services.organizations.models import Organization
 from human_services.organizations.tests.helpers import OrganizationBuilder
 from human_services.services.models import Service
+from human_services.services.tests.helpers import ServiceBuilder
 from human_services.addresses.models import Address, AddressType
 from taxonomies.models import TaxonomyTerm
 
@@ -56,8 +57,8 @@ class InactiveDataImportTests(TestCase):
         self.assertEqual(all_records_from_database[0].id, active_organization.id)
 
     def test_do_not_import_inactive_location(self):
-        inactive_description = 'DEL ' + a_string()
         organization = OrganizationBuilder().create()
+        inactive_description = 'DEL ' + a_string()
         inactive_location = LocationBuilder(organization).with_description(inactive_description).build_dto()
         active_location = LocationBuilder(organization).build_dto()
 
@@ -66,6 +67,24 @@ class InactiveDataImportTests(TestCase):
 
         self.assertEqual(len(all_records_from_database), 1)
         self.assertEqual(all_records_from_database[0].id, active_location.id)
+
+    def test_do_not_import_inactive_service(self):
+        organization = OrganizationBuilder().create()
+        location = LocationBuilder(organization).create()
+        inactive_description = 'DEL ' + a_string()
+        inactive_service = (ServiceBuilder(organization).
+                            with_location(location).
+                            with_description(inactive_description).
+                            build_dto())
+        active_service = (ServiceBuilder(organization).
+                          with_location(location).
+                          build_dto())
+
+        save_services([inactive_service, active_service], ImportCounters())
+        all_records_from_database = Service.objects.all()
+
+        self.assertEqual(len(all_records_from_database), 1)
+        self.assertEqual(all_records_from_database[0].id, active_service.id)
 
 
 class OrganizationImportTests(TestCase):

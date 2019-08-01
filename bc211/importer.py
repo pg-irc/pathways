@@ -104,7 +104,7 @@ def build_service_at_location_active_record(record):
 
 def save_services(services, counters):
     for service in services:
-        if not service_already_exists(service):
+        if not is_inactive(service) and not service_already_exists(service):
             active_record = build_service_active_record(service)
             active_record.save()
             counters.count_service()

@@ -1,8 +1,10 @@
+from bc211 import dtos
 from human_services.services import models
 from human_services.locations.models import ServiceAtLocation
 from common.testhelpers.random_test_values import a_string
 from newcomers_guide.tests.helpers import create_topic
 from search.models import TaskServiceSimilarityScore
+
 
 def create_related_topic(service_id, similarity_score):
     topic_id = a_string()
@@ -13,6 +15,7 @@ def create_related_topic(service_id, similarity_score):
         similarity_score=similarity_score
     )
     return topic_id
+
 
 class ServiceBuilder:
     def __init__(self, organization):
@@ -53,6 +56,15 @@ class ServiceBuilder:
             result.taxonomy_terms.add(taxonomy_term)
 
         return result
+
+    def build_dto(self):
+        location_id = self.location_ids[0] if self.location_ids else None
+        return dtos.Service(id=self.service_id,
+                            name=self.name,
+                            organization_id=self.organization.id,
+                            site_id=location_id,
+                            description=self.description,
+                            taxonomy_terms=self.taxonomy_terms)
 
     def create(self):
         result = self.build()
