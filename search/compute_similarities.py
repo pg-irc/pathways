@@ -20,7 +20,7 @@ def to_service_ids_and_descriptions(services):
     descriptions = []
     for service in services:
         ids.append(service.id)
-        description_without_phone_numbers = remove_phone_numbers(service.description)
+        description_without_phone_numbers = remove_phone_numbers(service.description) or ''
         descriptions.append(service.name + ' ' + description_without_phone_numbers)
     return (ids, descriptions)
 
@@ -39,5 +39,8 @@ def compute_cosine_doc_similarities(matrix):
     normalized_matrix = sklearn.preprocessing.normalize(matrix, axis=1)
     return normalized_matrix * normalized_matrix.T
 
+
 def remove_phone_numbers(description):
+    if not description:
+        return None
     return re.sub(r'(\+?[0-9]{1,2}-|\+?[\(\)\d]{3,5}-\d{3}-\d{4})', '', description)
