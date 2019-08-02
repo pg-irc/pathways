@@ -6,15 +6,18 @@ from search.save_similarities import (save_topic_similarities,
                                       save_topic_service_similarity_scores,
                                       save_manual_similarities)
 from search.remove_similarities_for_topics import remove_similarities_for_topics
+from search.remove_similarities_for_services import remove_similarities_for_services
 from search.models import Task, TaskSimilarityScore, TaskServiceSimilarityScore
 from common.testhelpers.random_test_values import a_string, a_float
 from newcomers_guide.tests.helpers import create_topic
 import scipy
 from search.tests.helpers import create_square_matrix_of_unique_floats
 
+
 def create_topics(ids):
     for the_id in ids:
         create_topic(the_id)
+
 
 class TestSavingTaskSimilarities(TestCase):
 
@@ -148,7 +151,8 @@ class TestSavingTaskServiceSimilarities(TestCase):
         scores_matrix = scipy.sparse.csr_matrix([[a_float() for i in range(6)] for j in range(6)])
 
         scores_to_save_per_row = 2
-        save_topic_service_similarity_scores(self.three_topic_ids, self.three_service_ids, scores_matrix, scores_to_save_per_row)
+        save_topic_service_similarity_scores(
+            self.three_topic_ids, self.three_service_ids, scores_matrix, scores_to_save_per_row)
 
         scores_saved_in_all = 3 * 2
         self.assertEqual(TaskServiceSimilarityScore.objects.count(), scores_saved_in_all)
@@ -336,7 +340,7 @@ class TestRemovingTaskTopicSimilarities(TestCase):
     def tearDown(self):
         logging.disable(logging.NOTSET)
 
-    def test_can_remove_one_similarity_score(self):
+    def test_can_remove_one_similarity_score_by_topic_id(self):
         service = ServiceBuilder(self.organization).create()
         topic_id = a_string()
         create_topic(topic_id)
@@ -346,6 +350,20 @@ class TestRemovingTaskTopicSimilarities(TestCase):
         record.save()
 
         remove_similarities_for_topics([topic_id])
+        records = TaskServiceSimilarityScore.objects.order_by('similarity_score')
+        self.assertEqual(len(records), 0)
+
+    def test_can_remove_one_similarity_score_by_service_id(self):
+        service_id = a_string()
+        service = ServiceBuilder(self.organization).with_id(service_id).create()
+        topic_id = a_string()
+        create_topic(topic_id)
+        record = TaskServiceSimilarityScore(task_id=topic_id,
+                                            service=service,
+                                            similarity_score=a_float())
+        record.save()
+
+        remove_similarities_for_services([service_id])
         records = TaskServiceSimilarityScore.objects.order_by('similarity_score')
         self.assertEqual(len(records), 0)
 
