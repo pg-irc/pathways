@@ -2,6 +2,7 @@ import string
 import random
 from . import private
 from django.contrib.gis.geos import Point
+import re
 
 private.set_random_seed_at_load_time()
 
@@ -40,4 +41,6 @@ def a_list_of_integers(length=3):
     return [an_integer() for x in range(length)]
 
 def a_phone_number(length=10):
-    return ''.join(str(an_integer(min=0, max=9)) for x in range(length))
+    phone_number = ''.join(str(an_integer(min=0, max=9)) for x in range(length))
+    phone_number = re.sub(r'(\d{3})(\d{3})(\d{4})', r'\1-\2-\3', phone_number)
+    return phone_number
