@@ -625,7 +625,7 @@ class PhoneNumberParserTests(unittest.TestCase):
         xml = self.build_phone_xml('250-949-6625 / 250-286-8064', a_string())
         root = etree.fromstring(xml)
         phone_numbers = parser.parse_site_phone_number_list(root, site_id)
-        self.assertEqual(phone_numbers[0].phone_number, '250-286-8064')
+        self.assertEqual(phone_numbers[0].phone_number, '250-949-6625')
 
     def test_parse_mnemonics_and_extension(self):
         site_id = a_string()

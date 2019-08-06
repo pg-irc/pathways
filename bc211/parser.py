@@ -312,12 +312,12 @@ def clean_one_phone_number(phone_number):
 
 def clean_multiple_phone_numbers(phone_number):
     toll_free_format = r'1-8[\d]{2}-[\d]{3}-[\d]{4}'
-    phone_number_array = re.split("/|or|;", phone_number)
-    for index in range(len(phone_number_array)):
-        cleanedNumber = clean_one_phone_number(phone_number_array[index])
-        if re.search(toll_free_format, cleanedNumber):
-            return cleanedNumber
-    return cleanedNumber
+    phone_numbers = re.split("/|or|;", phone_number)
+    cleaned_phone_numbers = [clean_one_phone_number(n) for n in phone_numbers]
+    for index, cleaned_phone_number in enumerate(cleaned_phone_numbers):
+        if re.search(toll_free_format, cleaned_phone_number):
+            return cleaned_phone_number
+    return cleaned_phone_numbers[0]
 
 def clean_phone_number(phone_number):
     if re.search(r'/|or|;', phone_number):
