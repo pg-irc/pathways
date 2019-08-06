@@ -289,11 +289,9 @@ def parse_site_phone(phone, site_id):
         phone_number=phone_number
     )
 
-def clean_phone_number(phone_number):
-    phone_number_format = r'(\d[- ]?)?\(?[\d]{3}\)?[- ]?[\d]{3}[- ]?[\d]{4}'
-    if re.search(r'(Local)|(Ext)|(local)|(ext)|(or)', phone_number):
-        return re.search(phone_number_format, phone_number)[0]
-    elif re.search(r'[a-zA-Z]', phone_number):
+def clean_one_phone_number(phone_number):
+    phone_number = re.sub(r'([Ll]ocal|[Ee]xt)[ \d].*', '', phone_number)
+    if re.search(r'[a-zA-Z]', phone_number):
         phone_number = re.sub(r'[a-cA-C]', '2', phone_number)
         phone_number = re.sub(r'[d-fD-F]', '3', phone_number)
         phone_number = re.sub(r'[g-iG-I]', '4', phone_number)
@@ -302,11 +300,29 @@ def clean_phone_number(phone_number):
         phone_number = re.sub(r'[p-sP-S]', '7', phone_number)
         phone_number = re.sub(r'[t-vT-V]', '8', phone_number)
         phone_number = re.sub(r'[w-zW-Z]', '9', phone_number)
-        phone_number = re.sub(r'\(.*\)', '', phone_number)
-        phone_number = re.sub(r' ', '', phone_number)
+        phone_number = re.sub(r'(\(?.*\)?.*)(\(.*\))', r'\1', phone_number)
+    phone_number = re.sub(r'[- \(\)]', '', phone_number)
+    if re.search(r'\d{11}', phone_number):
+        phone_number = re.sub(r'(\d)(\d{3})(\d{3})(\d{4})', r'\1-\2-\3-\4', phone_number)
         return phone_number
-    else:
-        return re.search(phone_number_format, phone_number)[0]
+    if re.search(r'\d{10}', phone_number):
+        phone_number = re.sub(r'(\d{3})(\d{3})(\d{4})', r'\1-\2-\3', phone_number)
+        return phone_number
+    return phone_number
+
+def clean_multiple_phone_numbers(phone_number):
+    toll_free_format = r'1-8[\d]{2}-[\d]{3}-[\d]{4}'
+    phone_number_array = re.split("/|or|;", phone_number)
+    for index in range(len(phone_number_array)):
+        cleanedNumber = clean_one_phone_number(phone_number_array[index])
+        if re.search(toll_free_format, cleanedNumber):
+            return cleanedNumber
+    return cleanedNumber
+
+def clean_phone_number(phone_number):
+    if re.search(r'/|or|;', phone_number):
+        return clean_multiple_phone_numbers(phone_number)
+    return clean_one_phone_number(phone_number)
 
 def phone_has_number_and_type(phone):
     return parse_optional_field(phone, 'PhoneNumber') and parse_optional_field(phone, 'Type')
