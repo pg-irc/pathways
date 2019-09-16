@@ -10,6 +10,7 @@ from newcomers_guide.tests.helpers import create_topic
 from common.testhelpers.random_test_values import a_string, a_latitude, a_longitude
 from django.test.testcases import LiveServerTestCase
 
+
 class ServicesAtLocationIntegrationTests(LiveServerTestCase):
     def test_get_service_from_server(self):
         if not os.path.isfile('./run_integration_tests'):
@@ -47,7 +48,7 @@ class ServicesAtLocationIntegrationTests(LiveServerTestCase):
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
                                 shell=True,
-                               )
+                                )
         response = output.stdout.decode('utf-8')
         start_index = response.find('START_OF_RESPONSE') + len('START_OF_RESPONSE')
         end_index = response.find('END_OF_RESPONSE')
@@ -101,7 +102,8 @@ class ServicesAtLocationIntegrationTests(LiveServerTestCase):
         set_location_for_service(a_nearby_service.id, location.id)
 
         a_further_away_service = ServiceBuilder(organization).create()
-        location = LocationBuilder(organization).with_long_lat(a_further_away_point[0], a_further_away_point[1]).create()
+        location = LocationBuilder(organization).with_long_lat(
+            a_further_away_point[0], a_further_away_point[1]).create()
         set_location_for_service(a_further_away_service.id, location.id)
 
         a_far_away_service = ServiceBuilder(organization).create()
