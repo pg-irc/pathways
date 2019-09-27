@@ -58,6 +58,7 @@ class OptionalCharField(models.CharField):
         kwargs.pop('blank', None)
         return name, path, args, kwargs
 
+
 class OptionalTextField(models.TextField):
     def __init__(self, *args, **kwargs):
         kwargs['null'] = True
@@ -70,6 +71,7 @@ class OptionalTextField(models.TextField):
         kwargs.pop('blank', None)
         return name, path, args, kwargs
 
+
 class RequiredCharField(models.CharField):
     def __init__(self, *args, **kwargs):
         kwargs['null'] = False
@@ -78,6 +80,19 @@ class RequiredCharField(models.CharField):
 
     def deconstruct(self):
         name, path, args, kwargs = super(RequiredCharField, self).deconstruct()
+        kwargs.pop('null', None)
+        kwargs.pop('blank', None)
+        return name, path, args, kwargs
+
+
+class RequiredURLField(models.URLField):
+    def __init__(self, *args, **kwargs):
+        kwargs['null'] = False
+        kwargs['blank'] = False
+        super(RequiredURLField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(RequiredURLField, self).deconstruct()
         kwargs.pop('null', None)
         kwargs.pop('blank', None)
         return name, path, args, kwargs
