@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.core import exceptions
 from common.testhelpers.database import validate_save_and_reload
-from qa_tool.tests.helpers import AlgorithmBuilder
+from qa_tool.tests.helpers import AlgorithmBuilder, SearchLocationBuilder
+from common.testhelpers.random_test_values import a_float
 
 
 class TestAlgorithmModel(TestCase):
@@ -37,3 +38,20 @@ class TestAlgorithmModel(TestCase):
         algorithm = AlgorithmBuilder().with_notes('').build()
         algorithm_from_db = validate_save_and_reload(algorithm)
         self.assertEqual(algorithm_from_db.notes, '')
+
+
+class TestSearchLocationModel(TestCase):
+    def test_has_name(self):
+        search_location = SearchLocationBuilder().build()
+        search_location_from_db = validate_save_and_reload(search_location)
+        self.assertEqual(search_location_from_db.name, search_location.name)
+
+    def test_name_field_can_be_empty(self):
+        search_location = SearchLocationBuilder().with_name('').build()
+        search_location_from_db = validate_save_and_reload(search_location)
+        self.assertEqual(search_location_from_db.name, '')
+
+    def test_can_create_and_retrieve_point(self):
+        location = SearchLocationBuilder().with_long_lat(a_float(), a_float()).build()
+        location_from_db = validate_save_and_reload(location)
+        self.assertEqual(location_from_db.point, location.point)
