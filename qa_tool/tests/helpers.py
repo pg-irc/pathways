@@ -30,6 +30,11 @@ class AlgorithmBuilder:
         self.notes = notes
         return self
 
+    def create(self):
+        result = self.build()
+        result.save()
+        return result
+
 
 class SearchLocationBuilder:
     def __init__(self):
@@ -37,7 +42,7 @@ class SearchLocationBuilder:
         self.point = a_point()
 
     def build(self):
-        result = models.Algorithm()
+        result = models.SearchLocation()
         result.name = self.name
         result.point = self.point
         return result
@@ -49,3 +54,8 @@ class SearchLocationBuilder:
     def with_long_lat(self, longitude, latitude):
         self.point = Point(longitude, latitude)
         return self
+
+    def create(self):
+        result = self.build()
+        result.save()
+        return result
