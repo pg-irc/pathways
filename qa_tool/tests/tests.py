@@ -1,13 +1,11 @@
 from django.utils import timezone
-import pytz
-from test_plus.test import TestCase
 from django.core import exceptions
+from test_plus.test import TestCase
 from common.testhelpers.database import validate_save_and_reload
+from common.testhelpers.random_test_values import a_float, an_integer
 from qa_tool.tests.helpers import AlgorithmBuilder, SearchLocationBuilder
-from human_services.services.tests.helpers import ServiceBuilder
-from human_services.organizations.tests.helpers import OrganizationBuilder
-from common.testhelpers.random_test_values import a_float, an_integer, a_string
 from qa_tool.models import Score
+from human_services.services_at_location.tests.helpers import ServiceAtLocationBuilder
 
 
 class TestAlgorithmModel(TestCase):
@@ -71,13 +69,12 @@ class TestScore(TestCase):
         time_stamp = timezone.now()
         algorithm = AlgorithmBuilder().create()
         search_location = SearchLocationBuilder().create()
-        organization = OrganizationBuilder().create()
-        service = ServiceBuilder(organization).create()
+        service_at_location = ServiceAtLocationBuilder().create_many()[0]
         score = Score(value=value,
                       time_stamp=time_stamp,
                       algorithm=algorithm,
                       search_location=search_location,
-                      service=service,
+                      service_at_location=service_at_location,
                       user=self.user
                       )
         score_from_db = validate_save_and_reload(score)
@@ -86,5 +83,5 @@ class TestScore(TestCase):
         self.assertEqual(score_from_db.algorithm, algorithm)
         self.assertEqual(score_from_db.time_stamp, time_stamp)
         self.assertEqual(score_from_db.search_location, search_location)
-        self.assertEqual(score_from_db.service, service)
+        self.assertEqual(score_from_db.service_at_location, service_at_location)
         self.assertEqual(score_from_db.user, self.user)
