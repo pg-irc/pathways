@@ -69,7 +69,7 @@ class TestScore(TestCase):
         time_stamp = timezone.now()
         algorithm = AlgorithmBuilder().create()
         search_location = SearchLocationBuilder().create()
-        service_at_location = ServiceAtLocationBuilder().create_many()[0]
+        service_at_location = ServiceAtLocationBuilder().create()
         score = Score(value=value,
                       time_stamp=time_stamp,
                       algorithm=algorithm,
