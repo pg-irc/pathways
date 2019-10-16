@@ -4,7 +4,7 @@ from test_plus.test import TestCase
 from common.testhelpers.database import validate_save_and_reload
 from common.testhelpers.random_test_values import a_float, an_integer
 from qa_tool.tests.helpers import AlgorithmBuilder, SearchLocationBuilder
-from qa_tool.models import Score
+from qa_tool.models import RelevancyScore
 from human_services.services_at_location.tests.helpers import ServiceAtLocationBuilder
 
 
@@ -70,13 +70,13 @@ class TestScore(TestCase):
         algorithm = AlgorithmBuilder().create()
         search_location = SearchLocationBuilder().create()
         service_at_location = ServiceAtLocationBuilder().create()
-        score = Score(value=value,
-                      time_stamp=time_stamp,
-                      algorithm=algorithm,
-                      search_location=search_location,
-                      service_at_location=service_at_location,
-                      user=self.user
-                      )
+        score = RelevancyScore(value=value,
+                               time_stamp=time_stamp,
+                               algorithm=algorithm,
+                               search_location=search_location,
+                               service_at_location=service_at_location,
+                               user=self.user
+                               )
         score_from_db = validate_save_and_reload(score)
 
         self.assertEqual(score_from_db.value, value)
