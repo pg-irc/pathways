@@ -10,7 +10,7 @@ from human_services.locations.viewsets import (LocationViewSet, LocationViewSetU
 from human_services.services_at_location.viewsets import ServiceAtLocationViewSet
 from human_services.services.viewsets import ServiceViewSet, ServiceTopicsViewSet
 from search.viewsets import RelatedTopicsViewSet, RelatedServicesViewSet
-from qa_tool.viewsets import RelevantScoreViewSet
+from qa_tool.viewsets import AlgorithmViewSet, RelevancyScoreViewSet
 from rest_framework import routers
 from config import documentation
 from bc211.views import Bc211VersionView
@@ -40,7 +40,9 @@ def build_router():
     router.register(r'services_at_location', ServiceAtLocationViewSet, base_name='services_at_location')
     router.register(r'topics/(?P<topic_id>[\w-]+)/related_topics', RelatedTopicsViewSet, base_name='topics')
     router.register(r'topics/(?P<topic_id>[\w-]+)/related_services', RelatedServicesViewSet, base_name='topics')
-    router.register(r'relevancyscores', RelevantScoreViewSet, base_name='relevancyscores')
+    router.register(r'algorithms', AlgorithmViewSet, base_name='algorithms')
+    router.register(r'algorithms/(?P<algorithm_id>[\w-]+)/relevancyscores',
+                    RelevancyScoreViewSet, base_name='relevancyscores')
 
     return router
 
