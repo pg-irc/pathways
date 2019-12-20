@@ -33,7 +33,7 @@ class CompareDataForReviewTests(TestCase):
         target_text = 'Heading'
         reference_text = '# Heading'
         result = compare_data(target_text, reference_text)
-        self.assertRegexpMatches(result, r'contains 0 headings, reference has 1')
+        self.assertRegex(result, r'contains 0 headings, reference has 1')
 
     def test_ignores_matching_heading(self):
         target_text = 'some text.\n#Heading'
@@ -45,13 +45,13 @@ class CompareDataForReviewTests(TestCase):
         target_text = 'some text.\nHeading'
         reference_text = 'some text.\n#Heading'
         result = compare_data(target_text, reference_text)
-        self.assertRegexpMatches(result, r'contains 0 headings, reference has 1')
+        self.assertRegex(result, r'contains 0 headings, reference has 1')
 
     def test_detects_extra_heading(self):
         target_text = 'some text.\n#Heading'
         reference_text = 'some text.\nHeading'
         result = compare_data(target_text, reference_text)
-        self.assertRegexpMatches(result, r'contains 1 headings, reference has 0')
+        self.assertRegex(result, r'contains 1 headings, reference has 0')
 
     def test_ignores_hash_signs_within_lines(self):
         target_text = 'foo bar baz'
