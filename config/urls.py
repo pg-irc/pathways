@@ -21,39 +21,39 @@ from push_notifications.view_sets import create_or_update_push_notification_toke
 def build_router():
     router = routers.DefaultRouter()
 
-    router.register(r'organizations', OrganizationViewSet, base_name='organization')
+    router.register(r'organizations', OrganizationViewSet, basename='organization')
     router.register(r'organizations/(?P<organization_id>[\w-]+)/locations',
-                    LocationViewSetUnderOrganizations, base_name='organization-location')
-    router.register(r'organizations/(?P<organization_id>[\w-]+)/services', ServiceViewSet, base_name='service')
+                    LocationViewSetUnderOrganizations, basename='organization-location')
+    router.register(r'organizations/(?P<organization_id>[\w-]+)/services', ServiceViewSet, basename='service')
     router.register(r'organizations/(?P<organization_id>[\w-]+)/locations/(?P<location_id>[\w-]+)/services',
-                    ServiceViewSet, base_name='service')
-    router.register(r'services', ServiceViewSet, base_name='service')
+                    ServiceViewSet, basename='service')
+    router.register(r'services', ServiceViewSet, basename='service')
     router.register(r'services/(?P<service_id>[\w-]+)/services_at_location', ServiceAtLocationViewSet)
     router.register(r'services/(?P<service_id>[\w-]+)/locations/(?P<location_id>[\w-]+)/services_at_location',
                     ServiceAtLocationViewSet)
-    router.register(r'services/(?P<service_id>[\w-]+)/related_topics', ServiceTopicsViewSet, base_name='topics')
-    router.register(r'locations', LocationViewSet, base_name='location')
-    router.register(r'locations/(?P<location_id>[\w-]+)/services', ServiceViewSet, base_name='service')
+    router.register(r'services/(?P<service_id>[\w-]+)/related_topics', ServiceTopicsViewSet, basename='topics')
+    router.register(r'locations', LocationViewSet, basename='location')
+    router.register(r'locations/(?P<location_id>[\w-]+)/services', ServiceViewSet, basename='service')
     router.register(r'locations/(?P<location_id>[\w-]+)/organizations/(?P<organization_id>[\w-]+)/services',
-                    ServiceViewSet, base_name='service')
+                    ServiceViewSet, basename='service')
     router.register(r'locations/(?P<location_id>[\w-]+)/services_at_location', ServiceAtLocationViewSet)
     router.register(r'locations/(?P<location_id>[\w-]+)/services/(?P<service_id>[\w-]+)/services_at_location',
                     ServiceAtLocationViewSet)
-    router.register(r'services_at_location', ServiceAtLocationViewSet, base_name='services_at_location')
-    router.register(r'topics', TopicViewSet, base_name='topics')
-    router.register(r'topics/(?P<topic_id>[\w-]+)/related_topics', RelatedTopicsViewSet, base_name='topics')
-    router.register(r'topics/(?P<topic_id>[\w-]+)/related_services', RelatedServicesViewSet, base_name='topics')
+    router.register(r'services_at_location', ServiceAtLocationViewSet, basename='services_at_location')
+    router.register(r'topics', TopicViewSet, basename='topics')
+    router.register(r'topics/(?P<topic_id>[\w-]+)/related_topics', RelatedTopicsViewSet, basename='topics')
+    router.register(r'topics/(?P<topic_id>[\w-]+)/related_services', RelatedServicesViewSet, basename='topics')
 
     return router
 
 
 def build_qa_tool_routes():
     router = routers.DefaultRouter()
-    router.register(r'algorithms', AlgorithmViewSet, base_name='algorithms')
+    router.register(r'algorithms', AlgorithmViewSet, basename='algorithms')
     router.register(r'algorithms/(?P<algorithm_id>[\w-]+)/relevancyscores',
-                    RelevancyScoreViewSet, base_name='relevancyscores')
-    router.register(r'searchlocations', SearchLocationViewSet, base_name='searchlocations')
-    router.register(r'relevancyscores', RelevancyScoreViewSet, base_name='relevancyscores')
+                    RelevancyScoreViewSet, basename='relevancyscores')
+    router.register(r'searchlocations', SearchLocationViewSet, basename='searchlocations')
+    router.register(r'relevancyscores', RelevancyScoreViewSet, basename='relevancyscores')
 
     return router
 
