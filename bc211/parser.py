@@ -251,7 +251,8 @@ def record_is_confidential(record):
     return True
 
 def parse_address_lines(address):
-    sorted_address_children = sorted(address.getchildren(), key=lambda child: child.tag)
+    address_children = list(address)
+    sorted_address_children = sorted(address_children, key=lambda child: child.tag)
     address_line_tags = [child.tag for child in sorted_address_children if re.match('Line[1-9]', child.tag)]
     if not address_line_tags:
         return None
