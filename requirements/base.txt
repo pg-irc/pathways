@@ -1,5 +1,5 @@
 # Package management
-wheel==0.33.4
+wheel==0.33.6
 
 # python 2 compatibility
 six==1.13.0
