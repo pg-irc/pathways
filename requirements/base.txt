@@ -2,7 +2,7 @@
 wheel==0.33.4
 
 # python 2 compatibility
-six==1.12.0
+six==1.13.0
 
 # django
 django==3.0.1

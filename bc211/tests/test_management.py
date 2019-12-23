@@ -1,7 +1,7 @@
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import TestCase
-from django.utils.six import StringIO
+from six import StringIO
 
 ONE_AGENCY_FIXTURE = 'bc211/data/BC211_data_one_agency.xml'
 MULTI_AGENCY_FIXTURE = 'bc211/data/BC211_data_excerpt.xml'
