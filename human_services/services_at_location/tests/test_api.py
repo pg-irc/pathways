@@ -223,10 +223,10 @@ class ServicesAtLocationApiTests(rest_test.APITestCase):
         self.assertEqual(json[1]['service']['name'], dissimilar_service.name)
 
     def test_orders_by_distance_to_user_location(self):
-        latitude = 0
-        user_longitude = 0
-        near_longitude = 0.0001
-        far_longitude = 0.0002
+        latitude = 0.0001
+        user_longitude = 0.0001
+        near_longitude = 0.0002
+        far_longitude = 0.0003
 
         far_location = (LocationBuilder(self.organization).
                         with_long_lat(far_longitude, latitude).
