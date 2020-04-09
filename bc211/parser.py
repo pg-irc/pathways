@@ -147,10 +147,12 @@ def parse_service(service, organization_id, site_id):
     name = parse_service_name(service)
     description = parse_service_description(service)
     taxonomy_terms = parse_service_taxonomy_terms(service, id)
+    last_verified_date = parse_last_verified_date(service)
     LOGGER.debug('Service: "%s" "%s"', id, name)
     return dtos.Service(id=id, name=name, organization_id=organization_id,
                         site_id=site_id, description=description,
-                        taxonomy_terms=taxonomy_terms)
+                        taxonomy_terms=taxonomy_terms,
+                        last_verified_date=last_verified_date)
 
 
 def parse_service_id(service):
@@ -171,6 +173,9 @@ def parse_service_taxonomy_terms(service, service_id):
         map(ServiceTaxonomyTermParser(service_id), taxonomy_terms)
     )
 
+def parse_last_verified_date(service):
+    resource_info = service.find('ResourceInfo')
+    return parse_attribute(resource_info, 'DateLastVerified')
 
 class ServiceTaxonomyTermParser:
     def __init__(self, service_id):
@@ -227,7 +232,7 @@ def parse_attribute(parent, attribute):
         return None
     return value
 
-    
+
 def parse_address(address, site_id, address_type_id):
     city = parse_city(address)
     if not city:

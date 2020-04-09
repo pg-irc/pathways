@@ -34,11 +34,35 @@ MINIMAL_211_DATA_SET = '''
                 <Key>the service key</Key>
                 <Name>the service name</Name>
                 <Description>the service description</Description>
+                <ResourceInfo AvailableForDirectory="true" AvailableForReferral="true" AvailableForResearch="true" DateAdded="1982-02-01" DateLastVerified="2017-03-25" DateOfLastAction="2016-05-03">
+                    <Contact Type="Resource Specialist">
+                        <Title>Title</Title>
+                        <Name>Name</Name>
+                        <Email>
+                            <Address>Email</Address>
+                        </Email>
+                        <Phone TollFree="false" Confidential="false">
+                            <PhoneNumber>PhoneNumber</PhoneNumber>
+                        </Phone>
+                    </Contact>
+                </ResourceInfo>
             </SiteService>
             <SiteService>
                 <Key>the second service key</Key>
                 <Name>the second service name</Name>
                 <Description>the second service description</Description>
+                 <ResourceInfo AvailableForDirectory="true" AvailableForReferral="true" AvailableForResearch="true" DateAdded="1982-02-01" DateLastVerified="2017-03-25" DateOfLastAction="2016-05-03">
+                    <Contact Type="Resource Specialist">
+                        <Title>Title</Title>
+                        <Name>Name</Name>
+                        <Email>
+                            <Address>Email</Address>
+                        </Email>
+                        <Phone TollFree="false" Confidential="false">
+                            <PhoneNumber>PhoneNumber</PhoneNumber>
+                        </Phone>
+                    </Contact>
+                </ResourceInfo>
             </SiteService>
             <MailingAddress>
                 <Line1>Line1</Line1>
@@ -68,6 +92,18 @@ MINIMAL_211_DATA_SET = '''
                 <Key>the second site's service key</Key>
                 <Name>the second site's service name</Name>
                 <Description>the second site's service description</Description>
+                <ResourceInfo AvailableForDirectory="true" AvailableForReferral="true" AvailableForResearch="true" DateAdded="1982-02-01" DateLastVerified="2017-03-25" DateOfLastAction="2016-05-03">
+                    <Contact Type="Resource Specialist">
+                        <Title>Title</Title>
+                        <Name>Name</Name>
+                        <Email>
+                            <Address>Email</Address>
+                        </Email>
+                        <Phone TollFree="false" Confidential="false">
+                            <PhoneNumber>PhoneNumber</PhoneNumber>
+                        </Phone>
+                    </Contact>
+                </ResourceInfo>
             </SiteService>
             <MailingAddress>
                 <Line1>Line1</Line1>
@@ -234,6 +270,12 @@ class ServiceParserTests(unittest.TestCase):
         self.assertEqual(self.from_minimal_data.site_id,
                          self.site_id_passed_to_parser)
 
+    def test_can_parse_date_last_verified(self):
+        self.assertEqual(self.from_real_data.last_verified_date,
+                         '2016-04-14')
+        self.assertEqual(self.from_minimal_data.last_verified_date,
+                         '2017-03-25')
+
     def test_site_service_description_is_optional(self):
         organization_id = a_string()
         xml_site = '''
@@ -248,6 +290,18 @@ class ServiceParserTests(unittest.TestCase):
             <SiteService>
                 <Key>the service key</Key>
                 <Name>the service without description</Name>
+                <ResourceInfo AvailableForDirectory="true" AvailableForReferral="true" AvailableForResearch="true" DateAdded="1982-02-01" DateLastVerified="2017-03-25" DateOfLastAction="2016-05-03">
+                    <Contact Type="Resource Specialist">
+                        <Title>Title</Title>
+                        <Name>Name</Name>
+                        <Email>
+                            <Address>Email</Address>
+                        </Email>
+                        <Phone TollFree="false" Confidential="false">
+                            <PhoneNumber>PhoneNumber</PhoneNumber>
+                        </Phone>
+                    </Contact>
+                </ResourceInfo>
             </SiteService>
         </Site>
         '''
@@ -553,7 +607,7 @@ class PhoneNumberParserTests(unittest.TestCase):
         root = etree.fromstring(xml)
         phone_numbers = parser.parse_site_phone_number_list(root, site_id)
         self.assertEqual(len(phone_numbers), 0)
-    
+
     def test_parses_phone_into_expected_dto_object(self):
         site_id = a_string()
         phone_type = a_string()
@@ -650,7 +704,7 @@ class PhoneNumberParserTests(unittest.TestCase):
         root = etree.fromstring(xml)
         phone_numbers = parser.parse_site_phone_number_list(root, site_id)
         self.assertEqual(phone_numbers[0].phone_number, '1-800-434-2268 Locals 245 and 265')
-    
+
     def test_parses_phone_number_with_full_mnemonics(self):
         site_id = a_string()
         xml = self.build_phone_xml('1-888-4AL-ANON (1-888-425-2666)', a_string())
@@ -762,7 +816,7 @@ class PhoneNumberParserTests(unittest.TestCase):
         root = etree.fromstring(xml)
         phone_numbers = parser.parse_site_phone_number_list(root, site_id)
         self.assertEqual(phone_numbers[0].phone_number, '1-866-286-9766')
-    
+
     def test_chooses_toll_free_number_when_it_comes_last(self):
         site_id = a_string()
         xml = self.build_phone_xml('604-733-2493; 1-800-377-8129', a_string())
@@ -783,7 +837,7 @@ class PhoneNumberParserTests(unittest.TestCase):
         root = etree.fromstring(xml)
         phone_numbers = parser.parse_site_phone_number_list(root, site_id)
         self.assertEqual(phone_numbers[0].phone_number, '1-866-235-0350')
-    
+
     def test_parses_two_phone_numbers_separated_by_slash(self):
         site_id = a_string()
         xml = self.build_phone_xml('250-949-6625 / 250-286-8064', a_string())
@@ -797,7 +851,7 @@ class PhoneNumberParserTests(unittest.TestCase):
         root = etree.fromstring(xml)
         phone_numbers = parser.parse_site_phone_number_list(root, site_id)
         self.assertEqual(phone_numbers[0].phone_number, '1-866-235-0350')
-    
+
     def test_parse_two_mnemonic_phone_numbers(self):
         site_id = a_string()
         xml = self.build_phone_xml('(250)-949-HELP (4357) local 101 or 1-844-START11 (782-7811) ext 102', a_string())

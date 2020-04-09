@@ -37,6 +37,7 @@ class Service:
         self.site_id = validate.required_string('site_id', kwargs)
         self.description = validate.optional_string('description', kwargs)
         self.taxonomy_terms = kwargs.get('taxonomy_terms', [])
+        self.last_verified_date = kwargs.get('last_verified_date', kwargs)
 
 
 class TaxonomyTerm:

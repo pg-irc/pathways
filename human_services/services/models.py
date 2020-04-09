@@ -1,4 +1,4 @@
-from common.models import ValidateOnSaveMixin, RequiredCharField
+from common.models import ValidateOnSaveMixin, RequiredCharField, OptionalCharField
 from django.core import validators
 from django.db import models
 from parler.models import TranslatableModel, TranslatedFields
@@ -17,6 +17,7 @@ class Service(ValidateOnSaveMixin, TranslatableModel):
                                             db_table='services_service_taxonomy_terms')
     translations = TranslatedFields(name=models.CharField(max_length=200),
                                     description=models.TextField(blank=True, null=True))
+    last_verified_date = OptionalCharField(max_length=200)
 
     class Meta:
         ordering = ['id']
