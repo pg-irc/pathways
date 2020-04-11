@@ -1,7 +1,7 @@
 from bc211 import dtos
 from human_services.services import models
 from human_services.locations.models import ServiceAtLocation
-from common.testhelpers.random_test_values import a_string
+from common.testhelpers.random_test_values import a_string, a_date
 from newcomers_guide.tests.helpers import create_topic
 from search.models import TaskServiceSimilarityScore
 
@@ -25,6 +25,7 @@ class ServiceBuilder:
         self.description = a_string()
         self.taxonomy_terms = []
         self.location_ids = []
+        self.last_verified_date = a_date()
 
     def with_id(self, service_id):
         self.service_id = service_id
@@ -46,6 +47,10 @@ class ServiceBuilder:
         self.location_ids.append(location.id)
         return self
 
+    def with_last_verified_date(self, last_verified_date):
+        self.last_verified_date = last_verified_date
+        return self
+
     def build(self):
         result = models.Service()
         result.id = self.service_id
@@ -64,7 +69,8 @@ class ServiceBuilder:
                             organization_id=self.organization.id,
                             site_id=location_id,
                             description=self.description,
-                            taxonomy_terms=self.taxonomy_terms)
+                            taxonomy_terms=self.taxonomy_terms,
+                            last_verified_date=self.last_verified_date)
 
     def create(self):
         result = self.build()

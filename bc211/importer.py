@@ -123,6 +123,7 @@ def build_service_active_record(record):
     active_record.name = record.name
     active_record.organization_id = record.organization_id
     active_record.description = record.description
+    active_record.last_verified_date = record.last_verified_date
     return active_record
 
 
