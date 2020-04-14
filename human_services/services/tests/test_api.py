@@ -1,4 +1,4 @@
-from common.testhelpers.random_test_values import a_string, a_float
+from common.testhelpers.random_test_values import a_string, a_float, a_date
 from human_services.services.tests.helpers import ServiceBuilder, create_related_topic
 from human_services.organizations.tests.helpers import OrganizationBuilder
 from rest_framework import test as rest_test
@@ -13,7 +13,8 @@ class ServicesApiTests(rest_test.APITestCase):
             'id': a_string(),
             'name': a_string(),
             'organization_id': self.organization_id,
-            'description': a_string()
+            'description': a_string(),
+            'last_verified_date': a_date()
         }
 
     def test_can_get_services(self):

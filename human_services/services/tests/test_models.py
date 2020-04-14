@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime
 from django.test import TestCase
 from django.core import exceptions
 from django.db import utils as django_utils
@@ -71,6 +72,18 @@ class TestServiceModel(TestCase):
         service = ServiceBuilder(self.organization).with_description(null_description).build()
         service_from_db = validate_save_and_reload(service)
         self.assertEqual(service_from_db.description, null_description)
+
+    def test_can_set_last_verified_date(self):
+        last_verified_date = datetime(2020, 1, 3).date()
+        service = ServiceBuilder(self.organization).with_last_verified_date(last_verified_date).build()
+        service_from_db = validate_save_and_reload(service)
+        self.assertEqual(service_from_db.last_verified_date, last_verified_date)
+
+    def test_last_verified_date_can_be_none(self):
+        null_last_verified_date = None
+        service = ServiceBuilder(self.organization).with_last_verified_date(null_last_verified_date).build()
+        service_from_db = validate_save_and_reload(service)
+        self.assertEqual(service_from_db.last_verified_date, null_last_verified_date)
 
     @unittest.expectedFailure
     def test_empty_description_is_saved_as_null(self):

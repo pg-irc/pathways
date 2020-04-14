@@ -17,6 +17,7 @@ select distinct
 	service.id as service_id,
 	'"' || serviceStrings.name || '"' as service_name,
 	left(regexp_replace(serviceStrings.description, E'[\\n\\r\\t;,]+', ' ', 'g' ), 5000) as service_description,
+    service.last_verified_date as last_verified_date,
 	organization.id as "organization.id",
 	'"' || organizationStrings.name || '"' as "organization.name",
 	organization.website as "organization.website",

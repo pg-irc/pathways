@@ -57,6 +57,7 @@ class ServiceBuilder:
         result.name = self.name
         result.organization = self.organization
         result.description = self.description
+        result.last_verified_date = self.last_verified_date
         for taxonomy_term in self.taxonomy_terms:
             result.taxonomy_terms.add(taxonomy_term)
 
