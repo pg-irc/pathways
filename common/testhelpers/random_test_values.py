@@ -45,5 +45,5 @@ def a_phone_number(dummy_number='xxx-xxx-xxxx'):
 
 def a_date():
     rand_delta = random.randint(0, 1e9)
-    now_ts = datetime.timestamp(datetime.now())
-    return datetime.fromtimestamp(now_ts - rand_delta)
+    now = datetime.timestamp(datetime.now())
+    return datetime.fromtimestamp(now - rand_delta)
