@@ -17,7 +17,7 @@ class Service(ValidateOnSaveMixin, TranslatableModel):
                                             db_table='services_service_taxonomy_terms')
     translations = TranslatedFields(name=models.CharField(max_length=200),
                                     description=models.TextField(blank=True, null=True))
-
+    last_verified_date = models.DateField(blank=True, null=True)
     class Meta:
         ordering = ['id']
 

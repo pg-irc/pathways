@@ -10,4 +10,4 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Service
         fields = ('id', 'name', 'organization_id', 'description', 'organization_url', 'organization_email',
-                  'organization_name')
+                  'organization_name', 'last_verified_date')

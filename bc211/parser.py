@@ -4,6 +4,7 @@ import logging
 import re
 import xml.etree.ElementTree as etree
 from urllib import parse as urlparse
+from datetime import datetime
 
 from bc211 import dtos
 from bc211.exceptions import MissingRequiredFieldXmlParseException
@@ -147,10 +148,12 @@ def parse_service(service, organization_id, site_id):
     name = parse_service_name(service)
     description = parse_service_description(service)
     taxonomy_terms = parse_service_taxonomy_terms(service, id)
+    last_verified_date = parse_last_verified_date(service)
     LOGGER.debug('Service: "%s" "%s"', id, name)
     return dtos.Service(id=id, name=name, organization_id=organization_id,
                         site_id=site_id, description=description,
-                        taxonomy_terms=taxonomy_terms)
+                        taxonomy_terms=taxonomy_terms,
+                        last_verified_date=last_verified_date)
 
 
 def parse_service_id(service):
@@ -170,6 +173,15 @@ def parse_service_taxonomy_terms(service, service_id):
     return itertools.chain.from_iterable(
         map(ServiceTaxonomyTermParser(service_id), taxonomy_terms)
     )
+
+def parse_last_verified_date(service):
+    resource_info = service.find('ResourceInfo')
+    date_last_verified_string = parse_attribute(resource_info, 'DateLastVerified')
+
+    if date_last_verified_string is None:
+        return None
+
+    return datetime.strptime(date_last_verified_string, '%Y-%m-%d')
 
 
 class ServiceTaxonomyTermParser:
@@ -227,7 +239,7 @@ def parse_attribute(parent, attribute):
         return None
     return value
 
-    
+
 def parse_address(address, site_id, address_type_id):
     city = parse_city(address)
     if not city:
