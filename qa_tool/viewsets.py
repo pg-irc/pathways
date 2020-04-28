@@ -2,7 +2,6 @@ from rest_framework import viewsets, permissions, status, authentication
 from rest_framework.response import Response
 from qa_tool import models, serializers
 from django.utils import timezone
-from django.http import Http404
 
 
 class RelevancyScoreViewSet(viewsets.ModelViewSet):
