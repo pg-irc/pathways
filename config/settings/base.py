@@ -235,9 +235,6 @@ DATABASES = {
     }
 }
 
-GDAL_LIBRARY_PATH = env('GDAL_LIBRARY_PATH', default='')
-GEOS_LIBRARY_PATH = env('GEOS_LIBRARY_PATH', default='')
-
 WSGI_APPLICATION = 'config.wsgi.application'
 
 PASSWORD_HASHERS = [

@@ -32,13 +32,18 @@ Install the required python libraries for local development, including the Engli
 pip install -r requirements/local.txt
 python -m spacy download en
 ```
+
 ## Psycopg2 on Mac
+
 PostgreSQL and Postgis are prerequisites for installing psycopg2
+
 ```
 brew install postgres
 brew install postgis
 ```
+
 If the pip install consistenly breaks for installing psycopg2, install the biniary version as follows
+
 ```
 pip install psycopg2-binary
 ```
@@ -61,10 +66,13 @@ postgres=# CREATE EXTENSION postgis;
 ```
 
 Create a .env file and add your database user password
+
 ```
 echo "POSTGRES_PASSWORD='your-secure-password'" > .env
 ```
+
 To execute the test suite in production, where a database connection string is used, use a command line
+
 ```
 DATABASE_URL=postgres://pathways:password@localhost/pathways_local \
 MAILGUN_SENDER_DOMAIN=mailgun.org DJANGO_MAILGUN_API_KEY=xyz \
@@ -185,9 +193,9 @@ To deploy on Heroku from an empty production database: First prepare the deploym
 files locally using the `utility/prepare_deploy.sh` script. It should be called with three
 arguments
 
-  * Path to the XML file containing the BC211 data
-  * Path to the folder containing the Newcomers Guide content
-  * Path to the output file to generate, must end in `.json`
+- Path to the XML file containing the BC211 data
+- Path to the folder containing the Newcomers Guide content
+- Path to the output file to generate, must end in `.json`
 
 Upload the resulting json file to AWS so that it can be accessed from Heroku.
 
@@ -197,49 +205,53 @@ Ensure ALLOWED_HOSTS in the production settings include the name of the heroku i
 
 These steps are for creating a new Heroku instance from scratch:
 
-* Create an instance on Heroku, give it a name
-* Under Resources, add a Heroku Postgres add-on, using the Hbby Basic level to support our amount of data
-* Under Deploy, connect it to github using the pg-irc organization and the pathways-backend repo
-* Under Settings, set all the environment variables (DATABASE_URL should already be there from the step above, you'll need that later)
+- Create an instance on Heroku, give it a name
+- Under Resources, add a Heroku Postgres add-on, using the Hbby Basic level to support our amount of data
+- Under Deploy, connect it to github using the pg-irc organization and the pathways-backend repo
+- Under Settings, set all the environment variables (DATABASE_URL should already be there from the step above, you'll need that later)
 
-Variable                       | Value
--------------------------------|-------------------------------------
-DJANGO_SETTINGS_MODULE         | config.settings.production_heroku
-DJANGO_READ_DOT_ENV_FILE       | False
-BUILD_WITH_GEO_LIBRARIES       | 1
-MAILGUN_SENDER_DOMAIN          | mailgun.org
-DJANGO_AWS_STORAGE_BUCKET_NAME | the bucket
-DJANGO_SERVER_EMAIL            | the email
-DJANGO_MAILGUN_API_KEY         | the key
-DJANGO_SECRET_KEY              | the key
+| Variable                       | Value                             |
+| ------------------------------ | --------------------------------- |
+| DJANGO_SETTINGS_MODULE         | config.settings.production_heroku |
+| DJANGO_READ_DOT_ENV_FILE       | False                             |
+| BUILD_WITH_GEO_LIBRARIES       | 1                                 |
+| MAILGUN_SENDER_DOMAIN          | mailgun.org                       |
+| DJANGO_AWS_STORAGE_BUCKET_NAME | the bucket                        |
+| DJANGO_SERVER_EMAIL            | the email                         |
+| DJANGO_MAILGUN_API_KEY         | the key                           |
+| DJANGO_SECRET_KEY              | the key                           |
 
-* Under Deploy, Manual deploy, select git branch to deploy to the instance, then deploy it. This will take a while.
+- Under Deploy, Manual deploy, select git branch to deploy to the instance, then deploy it. This will take a while.
 
 ### Populate the server
 
-* From bash, log into the server with 
+- From bash, log into the server with
+
 ```
 heroku ps:exec -a *appname*
 ```
-* Set environment variables in shell, using the DATABASE_URL from the Settings, see abovve
+
+- Set environment variables in shell, using the DATABASE_URL from the Settings, see abovve
+
 ```
 export DJANGO_SETTINGS_MODULE=config.settings.production
 export DJANGO_READ_DOT_ENV_FILE=False
 export MAILGUN_SENDER_DOMAIN="example.com"
-export GDAL_LIBRARY_PATH="/app/.heroku/vendor/lib/libgdal.so"
-export GEOS_LIBRARY_PATH="/app/.heroku/vendor/lib/libgeos_c.so"
 
 export DJANGO_AWS_STORAGE_BUCKET_NAME="the bucket"
 export DJANGO_SECRET_KEY="the key"
 export DJANGO_MAILGUN_API_KEY="the key"
 export DATABASE_URL="value from Settings"
 ```
-* Use wget to get the database dump file from AWS-S3
-* Load the data
+
+- Use wget to get the database dump file from AWS-S3
+- Load the data
+
 ```
 ./manage.py loaddata *file.json*
 ```
-* Then open the app, go to swagger and fire requests
+
+- Then open the app, go to swagger and fire requests
 
 ## Getting started with docker
 
@@ -265,13 +277,14 @@ docker-compose -f compose-local.yml up
 and check out http://localhost:8000/ to see if it worked. See https://cookiecutter-django.readthedocs.io/en/latest/developing-locally-docker.html for more details.
 
 ## Getting started with PostgreSQL and PostGIS
+
 PostgreSQL with the PostGIS extension is required for local development.
 You can find the installation that is right for your OS here: https://www.postgresql.org/download/ or use a package manager
 of your choice. The PostGIS extension can be found here: https://postgis.net/install/.
 
 ## Translations
 
-Certain content is translatable, using [django-parler](http://django-parler.readthedocs.io/). The *translation* module provides management commands to export translatable strings as POT files, and import their translations from PO files.
+Certain content is translatable, using [django-parler](http://django-parler.readthedocs.io/). The _translation_ module provides management commands to export translatable strings as POT files, and import their translations from PO files.
 
 List available translatable models:
 
@@ -323,5 +336,5 @@ All commits are labelled with the issue they are being done under. This ensures 
 
 Changes that are made in each release are tracked following [Expo's](https://github.com/expo/expo/blob/master/CHANGELOG.md) procedure.
 
-* changelog is updated with every PR that affects functionality.
-* a new heading is added to the changelog as part of every PR that bumps version strings.
+- changelog is updated with every PR that affects functionality.
+- a new heading is added to the changelog as part of every PR that bumps version strings.
