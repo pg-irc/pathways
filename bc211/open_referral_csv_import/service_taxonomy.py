@@ -40,23 +40,18 @@ def read_and_import_rows(reader, collector):
         service_id = parser.parse_required_field_with_double_escaped_html('service_id', row[1])
         if collector.has_inactive_service_id(service_id):
             continue
-        service = import_service_taxonomy(row, service)
+        service = get_service_active_record_or_raise(service_id)
+        import_service_taxonomy(row, service)
 
 
 def import_service_taxonomy(row, service):
     try:
-        last_service_id = service.id if service else None
-        service_id = parser.parse_required_field_with_double_escaped_html('service_id', row[1])
         taxonomy_id = parser.parse_required_field_with_double_escaped_html('taxonomy_id', row[2])
         taxonomy_term = get_taxonomy_term_active_record_or_raise(taxonomy_id)
-        if service_id != last_service_id:
-            active_record = build_service_taxonomy_active_record(service_id, taxonomy_term)
-            return active_record
         service.taxonomy_terms.add(taxonomy_term)
-        return None
     except ValidationError as error:
         LOGGER.warning('%s', error.__str__())
-    except ObjectDoesNotExist as error:
+    except ObjectDoesNotExist:
         pass
 
 
