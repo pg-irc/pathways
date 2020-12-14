@@ -50,8 +50,8 @@ def import_address(row, counters):
         return address_active_record
     except ValidationError as error:
         LOGGER.warning('%s', error.__str__())
-    except CsvParseException:
-        pass
+    except CsvParseException as error:
+        LOGGER.warning('%s', error.__str__())
 
 
 def build_address_active_record(row):
