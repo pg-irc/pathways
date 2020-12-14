@@ -65,7 +65,7 @@ def get_service_active_record_or_raise(service_id):
     try:
         return Service.objects.get(pk=service_id)
     except ObjectDoesNotExist as error:
-        LOGGER.warning('Service record with id "{}" does not exist. {}'.format(service_id, error))
+        LOGGER.warning('Service record with id "%s" does not exist. %s', service_id, error)
         raise
 
 
