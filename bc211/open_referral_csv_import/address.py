@@ -76,9 +76,9 @@ def import_location_address(row, address, collector, counters):
         active_record.save()
         counters.count_location_address()
     except ValidationError as error:
-        LOGGER.warning('{}'.format(error.__str__()))
-    except ObjectDoesNotExist:
-        pass
+        LOGGER.warning('%s', error.__str__())
+    except ObjectDoesNotExist as error:
+        LOGGER.warning('%s', error.__str__())      
 
 
 def build_location_address_active_record(row, address, location_id):
