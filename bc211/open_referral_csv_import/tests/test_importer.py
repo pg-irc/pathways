@@ -10,8 +10,7 @@ from bc211.open_referral_csv_import.service_at_location import import_service_at
 from bc211.open_referral_csv_import.address import import_address, import_location_address
 from bc211.open_referral_csv_import.phone import import_phone
 from bc211.open_referral_csv_import.taxonomy import import_taxonomy
-from bc211.open_referral_csv_import.service_taxonomy import(
-    import_service_taxonomy, read_and_import_rows)
+from bc211.open_referral_csv_import.service_taxonomy import(read_and_import_rows)
 from bc211.open_referral_csv_import.tests.helpers import (
     OpenReferralCsvOrganizationBuilder, OpenReferralCsvServiceBuilder,
     OpenReferralCsvLocationBuilder, OpenReferralCsvServiceAtLocationBuilder,
@@ -429,8 +428,9 @@ class ServiceTaxonomyImporterTests(TestCase):
                                  with_service_id(self.service_id).
                                  with_taxonomy_id(self.taxonomy_id).
                                  build())
+        csv_data = [service_taxonomy_data]
+        read_and_import_rows(csv_data, InactiveRecordsCollector())
         service = Service.objects.get(pk=self.service_id)
-        import_service_taxonomy(service_taxonomy_data, service)
         service_taxonomy_terms = service.taxonomy_terms.all()
         self.assertEqual(service_taxonomy_terms[0], self.taxonomy_term)
 
