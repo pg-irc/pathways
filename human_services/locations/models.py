@@ -49,6 +49,9 @@ class LocationAddress(ValidateOnSaveMixin, models.Model):
                                  related_name='location_addresses')
     address_type = models.ForeignKey(AddressType, on_delete=models.PROTECT)
 
+    class Meta:
+        unique_together = ('location', 'address_type')
+
 
     def __str__(self):
         return '"{address}" for "{location}"'.format(
