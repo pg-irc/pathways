@@ -2,14 +2,14 @@ from django.test import TestCase
 from bc211.open_referral_csv_import import parser
 from bc211.parser import remove_double_escaped_html_markup
 from bc211.open_referral_csv_import import exceptions
-from common.testhelpers.random_test_values import a_string, a_latitude_as_a_string
+from common.testhelpers.random_test_values import a_string, a_latitude
 
 
 class LocationParserTests(TestCase):
     def test_can_parse_coordinate(self):
-        the_latitude = a_latitude_as_a_string()
-        parsed_latitude = parser.parse_coordinate_if_defined(the_latitude)
-        self.assertEqual(parsed_latitude, float(the_latitude))
+        the_latitude = a_latitude()
+        parsed_latitude = parser.parse_coordinate_if_defined(str(the_latitude))
+        self.assertEqual(parsed_latitude, the_latitude)
 
     def test_returns_none_if_coordinate_is_empty(self):
         empty_latitude = ''

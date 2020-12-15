@@ -1,7 +1,7 @@
 from datetime import date
 import string
 from common.testhelpers.random_test_values import (a_string, an_email_address, a_website_address,
-                                a_latitude_as_a_string, a_longitude_as_a_string, a_phone_number)
+                                a_latitude, a_longitude, a_phone_number)
 
 
 class OpenReferralCsvOrganizationBuilder:
@@ -114,8 +114,8 @@ class OpenReferralCsvLocationBuilder:
         self.name = a_string()
         self.alternate_name = a_string()
         self.description = a_string()
-        self.latitude = a_latitude_as_a_string()
-        self.longitude = a_longitude_as_a_string()
+        self.latitude = str(a_latitude())
+        self.longitude = str(a_longitude())
 
     def with_id(self, location_id):
         self.location_id = location_id
