@@ -172,6 +172,15 @@ class ParseServicesTests(TestCase):
         parsed_data = parse(TestDataSink(), data)
         self.assertEqual(parsed_data.first_service()['last_verified_on-x'], '2018-09-15')
 
+    def test_can_parse_alternative_date_format(self):
+        a_date = '2018-09-15 0:00'
+        data = (Bc211CsvDataBuilder().
+                as_service().
+                with_field('LastVerifiedOn', a_date).
+                build())
+        parsed_data = parse(TestDataSink(), data)
+        self.assertEqual(parsed_data.first_service()['last_verified_on-x'], '2018-09-15')
+
     def test_last_verified_date_can_be_empty(self):
         data = (Bc211CsvDataBuilder().
                 as_service().

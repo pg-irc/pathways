@@ -115,11 +115,21 @@ def fix_date_time_string_if_exists(date_time_string):
     if not date_time_string:
         return None
     date_string = date_time_string.split()[0]
-    date = datetime.datetime.strptime(date_string, '%m/%d/%Y')
+    date = parse_date_string(date_string)
     date_time_as_iso_string = str(date)
     date_as_iso_string = date_time_as_iso_string.split(' ')[0]
     return date_as_iso_string
 
+
+def parse_date_string(date_string):
+    try:
+        return datetime.datetime.strptime(date_string, '%m/%d/%Y')
+    except ValueError:
+        pass
+    try:
+        return datetime.datetime.strptime(date_string, '%Y-%m-%d')
+    except ValueError:
+        pass
 
 organization_header_map = {
     'ResourceAgencyNum': 'id',
