@@ -126,10 +126,8 @@ def parse_date_string(date_string):
         return datetime.datetime.strptime(date_string, '%m/%d/%Y')
     except ValueError:
         pass
-    try:
-        return datetime.datetime.strptime(date_string, '%Y-%m-%d')
-    except ValueError:
-        pass
+    return datetime.datetime.strptime(date_string, '%Y-%m-%d')
+
 
 organization_header_map = {
     'ResourceAgencyNum': 'id',
