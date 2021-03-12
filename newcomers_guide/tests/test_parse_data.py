@@ -55,7 +55,7 @@ class FilePathParseTests(TestCase):
 
 class ProcessTaskFilesTests(TestCase):
     def setUp(self):
-        self.english_path = 'some/path/chapter 5 - driving/topics/To_learn_english/en.Learn_english.txt'
+        self.english_path = 'some/path/bc/chapter 5 - driving/topics/To_learn_english/en.Learn_english.txt'
 
         self.content = a_string()
         self.result = parse_topic_files([[self.english_path, self.content]])
@@ -65,6 +65,9 @@ class ProcessTaskFilesTests(TestCase):
 
     def test_include_localzed_title_from_path(self):
         self.assertEqual(self.result['taskMap']['to_learn_english']['title']['en'], 'Learn_english')
+
+    def test_include_region_from_path(self):
+        self.assertEqual(self.result['taskMap']['to_learn_english']['region'], 'bc')
 
     def test_include_isNewlyRecommended_flag(self):
         self.assertEqual(self.result['taskMap']['to_learn_english']['isNewlyRecommended'], False)
