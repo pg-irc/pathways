@@ -98,12 +98,12 @@ class TestSplitWinFile(TestCase):
     def test_compute_file_path(self):
         data = ('8 CHAPTER 8 - Driving\n1.23 Topic: Buying a new or used vehicle (car or truck)\nTags: explore:driving driving:cost\nThis is about driving\n')
         writer = parse_string(data)
-        self.assertEqual(writer.topics[0].file_path(), 'CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/')
+        self.assertEqual(writer.topics[0].file_path(), 'mb/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/')
 
     def test_compute_file_name(self):
         data = ('8 CHAPTER 8 - Driving\n1.23 Topic: Buying a new or used vehicle (car or truck)\nTags: explore:driving driving:cost\nThis is about driving\n')
         writer = parse_string(data)
-        self.assertEqual(writer.topics[0].file_name(), 'CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/en.Buying a new or used vehicle (car or truck).md')
+        self.assertEqual(writer.topics[0].file_name(), 'mb/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/en.Buying a new or used vehicle (car or truck).md')
 
     def test_throw_error_on_empty_chapter(self):
         data = '1.23 Topic: Topic name\nTags: first:tag second:tag\nSome text'
@@ -127,20 +127,20 @@ class TestSplitWinFile(TestCase):
         data = ('8 CHAPTER 8 - Driving\n1.23 Topic: Buying a new or used vehicle (car or truck)\nTags: explore:driving driving:cost\nThis is about driving\n')
         writer = parse_string(data)
         root = 'theRoot'
-        self.assertEqual(writer.topics[0].file_path(root), 'theRoot/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/')
-        self.assertEqual(writer.topics[0].file_name(root), 'theRoot/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/en.Buying a new or used vehicle (car or truck).md')
+        self.assertEqual(writer.topics[0].file_path(root), 'theRoot/mb/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/')
+        self.assertEqual(writer.topics[0].file_name(root), 'theRoot/mb/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/en.Buying a new or used vehicle (car or truck).md')
 
     def test_can_pass_locale_for_output_filename(self):
         data = ('8 CHAPTER 8 - Driving\n1.23 Topic: Buying a new or used vehicle (car or truck)\nTags: explore:driving driving:cost\nThis is about driving\n')
         writer = parse_string(data)
         root = 'theRoot'
-        self.assertEqual(writer.topics[0].file_name(root, 'xy'), 'theRoot/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/xy.Buying a new or used vehicle (car or truck).md')
+        self.assertEqual(writer.topics[0].file_name(root, 'xy'), 'theRoot/mb/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/xy.Buying a new or used vehicle (car or truck).md')
 
     def test_can_compute_taxonomy_file_name(self):
         data = ('8 CHAPTER 8 - Driving\n1.23 Topic: Buying a new or used vehicle (car or truck)\nTags: explore:driving driving:cost\nThis is about driving\n')
         writer = parse_string(data)
         root = 'theRoot'
-        self.assertEqual(writer.topics[0].taxonomy_file_name(root), 'theRoot/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/taxonomy.txt')
+        self.assertEqual(writer.topics[0].taxonomy_file_name(root), 'theRoot/mb/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/taxonomy.txt')
 
     def test_can_get_taxonomy_terms_for_output(self):
         data = '8 CHAPTER 8 - Driving\n1.23 Topic: The topic\nTags: healthCare:disability housing:wantToBuy'

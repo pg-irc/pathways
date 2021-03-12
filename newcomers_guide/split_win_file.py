@@ -61,15 +61,15 @@ class Topic:
 
     def file_path(self, root=''):
         self.validate()
-        return f'{self.clean_root(root)}{self.chapter}/topics/{self.topic}/'
+        return f'{self.clean_root(root)}mb/{self.chapter}/topics/{self.topic}/'
 
     def file_name(self, root='', locale='en'):
         self.validate()
-        return f'{self.clean_root(root)}{self.chapter}/topics/{self.topic}/{locale}.{self.topic}.md'
+        return f'{self.clean_root(root)}mb/{self.chapter}/topics/{self.topic}/{locale}.{self.topic}.md'
 
     def taxonomy_file_name(self, root=''):
         self.validate()
-        return f'{self.clean_root(root)}{self.chapter}/topics/{self.topic}/taxonomy.txt'
+        return f'{self.clean_root(root)}mb/{self.chapter}/topics/{self.topic}/taxonomy.txt'
 
     def clean_root(self, root):
         if root == '' or root.endswith('/'):
