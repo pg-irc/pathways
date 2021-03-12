@@ -55,7 +55,7 @@ class FilePathParseTests(TestCase):
 
 class ProcessTaskFilesTests(TestCase):
     def setUp(self):
-        self.english_path = 'some/path/chapter/topics/To_learn_english/en.Learn_english.txt'
+        self.english_path = 'some/path/chapter 5 - driving/topics/To_learn_english/en.Learn_english.txt'
 
         self.content = a_string()
         self.result = parse_topic_files([[self.english_path, self.content]])
@@ -88,14 +88,14 @@ class ProcessTaskFilesTests(TestCase):
         self.assertEqual(description, 'abc [http://example.com](http://example.com) def')
 
     def test_handle_localized_titles_when_processing_the_same_content_in_different_locales(self):
-        french_path = 'some/path/chapter/topics/To_learn_english/fr.Apprendre_l_anglais.txt'
+        french_path = 'some/path/chapter 5 - driving/topics/To_learn_english/fr.Apprendre_l_anglais.txt'
         result = parse_topic_files([[self.english_path, a_string()],
                                     [french_path, a_string()]])
         self.assertEqual(result['taskMap']['to_learn_english']['title']['en'], 'Learn_english')
         self.assertEqual(result['taskMap']['to_learn_english']['title']['fr'], 'Apprendre_l_anglais')
 
     def test_handle_localized_description_when_processing_the_same_content_in_different_locales(self):
-        french_path = 'some/path/chapter/topics/To_learn_english/fr.Apprendre_l_anglais.txt'
+        french_path = 'some/path/chapter 5 - driving/topics/To_learn_english/fr.Apprendre_l_anglais.txt'
         english_description = a_string()
         french_description = a_string()
         result = parse_topic_files([[self.english_path, english_description],

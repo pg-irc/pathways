@@ -32,3 +32,5 @@ class Command(BaseCommand):
 
         counts = ImportCounters()
         save_topics(topics, counts)
+
+# add bc or mb prefix to topic ids
