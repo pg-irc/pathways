@@ -16,7 +16,7 @@ def parse_topic_files(file_specs):
         description = clean_text(spec[1])
 
         parsed_path = parse_file_path(path)
-        topic_id = parsed_path.id
+        topic_id = f'{parsed_path.id}_{parsed_path.region}'
 
         if parsed_path.type == 'topics':
             ensure_builder_exists_for_topic(builders, topic_id)
@@ -184,7 +184,7 @@ def parse_taxonomy_files(file_specs):
         path = spec[0]
         file_content = spec[1]
         parsed_path = parse_file_path(path)
-        content_id = parsed_path.id
+        content_id = f'{parsed_path.id}_{parsed_path.region}'
         content_type = parsed_path.type
         try:
             parsed_terms = parse_taxonomy_terms(file_content)
