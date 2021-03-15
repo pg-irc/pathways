@@ -9,7 +9,7 @@ class CsvMissingIdParseException(Exception):
         Exception.__init__(self, *args, **kwargs)
 
 
-def parse(sink, lines, vocabulary=None):
+def parse(sink, lines, region, vocabulary=None):
     reader = csv.reader(lines)
     headers = reader.__next__()
     unique_location_ids = {}
@@ -32,11 +32,11 @@ def parse(sink, lines, vocabulary=None):
 
         for header, value in zip(headers, row):
             parse_row(header, value, organization_or_service, location,
-                      addresses, phone_numbers, taxonomy_terms, vocabulary)
+                      addresses, phone_numbers, taxonomy_terms, vocabulary, region)
             if header == 'ParentAgencyNum':
-                parent_id = value
+                parent_id = add_region_to_id(region, value)
 
-        if not organization_or_service['id']:
+        if not is_primary_key_valid(organization_or_service['id']):
             raise CsvMissingIdParseException(f'Missing service or organization id at line {line}')
 
         set_location_ids(location, addresses, phone_numbers, organization_or_service['id'], parent_id)
@@ -57,8 +57,14 @@ def parse(sink, lines, vocabulary=None):
     return sink
 
 
-def parse_row(header, value, organization_or_service, location, addresses, phone_numbers, taxonomy_terms, vocabulary):
-    parse_organization_and_service_fields(header, value, organization_or_service)
+def add_region_to_id(region, value):
+    if value == '0':
+        return value
+    return f'{value}_{region}'
+
+
+def parse_row(header, value, organization_or_service, location, addresses, phone_numbers, taxonomy_terms, vocabulary, region):
+    parse_organization_and_service_fields(header, value, region, organization_or_service)
     parse_locations_fields(header, value, location)
     parse_address_fields(header, value, addresses)
     parse_phone_number_fields(header, value, phone_numbers)
@@ -67,7 +73,7 @@ def parse_row(header, value, organization_or_service, location, addresses, phone
         mark_as_inactive(organization_or_service)
 
 
-def parse_organization_and_service_fields(header, value, organization_or_service):
+def parse_organization_and_service_fields(header, value, region, organization_or_service):
     output_header = organization_header_map.get(header, None)
     if output_header:
         if output_header == 'last_verified_on-x':
@@ -77,6 +83,8 @@ def parse_organization_and_service_fields(header, value, organization_or_service
             new_description = value
             organization_or_service[output_header] = transfer_inactive_mark_if_present(old_description,
                                                                                        new_description)
+        elif output_header == 'id':
+            organization_or_service[output_header] = add_region_to_id(region, value)
         else:
             organization_or_service[output_header] = value
 
@@ -289,6 +297,13 @@ def compute_hash(*args):
     for arg in args:
         hasher.update(arg.encode('utf-8'))
     return hasher.hexdigest()
+
+
+def is_primary_key_valid(key):
+    if key == '':
+        return False
+    key_without_region_postfix = key.split('_')[0]
+    return key_without_region_postfix != ''
 
 
 def set_location_ids(location, addresses, phone_numbers, organization_or_service_id, parent_id):
