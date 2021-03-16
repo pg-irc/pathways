@@ -162,14 +162,7 @@ importICarolCsvServiceData $BC211Path ./open_referral_csv_files bc
 
 importICarolCsvServiceData ../content/organizationAsServices.csv ./open_referral_csv_files_org_services bc
 
-echo "converting additional libraries CSV to open referral standard..."
-mkdir -p ./open_referral_csv_files_libraries
-./manage.py convert_icarol_csv ../content/additionalLibraries.csv ./open_referral_csv_files_libraries
-checkForSuccess "convert additional libraries data into open referral standard"
-
-echo "importing additional libraries open referral csv data into the database..."
-./manage.py import_open_referral_csv ./open_referral_csv_files_libraries --cityLatLongs $CityLatLongs
-checkForSuccess "import additional libraries open referral data into the database"
+importICarolCsvServiceData ../content/additionalLibraries.csv ./open_referral_csv_files_libraries bc
 
 echo "converting additional schools CSV to open referral standard..."
 mkdir -p ./open_referral_csv_files_schools
