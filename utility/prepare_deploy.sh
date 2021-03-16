@@ -164,14 +164,7 @@ importICarolCsvServiceData ../content/organizationAsServices.csv ./open_referral
 
 importICarolCsvServiceData ../content/additionalLibraries.csv ./open_referral_csv_files_libraries bc
 
-echo "converting additional schools CSV to open referral standard..."
-mkdir -p ./open_referral_csv_files_schools
-./manage.py convert_icarol_csv ../content/additionalSchools.csv ./open_referral_csv_files_schools
-checkForSuccess "convert additional schools data into open referral standard"
-
-echo "importing additional schools open referral csv data into the database..."
-./manage.py import_open_referral_csv ./open_referral_csv_files_schools --cityLatLongs $CityLatLongs
-checkForSuccess "import additional schools open referral data into the database"
+importICarolCsvServiceData ../content/additionalSchools.csv ./open_referral_csv_files_schools bc
 
 ./manage.py import_newcomers_guide $NewcomersGuidePath
 checkForSuccess "import newcomers guide data into the database"
