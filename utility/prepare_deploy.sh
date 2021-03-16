@@ -9,6 +9,10 @@ while (( "$#" )); do
     then
         BC211Path=$2
         shift 2
+    elif [ "$1" == "--mb211Path" ]
+    then
+        MB211Path=$2
+        shift 2
     elif [ "$1" == "--cityLatLongs" ]
     then
         CityLatLongs=$2
@@ -42,7 +46,7 @@ usage() {
     echo "Mandatory arguments:"
     echo
     echo "    --bc211Path"
-    echo "                The path to the BC211 data set in CSV iCarol format."
+    echo "                The path to the BC 211 data set in CSV iCarol format."
     echo
     echo "    --cityLatLongs"
     echo "                The path to the city and latlong dictionary in CSV format."
@@ -55,6 +59,11 @@ usage() {
     echo
     echo "    --outputDir"
     echo "                The directory where the output json file will be placed."
+    echo
+    echo "Optional arguments:"
+    echo
+    echo "    --mb211Path"
+    echo "                The path to the Manitoba 211 data set in CSV iCarol format."
     echo
 }
 
@@ -158,13 +167,18 @@ checkForSuccess "reset database"
 ./manage.py migrate
 checkForSuccess "migrate database"
 
-importICarolCsvServiceData $BC211Path ./open_referral_csv_files bc
+importICarolCsvServiceData $BC211Path ./open_referral_csv_files_bc bc
 
 importICarolCsvServiceData ../content/organizationAsServices.csv ./open_referral_csv_files_org_services bc
 
 importICarolCsvServiceData ../content/additionalLibraries.csv ./open_referral_csv_files_libraries bc
 
 importICarolCsvServiceData ../content/additionalSchools.csv ./open_referral_csv_files_schools bc
+
+if [ "$MB211Path" != "" ]
+then
+    importICarolCsvServiceData $MB211Path ./open_referral_csv_files_mb mb
+fi
 
 ./manage.py import_newcomers_guide $NewcomersGuidePath
 checkForSuccess "import newcomers guide data into the database"
