@@ -109,6 +109,19 @@ validateOutputFile () {
     fi
 }
 
+importICarolCsvServiceData() {
+    ICAROL_CSV_INPUT_PATH=$1
+    WORKING_DIR=$2
+    REGION=$3
+
+    echo "converting iCarol CSV ${ICAROL_CSV_INPUT_PATH} to open referral standard in ${WORKING_DIR}..."
+    mkdir -p $WORKING_DIR
+    ./manage.py convert_icarol_csv $ICAROL_CSV_INPUT_PATH $WORKING_DIR $REGION
+    checkForSuccess "convert iCarol CSV ${ICAROL_CSV_INPUT_PATH} data into open referral standard"
+
+    ./manage.py import_open_referral_csv $WORKING_DIR --cityLatLongs $CityLatLongs
+    checkForSuccess "import Bc-211 open referral data from ${WORKING_DIR} into the database"
+}
 
 validateFilePath "$BC211Path" "BC 211 data"
 
@@ -145,14 +158,7 @@ checkForSuccess "reset database"
 ./manage.py migrate
 checkForSuccess "migrate database"
 
-echo "converting iCarol BC-211 CSV to open referral standard..."
-mkdir -p ./open_referral_csv_files
-./manage.py convert_icarol_csv $BC211Path ./open_referral_csv_files
-checkForSuccess "convert iCarol BC-211 data into open referral standard"
-
-echo "importing BC-211 open referral csv data into the database..."
-./manage.py import_open_referral_csv ./open_referral_csv_files --cityLatLongs $CityLatLongs
-checkForSuccess "import Bc-211 open referral data into the database"
+importICarolCsvServiceData $BC211Path ./open_referral_csv_files bc
 
 echo "converting organizationAsService CSV to open referral standard..."
 mkdir -p ./open_referral_csv_files_org_services
