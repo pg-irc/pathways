@@ -160,14 +160,7 @@ checkForSuccess "migrate database"
 
 importICarolCsvServiceData $BC211Path ./open_referral_csv_files bc
 
-echo "converting organizationAsService CSV to open referral standard..."
-mkdir -p ./open_referral_csv_files_org_services
-./manage.py convert_icarol_csv ../content/organizationAsServices.csv ./open_referral_csv_files_org_services
-checkForSuccess "convert organizationAsService data into open referral standard"
-
-echo "importing organizationAsService open referral csv data into the database..."
-./manage.py import_open_referral_csv ./open_referral_csv_files_org_services --cityLatLongs $CityLatLongs
-checkForSuccess "import organizationAsService open referral data into the database"
+importICarolCsvServiceData ../content/organizationAsServices.csv ./open_referral_csv_files_org_services bc
 
 echo "converting additional libraries CSV to open referral standard..."
 mkdir -p ./open_referral_csv_files_libraries
