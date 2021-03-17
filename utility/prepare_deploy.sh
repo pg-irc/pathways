@@ -11,7 +11,7 @@ while (( "$#" )); do
         shift 2
     elif [ "$1" == "--mb211Path" ]
     then
-        MB211Path=$2
+        manitobaWinPath=$2
         shift 2
     elif [ "$1" == "--cityLatLongs" ]
     then
@@ -21,7 +21,11 @@ while (( "$#" )); do
     then
         NewcomersGuidePath=$2
         shift 2
-    elif [ "$1" == "--recommendationsToAddPath" ]
+    elif [ "$1" == "--manitobaWinPath" ]
+    then
+        ManitobaWinPath=$2
+        shift 2
+     elif [ "$1" == "--recommendationsToAddPath" ]
     then
         ManualRecommendations=$2
         shift 2
@@ -65,6 +69,8 @@ usage() {
     echo "    --mb211Path"
     echo "                The path to the Manitoba 211 data set in CSV iCarol format."
     echo
+    echo "    --manitobaWinPath"
+    echo "                The path to the Manitoba WIN document in txt format"
 }
 
 validateFilePath () {
@@ -106,6 +112,15 @@ validateNewcomersGuidePath () {
     fi
 }
 
+validateManitobaWinPath() {
+    if [ "$manitobaWinPath" != "" ] && [! -f $manitobaWinPath ]
+    then
+        echo "$manitobaWinPath: file does not exist"
+        usage
+        fail
+    fi
+}
+
 validateOutputFile () {
     if [ "$OutputFile" == "" ]; then
         echo "Missing a required argument for output"
@@ -138,6 +153,8 @@ validateFilePath "$CityLatLongs" "Latlong Replacement file"
 
 validateNewcomersGuidePath
 
+validateManitobaWinPath
+
 validateDirectoryPath "$ManualRecommendations" "Recommendations to add"
 
 validateOutputFile
@@ -146,6 +163,7 @@ echo "About to reinitialize database with data from:"
 echo "BC211 data at:                $BC211Path"
 echo "Latlong replacement file at:  $CityLatLongs"
 echo "Newcomers data at:            $NewcomersGuidePath"
+echo "Manitoba WIN data at:         $manitobaWinPath"
 echo "Manual recommendations:       $ManualRecommendations"
 echo "Output file:                  $OutputFile"
 read -p "Enter to continue, Ctrl-C to abort "
@@ -178,6 +196,12 @@ importICarolCsvServiceData ../content/additionalSchools.csv ./open_referral_csv_
 if [ "$MB211Path" != "" ]
 then
     importICarolCsvServiceData $MB211Path ./open_referral_csv_files_mb mb
+fi
+
+if [ "$manitobaWinPath" != "" ]
+then
+    ./manage.py convert_win_data $manitobaWinPath $NewcomersGuidePath
+    checkForSuccess "convert Manitoba WIN data, output to $NewcomersGuidePath"
 fi
 
 ./manage.py import_newcomers_guide $NewcomersGuidePath

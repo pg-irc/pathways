@@ -8,9 +8,11 @@ class TestSplitWinFile(TestCase):
     def test_can_identify_chapter_title(self):
         self.assertTrue(is_chapter('8 CHAPTER 8 - Driving'))
         self.assertTrue(is_chapter('1 CHAPTER 1 - Getting Started'))
+        self.assertTrue(is_chapter('5 CHAPTER 5 - Health Care'))
 
     def test_can_get_chapter_title(self):
         self.assertEqual(get_chapter('8 CHAPTER 8 - Driving'), 'CHAPTER 8 - Driving')
+        self.assertEqual(get_chapter('5 CHAPTER 5 - Health Care'), 'CHAPTER 5 - Health Care')
 
     def test_error_on_empty_chapter_title(self):
         with self.assertRaises(RuntimeError):
