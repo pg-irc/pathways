@@ -105,7 +105,7 @@ class WinFileParser:
     def save_current_topic(self):
         if self.topic:
             self.topics.append(Topic(self.chapter, self.topic, self.tags, self.text))
-            self.clear()
+        self.clear()
 
     def done(self):
         self.save_current_topic()

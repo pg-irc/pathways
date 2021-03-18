@@ -7,8 +7,6 @@ class TestSplitWinFile(TestCase):
 
     def test_can_identify_chapter_title(self):
         self.assertTrue(is_chapter('8 CHAPTER 8 - Driving'))
-        self.assertTrue(is_chapter('1 CHAPTER 1 - Getting Started'))
-        self.assertTrue(is_chapter('5 CHAPTER 5 - Health Care'))
 
     def test_can_get_chapter_title(self):
         self.assertEqual(get_chapter('8 CHAPTER 8 - Driving'), 'CHAPTER 8 - Driving')
@@ -73,6 +71,12 @@ class TestSplitWinFile(TestCase):
         writer = parse_string(data)
         self.assertEqual(len(writer.topics), 1)
         self.assertEqual(writer.topics[0].text, 'some more text goes here\nand here\nand then some more\n')
+
+    def test_do_not_include_text_from_before_the_heading(self):
+        data = 'this should be ignored\n2.20 Topic: Places of Worship\nTags: first:tag\nsome more text goes here\n'
+        writer = parse_string(data)
+        self.assertEqual(len(writer.topics), 1)
+        self.assertEqual(writer.topics[0].text, 'some more text goes here\n\n')
 
     def test_can_get_two_topics_from_lines(self):
         data = ('2.10 Topic: Biking\nTags: transport:local\nBiking is fun\n2.11 Topic: Travel by plane\n'
