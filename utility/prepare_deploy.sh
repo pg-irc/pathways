@@ -33,6 +33,7 @@ while (( "$#" )); do
     then
         CurrentDate=`date '+%Y'-'%m'-'%d'`
         OutputFile=$2/data-$CurrentDate.json
+        OutputDir=$2
         shift 2
     else
         echo "$1: Invalid command argument"
@@ -185,17 +186,14 @@ checkForSuccess "reset database"
 ./manage.py migrate
 checkForSuccess "migrate database"
 
-importICarolCsvServiceData $BC211Path ./open_referral_csv_files_bc bc
-
-importICarolCsvServiceData ../content/organizationAsServices.csv ./open_referral_csv_files_org_services bc
-
-importICarolCsvServiceData ../content/additionalLibraries.csv ./open_referral_csv_files_libraries bc
-
-importICarolCsvServiceData ../content/additionalSchools.csv ./open_referral_csv_files_schools bc
+importICarolCsvServiceData $BC211Path "${OutputDir}/openreferral/211/bc" bc
+importICarolCsvServiceData ../content/organizationAsServices.csv "${OutputDir}/openreferral/organizationsAsService" bc
+importICarolCsvServiceData ../content/additionalLibraries.csv "${OutputDir}/openreferral/libraries" bc
+importICarolCsvServiceData ../content/additionalSchools.csv "${OutputDir}/openreferral/schools" bc
 
 if [ "$MB211Path" != "" ]
 then
-    importICarolCsvServiceData $MB211Path ./open_referral_csv_files_mb mb
+    importICarolCsvServiceData $MB211Path "${OutputDir}/openreferral/211/mb" mb
 fi
 
 if [ "$manitobaWinPath" != "" ]
