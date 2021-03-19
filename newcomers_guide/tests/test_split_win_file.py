@@ -47,6 +47,8 @@ class TestSplitWinFile(TestCase):
     def test_can_get_multiple_tags(self):
         self.assertEqual(get_tags('Tags: healthCare:disability housing:wantToBuy'), ['healthCare:disability',
                                                                                      'housing:wantToBuy'])
+    def test_can_get_tags_separated_by_comma(self):
+        self.assertEqual(get_tags('Tags: first:tag, second:tag'), ['first:tag', 'second:tag'])
 
     def test_can_get_topic_from_line(self):
         data = '2.20 Topic: Places of Worship\nsome more text goes here'

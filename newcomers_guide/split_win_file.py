@@ -40,8 +40,10 @@ def is_tag(line):
 
 def get_tags(line):
     regex = r'Tags:(.*)'
-    result = re.match(regex, line)[1].strip().split()
-    return result
+    all_tags = re.match(regex, line)[1]
+    tags_separated = re.split(r'[ ,]+', all_tags)
+    non_empty_tags = [r for r in tags_separated if r]
+    return non_empty_tags
 
 
 class Topic:
