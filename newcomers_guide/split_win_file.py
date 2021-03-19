@@ -93,6 +93,7 @@ class WinFileParser:
 
     def parse(self, stream, line):
         if is_chapter(line):
+            self.save_current_topic()
             self.chapter = get_chapter(line)
         elif is_title(line):
             self.save_current_topic()

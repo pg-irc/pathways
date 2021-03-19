@@ -101,6 +101,17 @@ class TestSplitWinFile(TestCase):
         self.assertEqual(writer.topics[0].chapter, 'CHAPTER 8 - Driving')
         self.assertEqual(writer.topics[1].chapter, 'CHAPTER 8 - Driving')
 
+    def test_last_topic_in_a_chapter_is_assigned_to_the_correct_chapter(self):
+        data = ('8 CHAPTER 8 - Driving\n'
+                '8.23 Topic: First topic\n'
+                'Some text\n'
+                'Some more text\n'
+                '9 CHAPTER 9 - Employment\n'
+                '9.1 Topic: Second topic\n'
+                'Some text')
+        writer = parse_string(data)
+        self.assertEqual(writer.topics[0].file_path(), 'mb/CHAPTER 8 - Driving/topics/First topic/')
+
     def test_compute_file_path(self):
         data = ('8 CHAPTER 8 - Driving\n1.23 Topic: Buying a new or used vehicle (car or truck)\nTags: explore:driving driving:cost\nThis is about driving\n')
         writer = parse_string(data)
