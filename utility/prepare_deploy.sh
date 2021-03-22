@@ -201,11 +201,11 @@ fi
 
 if [ "$manitobaWinPath" != "" ]
 then
-    ./manage.py convert_win_data $manitobaWinPath $NewcomersGuidePath
+    ./manage.py convert_win_data "$manitobaWinPath" "$NewcomersGuidePath"
     checkForSuccess "convert Manitoba WIN data, output to $NewcomersGuidePath"
 fi
 
-./manage.py import_newcomers_guide $NewcomersGuidePath
+./manage.py import_newcomers_guide "$NewcomersGuidePath"
 checkForSuccess "import BC newcomers guide data (and MB WIN data if applicable) into the database"
 
 echo "computing similarity scores ..."
