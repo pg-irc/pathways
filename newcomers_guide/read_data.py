@@ -1,6 +1,6 @@
 import os
 from newcomers_guide import exceptions
-from glob import glob 
+from glob import glob
 
 
 def read_topic_data(root_folder):
@@ -15,7 +15,7 @@ def read_topic_data(root_folder):
 
 def read_taxonomy_data(root_folder):
     validate_taxonomy_data(root_folder)
-    
+
     taxonomy_data = []
     for root, _, filenames in os.walk(root_folder, topdown=False):
         for filename in filenames:
@@ -23,7 +23,7 @@ def read_taxonomy_data(root_folder):
             if is_taxonomy_file(path):
                 taxonomy_data.append([path, read_file_content(path)])
     return taxonomy_data
-    
+
 
 def read_file_content(path):
     with open(path, 'r') as file:
@@ -49,18 +49,21 @@ def is_taxonomy_file(path):
 
 
 def validate_taxonomy_data(root_folder):
-    if is_taxonomy_file_missing(root_folder):
-        raise Exception('There is a taxonomy file missing in the Newcomers Guide')
+    invalid_folders = get_topic_folders_without_taxonomy_files(root_folder)
+    if not invalid_folders:
+        return
+    folder_names = ', '.join(invalid_folders)
+    raise Exception(f'There is a taxonomy file missing in these topic folders:{folder_names}')
 
 
-def is_taxonomy_file_missing(root_folder):
-    paths = get_paths_to_topic_folders(root_folder)
-    for path in paths:
-        exists = os.path.isfile(path + '/taxonomy.txt')
-        if not exists:
-            return True
-    return False
+def get_topic_folders_without_taxonomy_files(root_folder):
+    folders = get_paths_to_topic_folders(root_folder)
+    return [f for f in folders if is_taxonomy_file_missing(f)]
+
+
+def is_taxonomy_file_missing(path):
+    return not os.path.isfile(path + '/taxonomy.txt')
 
 
 def get_paths_to_topic_folders(root_folder):
-    return glob(root_folder + '/*/topics/*/')  
+    return glob(root_folder + '/*/topics/*/')
