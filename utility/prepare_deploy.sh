@@ -194,9 +194,9 @@ importICarolCsvServiceData ../content/organizationAsServices.csv "${OutputDir}/o
 importICarolCsvServiceData ../content/additionalLibraries.csv "${OutputDir}/openreferral/libraries" bc
 importICarolCsvServiceData ../content/additionalSchools.csv "${OutputDir}/openreferral/schools" bc
 
-if [ "$MB211Path" != "" ]
+if [ "$mb211Path" != "" ]
 then
-    importICarolCsvServiceData $MB211Path "${OutputDir}/openreferral/211/mb" mb
+    importICarolCsvServiceData $mb211Path "${OutputDir}/openreferral/211/mb" mb
 fi
 
 if [ "$manitobaWinPath" != "" ]
