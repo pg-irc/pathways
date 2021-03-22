@@ -7,11 +7,11 @@ fail() {
 while (( "$#" )); do
     if [ "$1" == "--bc211Path" ]
     then
-        BC211Path=$2
+        bc211Path=$2
         shift 2
     elif [ "$1" == "--mb211Path" ]
     then
-        manitobaWinPath=$2
+        mb211Path=$2
         shift 2
     elif [ "$1" == "--cityLatLongs" ]
     then
@@ -23,7 +23,7 @@ while (( "$#" )); do
         shift 2
     elif [ "$1" == "--manitobaWinPath" ]
     then
-        ManitobaWinPath=$2
+        manitobaWinPath=$2
         shift 2
      elif [ "$1" == "--recommendationsToAddPath" ]
     then
@@ -148,23 +148,26 @@ importICarolCsvServiceData() {
     checkForSuccess "import Bc-211 open referral data from ${WORKING_DIR} into the database"
 }
 
-validateFilePath "$BC211Path" "BC 211 data"
-
-validateFilePath "$CityLatLongs" "Latlong Replacement file"
-
 validateNewcomersGuidePath
 
-validateManitobaWinPath
+validateFilePath "$manitobaWinPath" "Manitoba WIN file"
+
+validateFilePath "$bc211Path" "BC 211 data"
+
+validateFilePath "$mb211Path" "MB 211 data"
+
+validateFilePath "$CityLatLongs" "Latlong Replacement file"
 
 validateDirectoryPath "$ManualRecommendations" "Recommendations to add"
 
 validateOutputFile
 
 echo "About to reinitialize database with data from:"
-echo "BC211 data at:                $BC211Path"
+echo "BC 211 data at:               $bc211Path"
 echo "Latlong replacement file at:  $CityLatLongs"
 echo "Newcomers data at:            $NewcomersGuidePath"
 echo "Manitoba WIN data at:         $manitobaWinPath"
+echo "MB211 data at:                $mb211Path"
 echo "Manual recommendations:       $ManualRecommendations"
 echo "Output file:                  $OutputFile"
 read -p "Enter to continue, Ctrl-C to abort "
@@ -186,7 +189,7 @@ checkForSuccess "reset database"
 ./manage.py migrate
 checkForSuccess "migrate database"
 
-importICarolCsvServiceData $BC211Path "${OutputDir}/openreferral/211/bc" bc
+importICarolCsvServiceData $bc211Path "${OutputDir}/openreferral/211/bc" bc
 importICarolCsvServiceData ../content/organizationAsServices.csv "${OutputDir}/openreferral/organizationsAsService" bc
 importICarolCsvServiceData ../content/additionalLibraries.csv "${OutputDir}/openreferral/libraries" bc
 importICarolCsvServiceData ../content/additionalSchools.csv "${OutputDir}/openreferral/schools" bc
@@ -203,7 +206,7 @@ then
 fi
 
 ./manage.py import_newcomers_guide $NewcomersGuidePath
-checkForSuccess "import newcomers guide data into the database"
+checkForSuccess "import BC newcomers guide data (and MB WIN data if applicable) into the database"
 
 echo "computing similarity scores ..."
 ./manage.py compute_text_similarity_scores --related_topics 3 --related_services 0 $NewcomersGuidePath
