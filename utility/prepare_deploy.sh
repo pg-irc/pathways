@@ -209,7 +209,11 @@ fi
 checkForSuccess "import BC newcomers guide data (and MB WIN data if applicable) into the database"
 
 echo "computing similarity scores ..."
-./manage.py compute_text_similarity_scores --related_topics 3 --related_services 0 $NewcomersGuidePath
+./manage.py compute_text_similarity_scores --region bc --related_topics 3 --related_services 0 $NewcomersGuidePath
+if [ "$mb211Path" != "" ]
+    then
+    ./manage.py compute_text_similarity_scores --region mb --related_topics 3 --related_services 0 $NewcomersGuidePath
+fi
 checkForSuccess "compute similarity scores"
 
 echo "adding manual similarity scores ..."
