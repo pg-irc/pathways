@@ -7,10 +7,10 @@ class TestSplitWinFile(TestCase):
 
     def test_can_identify_chapter_title(self):
         self.assertTrue(is_chapter('8 CHAPTER 8 - Driving'))
-        self.assertTrue(is_chapter('1 CHAPTER 1 - Getting Started'))
 
     def test_can_get_chapter_title(self):
         self.assertEqual(get_chapter('8 CHAPTER 8 - Driving'), 'CHAPTER 8 - Driving')
+        self.assertEqual(get_chapter('5 CHAPTER 5 - Health Care'), 'CHAPTER 5 - Health Care')
 
     def test_error_on_empty_chapter_title(self):
         with self.assertRaises(RuntimeError):
@@ -47,6 +47,8 @@ class TestSplitWinFile(TestCase):
     def test_can_get_multiple_tags(self):
         self.assertEqual(get_tags('Tags: healthCare:disability housing:wantToBuy'), ['healthCare:disability',
                                                                                      'housing:wantToBuy'])
+    def test_can_get_tags_separated_by_comma(self):
+        self.assertEqual(get_tags('Tags: first:tag, second:tag'), ['first:tag', 'second:tag'])
 
     def test_can_get_topic_from_line(self):
         data = '2.20 Topic: Places of Worship\nsome more text goes here'
@@ -72,6 +74,12 @@ class TestSplitWinFile(TestCase):
         self.assertEqual(len(writer.topics), 1)
         self.assertEqual(writer.topics[0].text, 'some more text goes here\nand here\nand then some more\n')
 
+    def test_do_not_include_text_from_before_the_heading(self):
+        data = 'this should be ignored\n2.20 Topic: Places of Worship\nTags: first:tag\nsome more text goes here\n'
+        writer = parse_string(data)
+        self.assertEqual(len(writer.topics), 1)
+        self.assertEqual(writer.topics[0].text, 'some more text goes here\n\n')
+
     def test_can_get_two_topics_from_lines(self):
         data = ('2.10 Topic: Biking\nTags: transport:local\nBiking is fun\n2.11 Topic: Travel by plane\n'
                 'Tags: transport:long_distance\nPlanes fly fast\n')
@@ -95,15 +103,26 @@ class TestSplitWinFile(TestCase):
         self.assertEqual(writer.topics[0].chapter, 'CHAPTER 8 - Driving')
         self.assertEqual(writer.topics[1].chapter, 'CHAPTER 8 - Driving')
 
+    def test_last_topic_in_a_chapter_is_assigned_to_the_correct_chapter(self):
+        data = ('8 CHAPTER 8 - Driving\n'
+                '8.23 Topic: First topic\n'
+                'Some text\n'
+                'Some more text\n'
+                '9 CHAPTER 9 - Employment\n'
+                '9.1 Topic: Second topic\n'
+                'Some text')
+        writer = parse_string(data)
+        self.assertEqual(writer.topics[0].file_path(), 'mb/CHAPTER 8 - Driving/topics/First topic/')
+
     def test_compute_file_path(self):
         data = ('8 CHAPTER 8 - Driving\n1.23 Topic: Buying a new or used vehicle (car or truck)\nTags: explore:driving driving:cost\nThis is about driving\n')
         writer = parse_string(data)
-        self.assertEqual(writer.topics[0].file_path(), 'CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/')
+        self.assertEqual(writer.topics[0].file_path(), 'mb/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/')
 
     def test_compute_file_name(self):
         data = ('8 CHAPTER 8 - Driving\n1.23 Topic: Buying a new or used vehicle (car or truck)\nTags: explore:driving driving:cost\nThis is about driving\n')
         writer = parse_string(data)
-        self.assertEqual(writer.topics[0].file_name(), 'CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/en.Buying a new or used vehicle (car or truck).md')
+        self.assertEqual(writer.topics[0].file_name(), 'mb/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/en.Buying a new or used vehicle (car or truck).md')
 
     def test_throw_error_on_empty_chapter(self):
         data = '1.23 Topic: Topic name\nTags: first:tag second:tag\nSome text'
@@ -127,20 +146,20 @@ class TestSplitWinFile(TestCase):
         data = ('8 CHAPTER 8 - Driving\n1.23 Topic: Buying a new or used vehicle (car or truck)\nTags: explore:driving driving:cost\nThis is about driving\n')
         writer = parse_string(data)
         root = 'theRoot'
-        self.assertEqual(writer.topics[0].file_path(root), 'theRoot/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/')
-        self.assertEqual(writer.topics[0].file_name(root), 'theRoot/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/en.Buying a new or used vehicle (car or truck).md')
+        self.assertEqual(writer.topics[0].file_path(root), 'theRoot/mb/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/')
+        self.assertEqual(writer.topics[0].file_name(root), 'theRoot/mb/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/en.Buying a new or used vehicle (car or truck).md')
 
     def test_can_pass_locale_for_output_filename(self):
         data = ('8 CHAPTER 8 - Driving\n1.23 Topic: Buying a new or used vehicle (car or truck)\nTags: explore:driving driving:cost\nThis is about driving\n')
         writer = parse_string(data)
         root = 'theRoot'
-        self.assertEqual(writer.topics[0].file_name(root, 'xy'), 'theRoot/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/xy.Buying a new or used vehicle (car or truck).md')
+        self.assertEqual(writer.topics[0].file_name(root, 'xy'), 'theRoot/mb/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/xy.Buying a new or used vehicle (car or truck).md')
 
     def test_can_compute_taxonomy_file_name(self):
         data = ('8 CHAPTER 8 - Driving\n1.23 Topic: Buying a new or used vehicle (car or truck)\nTags: explore:driving driving:cost\nThis is about driving\n')
         writer = parse_string(data)
         root = 'theRoot'
-        self.assertEqual(writer.topics[0].taxonomy_file_name(root), 'theRoot/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/taxonomy.txt')
+        self.assertEqual(writer.topics[0].taxonomy_file_name(root), 'theRoot/mb/CHAPTER 8 - Driving/topics/Buying a new or used vehicle (car or truck)/taxonomy.txt')
 
     def test_can_get_taxonomy_terms_for_output(self):
         data = '8 CHAPTER 8 - Driving\n1.23 Topic: The topic\nTags: healthCare:disability housing:wantToBuy'

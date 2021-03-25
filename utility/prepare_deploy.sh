@@ -7,7 +7,11 @@ fail() {
 while (( "$#" )); do
     if [ "$1" == "--bc211Path" ]
     then
-        BC211Path=$2
+        bc211Path=$2
+        shift 2
+    elif [ "$1" == "--mb211Path" ]
+    then
+        mb211Path=$2
         shift 2
     elif [ "$1" == "--cityLatLongs" ]
     then
@@ -17,7 +21,11 @@ while (( "$#" )); do
     then
         NewcomersGuidePath=$2
         shift 2
-    elif [ "$1" == "--recommendationsToAddPath" ]
+    elif [ "$1" == "--manitobaWinPath" ]
+    then
+        manitobaWinPath=$2
+        shift 2
+     elif [ "$1" == "--recommendationsToAddPath" ]
     then
         ManualRecommendations=$2
         shift 2
@@ -25,6 +33,7 @@ while (( "$#" )); do
     then
         CurrentDate=`date '+%Y'-'%m'-'%d'`
         OutputFile=$2/data-$CurrentDate.json
+        OutputDir=$2
         shift 2
     else
         echo "$1: Invalid command argument"
@@ -42,7 +51,7 @@ usage() {
     echo "Mandatory arguments:"
     echo
     echo "    --bc211Path"
-    echo "                The path to the BC211 data set in CSV iCarol format."
+    echo "                The path to the BC 211 data set in CSV iCarol format."
     echo
     echo "    --cityLatLongs"
     echo "                The path to the city and latlong dictionary in CSV format."
@@ -56,6 +65,13 @@ usage() {
     echo "    --outputDir"
     echo "                The directory where the output json file will be placed."
     echo
+    echo "Optional arguments:"
+    echo
+    echo "    --mb211Path"
+    echo "                The path to the Manitoba 211 data set in CSV iCarol format."
+    echo
+    echo "    --manitobaWinPath"
+    echo "                The path to the Manitoba WIN document in txt format"
 }
 
 validateFilePath () {
@@ -97,6 +113,15 @@ validateNewcomersGuidePath () {
     fi
 }
 
+validateManitobaWinPath() {
+    if [ "$manitobaWinPath" != "" ] && [ ! -f $manitobaWinPath ]
+    then
+        echo "$manitobaWinPath: file does not exist"
+        usage
+        fail
+    fi
+}
+
 validateOutputFile () {
     if [ "$OutputFile" == "" ]; then
         echo "Missing a required argument for output"
@@ -109,21 +134,40 @@ validateOutputFile () {
     fi
 }
 
+importICarolCsvServiceData() {
+    ICAROL_CSV_INPUT_PATH=$1
+    WORKING_DIR=$2
+    REGION=$3
 
-validateFilePath "$BC211Path" "BC 211 data"
+    echo "converting iCarol CSV ${ICAROL_CSV_INPUT_PATH} to open referral standard in ${WORKING_DIR}..."
+    mkdir -p $WORKING_DIR
+    ./manage.py convert_icarol_csv $ICAROL_CSV_INPUT_PATH $WORKING_DIR $REGION
+    checkForSuccess "convert iCarol CSV ${ICAROL_CSV_INPUT_PATH} data into open referral standard"
 
-validateFilePath "$CityLatLongs" "Latlong Replacement file"
+    ./manage.py import_open_referral_csv $WORKING_DIR --cityLatLongs $CityLatLongs
+    checkForSuccess "import Bc-211 open referral data from ${WORKING_DIR} into the database"
+}
 
 validateNewcomersGuidePath
+
+validateFilePath "$manitobaWinPath" "Manitoba WIN file"
+
+validateFilePath "$bc211Path" "BC 211 data"
+
+validateFilePath "$mb211Path" "MB 211 data"
+
+validateFilePath "$CityLatLongs" "Latlong Replacement file"
 
 validateDirectoryPath "$ManualRecommendations" "Recommendations to add"
 
 validateOutputFile
 
 echo "About to reinitialize database with data from:"
-echo "BC211 data at:                $BC211Path"
+echo "BC 211 data at:               $bc211Path"
 echo "Latlong replacement file at:  $CityLatLongs"
 echo "Newcomers data at:            $NewcomersGuidePath"
+echo "Manitoba WIN data at:         $manitobaWinPath"
+echo "MB211 data at:                $mb211Path"
 echo "Manual recommendations:       $ManualRecommendations"
 echo "Output file:                  $OutputFile"
 read -p "Enter to continue, Ctrl-C to abort "
@@ -145,44 +189,24 @@ checkForSuccess "reset database"
 ./manage.py migrate
 checkForSuccess "migrate database"
 
-echo "converting iCarol BC-211 CSV to open referral standard..."
-mkdir -p ./open_referral_csv_files
-./manage.py convert_icarol_csv $BC211Path ./open_referral_csv_files
-checkForSuccess "convert iCarol BC-211 data into open referral standard"
+importICarolCsvServiceData $bc211Path "${OutputDir}/openreferral/211/bc" bc
+importICarolCsvServiceData ../content/organizationAsServices.csv "${OutputDir}/openreferral/organizationsAsService" bc
+importICarolCsvServiceData ../content/additionalLibraries.csv "${OutputDir}/openreferral/libraries" bc
+importICarolCsvServiceData ../content/additionalSchools.csv "${OutputDir}/openreferral/schools" bc
 
-echo "importing BC-211 open referral csv data into the database..."
-./manage.py import_open_referral_csv ./open_referral_csv_files --cityLatLongs $CityLatLongs
-checkForSuccess "import Bc-211 open referral data into the database"
+if [ "$mb211Path" != "" ]
+then
+    importICarolCsvServiceData $mb211Path "${OutputDir}/openreferral/211/mb" mb
+fi
 
-echo "converting organizationAsService CSV to open referral standard..."
-mkdir -p ./open_referral_csv_files_org_services
-./manage.py convert_icarol_csv ../content/organizationAsServices.csv ./open_referral_csv_files_org_services
-checkForSuccess "convert organizationAsService data into open referral standard"
+if [ "$manitobaWinPath" != "" ]
+then
+    ./manage.py convert_win_data "$manitobaWinPath" "$NewcomersGuidePath"
+    checkForSuccess "convert Manitoba WIN data, output to $NewcomersGuidePath"
+fi
 
-echo "importing organizationAsService open referral csv data into the database..."
-./manage.py import_open_referral_csv ./open_referral_csv_files_org_services --cityLatLongs $CityLatLongs
-checkForSuccess "import organizationAsService open referral data into the database"
-
-echo "converting additional libraries CSV to open referral standard..."
-mkdir -p ./open_referral_csv_files_libraries
-./manage.py convert_icarol_csv ../content/additionalLibraries.csv ./open_referral_csv_files_libraries
-checkForSuccess "convert additional libraries data into open referral standard"
-
-echo "importing additional libraries open referral csv data into the database..."
-./manage.py import_open_referral_csv ./open_referral_csv_files_libraries --cityLatLongs $CityLatLongs
-checkForSuccess "import additional libraries open referral data into the database"
-
-echo "converting additional schools CSV to open referral standard..."
-mkdir -p ./open_referral_csv_files_schools
-./manage.py convert_icarol_csv ../content/additionalSchools.csv ./open_referral_csv_files_schools
-checkForSuccess "convert additional schools data into open referral standard"
-
-echo "importing additional schools open referral csv data into the database..."
-./manage.py import_open_referral_csv ./open_referral_csv_files_schools --cityLatLongs $CityLatLongs
-checkForSuccess "import additional schools open referral data into the database"
-
-./manage.py import_newcomers_guide $NewcomersGuidePath
-checkForSuccess "import newcomers guide data into the database"
+./manage.py import_newcomers_guide "$NewcomersGuidePath"
+checkForSuccess "import BC newcomers guide data (and MB WIN data if applicable) into the database"
 
 echo "computing similarity scores ..."
 ./manage.py compute_text_similarity_scores --related_topics 3 --related_services 0 $NewcomersGuidePath

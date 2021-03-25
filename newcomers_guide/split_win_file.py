@@ -40,8 +40,10 @@ def is_tag(line):
 
 def get_tags(line):
     regex = r'Tags:(.*)'
-    result = re.match(regex, line)[1].strip().split()
-    return result
+    all_tags = re.match(regex, line)[1]
+    tags_separated = re.split(r'[ ,]+', all_tags)
+    non_empty_tags = [r for r in tags_separated if r]
+    return non_empty_tags
 
 
 class Topic:
@@ -61,15 +63,15 @@ class Topic:
 
     def file_path(self, root=''):
         self.validate()
-        return f'{self.clean_root(root)}{self.chapter}/topics/{self.topic}/'
+        return f'{self.clean_root(root)}mb/{self.chapter}/topics/{self.topic}/'
 
     def file_name(self, root='', locale='en'):
         self.validate()
-        return f'{self.clean_root(root)}{self.chapter}/topics/{self.topic}/{locale}.{self.topic}.md'
+        return f'{self.clean_root(root)}mb/{self.chapter}/topics/{self.topic}/{locale}.{self.topic}.md'
 
     def taxonomy_file_name(self, root=''):
         self.validate()
-        return f'{self.clean_root(root)}{self.chapter}/topics/{self.topic}/taxonomy.txt'
+        return f'{self.clean_root(root)}mb/{self.chapter}/topics/{self.topic}/taxonomy.txt'
 
     def clean_root(self, root):
         if root == '' or root.endswith('/'):
@@ -93,6 +95,7 @@ class WinFileParser:
 
     def parse(self, stream, line):
         if is_chapter(line):
+            self.save_current_topic()
             self.chapter = get_chapter(line)
         elif is_title(line):
             self.save_current_topic()
@@ -105,7 +108,7 @@ class WinFileParser:
     def save_current_topic(self):
         if self.topic:
             self.topics.append(Topic(self.chapter, self.topic, self.tags, self.text))
-            self.clear()
+        self.clear()
 
     def done(self):
         self.save_current_topic()

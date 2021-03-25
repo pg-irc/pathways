@@ -35,13 +35,16 @@ expected_headers = ['id', 'service_id', 'taxonomy_id', 'taxonomy_detail']
 def read_and_import_rows(reader, collector):
     service = None
     for row in reader:
-        if not row:
-            continue
-        service_id = parser.parse_required_field_with_double_escaped_html('service_id', row[1])
-        if collector.has_inactive_service_id(service_id):
-            continue
-        service = Service.objects.get(pk=service_id)
-        import_service_taxonomy(row, service)
+        try:
+            if not row:
+                continue
+            service_id = parser.parse_required_field_with_double_escaped_html('service_id', row[1])
+            if collector.has_inactive_service_id(service_id):
+                continue
+            service = Service.objects.get(pk=service_id)
+            import_service_taxonomy(row, service)
+        except ObjectDoesNotExist as error:
+            LOGGER.warning('%s', error.__str__())
 
 
 def import_service_taxonomy(row, service):
