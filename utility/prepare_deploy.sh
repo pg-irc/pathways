@@ -114,7 +114,7 @@ validateNewcomersGuidePath () {
 }
 
 validateManitobaWinPath() {
-    if [ "$manitobaWinPath" != "" ] && [! -f $manitobaWinPath ]
+    if [ "$manitobaWinPath" != "" ] && [ ! -f $manitobaWinPath ]
     then
         echo "$manitobaWinPath: file does not exist"
         usage

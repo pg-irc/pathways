@@ -38,6 +38,3 @@ class Command(BaseCommand):
 
         with open('taxonomies.ts', 'w') as file:
             file.write(generate_taxonomy_fixture(taxonomies))
-
-# add bc or mb prefix to each topic id
-# add region taxonomy term to each topic
