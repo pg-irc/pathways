@@ -17,6 +17,9 @@ class Command(BaseCommand):
         parser.add_argument('newcomers_guide_path',
                             metavar='newcomers_guide_path',
                             help='path to root of Newcomers Guide folder structure')
+        parser.add_argument('--region',
+                            metavar='region',
+                            help='Help')
         parser.add_argument('--related_topics',
                             dest='related_topics',
                             type=int,
@@ -42,6 +45,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         root_folder = options['newcomers_guide_path']
+        region = options['region']
         related_topic_count = options['related_topics']
         related_service_count = options['related_services']
         results_to_save = options['results_to_save']
@@ -51,12 +55,12 @@ class Command(BaseCommand):
 
         print('Reading topics...')
         topics = read_topic_descriptions(root_folder)
-        topic_ids, topic_descriptions = to_topic_ids_and_descriptions(topics)
+        topic_ids, topic_descriptions = to_topic_ids_and_descriptions(topics, region)
         print('{} topics read, reading services...'.format(len(topic_ids)))
 
         if related_service_count > 0:
             services = Service.objects.all()
-            service_ids, service_descriptions = to_service_ids_and_descriptions(services)
+            service_ids, service_descriptions = to_service_ids_and_descriptions(services, region)
         else:
             service_ids = []
             service_descriptions = []

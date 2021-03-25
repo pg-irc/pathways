@@ -9,23 +9,33 @@ from spacy.lang.en.stop_words import STOP_WORDS as SPACY_STOP_WORDS
 LOGGER = logging.getLogger(__file__)
 
 
-def to_topic_ids_and_descriptions(topics):
+def to_topic_ids_and_descriptions(topics, region):
     ids = []
     descriptions = []
     for _, topic in topics['taskMap'].items():
-        ids.append(slugify(topic['id']))
-        english_description = topic['title']['en'] + ' ' + topic['description']['en']
-        descriptions.append(english_description)
+        topic_id = topic['id']
+        if include_item(topic_id, region):
+            ids.append(slugify(topic_id))
+            english_description = topic['title']['en'] + ' ' + topic['description']['en']
+            descriptions.append(english_description)
     return (ids, descriptions)
 
 
-def to_service_ids_and_descriptions(services):
+def include_item(item_id, region):
+    default_result = True
+    if not region:
+        return default_result
+    return item_id.endswith(f'_{region}')
+
+
+def to_service_ids_and_descriptions(services, region):
     ids = []
     descriptions = []
     for service in services:
-        ids.append(service.id)
-        description_without_phone_numbers = remove_phone_numbers(service.description) or ''
-        descriptions.append(service.name + ' ' + description_without_phone_numbers)
+        if include_item(service.id, region):
+            ids.append(service.id)
+            description_without_phone_numbers = remove_phone_numbers(service.description) or ''
+            descriptions.append(service.name + ' ' + description_without_phone_numbers)
     return (ids, descriptions)
 
 
