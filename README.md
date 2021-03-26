@@ -242,6 +242,11 @@ These steps are for creating a new Heroku instance from scratch:
 heroku ps:exec -a *appname*
 ```
 
+- From bash, it is also simple to log into the database:
+```
+heroku pg:psql -a *appname*
+```
+
 - Set environment variables in shell, using the DATABASE_URL from the Settings, see abovve
 
 ```
