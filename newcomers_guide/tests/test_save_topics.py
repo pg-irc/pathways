@@ -36,13 +36,6 @@ class TestSavingTasks(TestCase):
             }
         }
 
-    def test_deletes_existing_records(self):
-        helpers.create_topic(a_string())
-        helpers.create_topic(a_string())
-
-        save_topics(self.one_topic, self.counts)
-        self.assertEqual(Task.objects.count(), 1)
-
     def test_saves_topic_id(self):
         save_topics(self.one_topic, self.counts)
         records = Task.objects.all()

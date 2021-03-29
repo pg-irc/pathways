@@ -21,19 +21,6 @@ def create_topics(ids):
 
 class TestSavingTaskSimilarities(TestCase):
 
-    def test_deletes_existing_records(self):
-        first_topic_id = a_string()
-        second_topic_id = a_string()
-        create_topics([first_topic_id, second_topic_id])
-        record = TaskSimilarityScore(first_task_id=first_topic_id,
-                                     second_task_id=second_topic_id,
-                                     similarity_score=a_float())
-        record.save()
-
-        save_topic_similarities([], [], 0)
-
-        self.assertEqual(TaskSimilarityScore.objects.count(), 0)
-
     def test_saves_required_number_of_records_for_each_row(self):
         ids = [a_string() for i in range(5)]
         create_topics(ids)
@@ -132,19 +119,6 @@ class TestSavingTaskServiceSimilarities(TestCase):
 
         services = [ServiceBuilder(self.organization).create() for i in range(3)]
         self.three_service_ids = [service.id for service in services]
-
-    def test_deletes_existing_records(self):
-        topic_id = a_string()
-        Task(id=topic_id, name=a_string(), description=a_string()).save()
-        service = ServiceBuilder(self.organization).create()
-        record = TaskServiceSimilarityScore(task_id=topic_id,
-                                            service=service,
-                                            similarity_score=a_float())
-        record.save()
-
-        save_topic_service_similarity_scores([], [], [], 0)
-
-        self.assertEqual(TaskServiceSimilarityScore.objects.count(), 0)
 
     def test_saves_required_number_of_records_for_each_row(self):
         scores = create_square_matrix_of_unique_floats(6)
