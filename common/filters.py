@@ -187,3 +187,13 @@ class AlertIdFilter(filters.BaseFilterBackend):
             if queryset.model is Alert:
                 queryset = queryset.filter(alert_id=alert_id)
         return queryset
+
+class RegionFilter(filters.BaseFilterBackend):
+
+    def filter_queryset(self, request, queryset, view):
+        region = request.query_params.get('region', None)
+        if region:
+            if queryset.model is ServiceAtLocation:
+                service_id_suffix = '_' + region
+                queryset = queryset.filter(service_id__id__endswith=service_id_suffix)
+        return queryset

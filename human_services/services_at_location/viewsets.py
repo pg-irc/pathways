@@ -5,7 +5,8 @@ from human_services.services_at_location import documentation, serializers
 # TODO move common.filters to human_services.filters,
 # LocationIdFilter and similar should be with the location code
 from common.filters import (TopicSimilarityAndProximitySortFilter, ProximityCutoffFilter,
-                            SearchFilter, LocationIdFilter, ServiceIdFilter, TaxonomyFilter)
+                            SearchFilter, LocationIdFilter, ServiceIdFilter, TaxonomyFilter,
+                            RegionFilter)
 
 
 # pylint: disable=too-many-ancestors
@@ -28,4 +29,5 @@ class ServiceAtLocationViewSet(viewsets.ReadOnlyModelViewSet):
                        ProximityCutoffFilter,
                        ServiceIdFilter,
                        TaxonomyFilter,
+                       RegionFilter,
                        )
