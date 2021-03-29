@@ -522,7 +522,7 @@ class ServicesAtLocationApiTests(rest_test.APITestCase):
 
         response = (self.client.get('/v1/services_at_location/?region={0}'.format(client_region)))
         json = response.json()
-        
+
         self.assertEqual(len(json), 1)
         self.assertEqual(json[0]['location']['id'], mb_service_at_location.location.id)
         self.assertEqual(json[0]['service']['id'], mb_service_at_location.service.id)

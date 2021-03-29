@@ -194,6 +194,6 @@ class RegionFilter(filters.BaseFilterBackend):
         region = request.query_params.get('region', None)
         if region:
             if queryset.model is ServiceAtLocation:
-                service_id_suffix = '_' + region
+                service_id_suffix = '_{0}'.format(region.lower())
                 queryset = queryset.filter(service_id__id__endswith=service_id_suffix)
         return queryset
