@@ -51,8 +51,6 @@ class Command(BaseCommand):
         results_to_save = options['results_to_save']
         results_file = options['results_file']
 
-        print('All topic data and topic/service similarity data will be deleted and reimported')
-
         print('Reading topics...')
         topics = read_topic_descriptions(root_folder)
         topic_ids, topic_descriptions = to_topic_ids_and_descriptions(topics, region)

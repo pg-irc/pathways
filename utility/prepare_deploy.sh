@@ -205,6 +205,10 @@ then
     checkForSuccess "convert Manitoba WIN data, output to $NewcomersGuidePath"
 fi
 
+echo "removing existing similarity scores"
+./manage.py remove_all_topics_and_recommendations
+checkForSuccess "remove exising similarity scores"
+
 ./manage.py import_newcomers_guide "$NewcomersGuidePath"
 checkForSuccess "import BC newcomers guide data (and MB WIN data if applicable) into the database"
 
