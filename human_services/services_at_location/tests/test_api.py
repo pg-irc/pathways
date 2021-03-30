@@ -8,8 +8,9 @@ from human_services.organizations.tests.helpers import OrganizationBuilder
 from human_services.services.tests.helpers import ServiceBuilder
 from newcomers_guide.tests.helpers import create_topic
 from taxonomies.tests.helpers import TaxonomyTermBuilder
-from common.testhelpers.random_test_values import a_float, a_string
+from common.testhelpers.random_test_values import a_float, a_string, a_region_specific_id
 from django.contrib.gis.geos import Point
+from human_services.locations.models import ServiceAtLocation
 
 
 class ServicesAtLocationApiTests(rest_test.APITestCase):
@@ -502,3 +503,47 @@ class ServicesAtLocationApiTests(rest_test.APITestCase):
         response = self.client.get('/v1/services_at_location/')
         json = response.json()
         self.assertEqual(json[0]['id'], service_at_location.id)
+    
+    def test_can_filter_by_region(self):
+
+        bc_organization = OrganizationBuilder().with_id(a_region_specific_id('bc')).create()
+        mb_organization = OrganizationBuilder().with_id(a_region_specific_id('mb')).create()
+
+        ServiceAtLocation.objects.create(
+            location=LocationBuilder(bc_organization).create(),
+            service=ServiceBuilder(bc_organization).with_id(a_region_specific_id('bc')).create()
+        )
+
+        mb_service_at_location = ServiceAtLocation.objects.create(
+            location=LocationBuilder(mb_organization).create(),
+            service=ServiceBuilder(mb_organization).with_id(a_region_specific_id('mb')).create()
+        )
+
+        response = (self.client.get('/v1/services_at_location/?region={0}'.format('mb')))
+        json = response.json()
+
+        self.assertEqual(len(json), 1)
+        self.assertEqual(json[0]['location']['id'], mb_service_at_location.location.id)
+        self.assertEqual(json[0]['service']['id'], mb_service_at_location.service.id)
+
+    def test_can_filter_by_region_when_uppercase(self):
+        
+        bc_organization = OrganizationBuilder().with_id(a_region_specific_id('bc')).create()
+        mb_organization = OrganizationBuilder().with_id(a_region_specific_id('mb')).create()
+
+        bc_service_at_location = ServiceAtLocation.objects.create(
+            location=LocationBuilder(bc_organization).create(),
+            service=ServiceBuilder(bc_organization).with_id(a_region_specific_id('bc')).create()
+        )
+
+        ServiceAtLocation.objects.create(
+            location=LocationBuilder(mb_organization).create(),
+            service=ServiceBuilder(mb_organization).with_id(a_region_specific_id('mb')).create()
+        )
+
+        response = (self.client.get('/v1/services_at_location/?region={0}'.format('BC')))
+        json = response.json()
+
+        self.assertEqual(len(json), 1)
+        self.assertEqual(json[0]['location']['id'], bc_service_at_location.location.id)
+        self.assertEqual(json[0]['service']['id'], bc_service_at_location.service.id)
