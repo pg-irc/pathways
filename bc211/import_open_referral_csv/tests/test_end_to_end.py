@@ -26,6 +26,7 @@ class EndToEndTest(TestCase):
         physical_city = a_string()
         mailing_address_1 = a_string()
         mailing_city = a_string()
+        the_region = a_string()
 
         # create and parse the bc211 csv data for a service with mailing and physical address
 
@@ -51,14 +52,14 @@ class EndToEndTest(TestCase):
                           with_field('PhysicalStateProvince', a_string()).
                           with_field('PhysicalCountry', 'CA').
                           build())
-        parsed_data = parse(TestDataSink(), bc211_csv_data)
+        parsed_data = parse(TestDataSink(), bc211_csv_data, the_region)
 
         self.assertEqual(len(parsed_data.organizations), 1)
-        self.assertEqual(parsed_data.organizations[0]['id'], the_organization_id)
+        self.assertEqual(parsed_data.organizations[0]['id'], f'{the_organization_id}_{the_region}')
 
         self.assertEqual(len(parsed_data.services), 1)
-        self.assertEqual(parsed_data.services[0]['organization_id'], the_organization_id)
-        self.assertEqual(parsed_data.services[0]['id'], the_service_id)
+        self.assertEqual(parsed_data.services[0]['organization_id'], f'{the_organization_id}_{the_region}')
+        self.assertEqual(parsed_data.services[0]['id'], f'{the_service_id}_{the_region}')
 
         self.assertEqual(len(parsed_data.locations), 2)
         location_id = parsed_data.locations[0]['id']
@@ -86,18 +87,19 @@ class EndToEndTest(TestCase):
             # tax_status,tax_id,year_incorporated,legal_status
             '', '', '', '']
                 for r in parsed_data.organizations]
+        organization_id_with_region = f'{the_organization_id}_{the_region}'
         collector = InactiveRecordsCollector()
         counters = ImportCounters()
         import_organization(open_referral_csv_data, collector, counters)
         result_from_db = Organization.objects.all()
         self.assertEqual(len(result_from_db), 1)
-        self.assertEqual(result_from_db[0].id, the_organization_id)
+        self.assertEqual(result_from_db[0].id, organization_id_with_region)
 
         # import location
 
         open_referral_csv_data = [[
             # id,organization_id,name,
-            r['id'], the_organization_id, r['name'],
+            r['id'], organization_id_with_region, r['name'],
             # alternate_name,description,transportation,
             '', '', '',
             # latitude,longitude
@@ -124,8 +126,8 @@ class EndToEndTest(TestCase):
         import_services(open_referral_csv_data, collector, counters)
         result_from_db = Service.objects.all()
         self.assertEqual(len(result_from_db), 1)
-        self.assertEqual(result_from_db[0].id, the_service_id)
-        self.assertEqual(result_from_db[0].organization_id, the_organization_id)
+        self.assertEqual(result_from_db[0].id, f'{the_service_id}_{the_region}')
+        self.assertEqual(result_from_db[0].organization_id, organization_id_with_region)
 
         # import addresses
 
@@ -166,6 +168,7 @@ class EndToEndTest(TestCase):
         second_name = a_string()
         mailing_address_1 = a_string()
         mailing_city = a_string()
+        the_region = a_string()
 
         # create and parse the bc211 csv data for two services with the same address information
 
@@ -197,17 +200,17 @@ class EndToEndTest(TestCase):
                           with_field('MailingCity', mailing_city).
                           with_field('MailingCountry', 'CA').
                           build())
-        parsed_data = parse(TestDataSink(), bc211_csv_data)
+        parsed_data = parse(TestDataSink(), bc211_csv_data, the_region)
 
         self.assertEqual(len(parsed_data.organizations), 2)
-        self.assertEqual(parsed_data.organizations[0]['id'], first_organization_id)
-        self.assertEqual(parsed_data.organizations[1]['id'], second_organization_id)
+        self.assertEqual(parsed_data.organizations[0]['id'], f'{first_organization_id}_{the_region}')
+        self.assertEqual(parsed_data.organizations[1]['id'], f'{second_organization_id}_{the_region}')
 
         self.assertEqual(len(parsed_data.services), 2)
-        self.assertEqual(parsed_data.services[0]['id'], first_service_id)
-        self.assertEqual(parsed_data.services[1]['id'], second_service_id)
-        self.assertEqual(parsed_data.services[0]['organization_id'], first_organization_id)
-        self.assertEqual(parsed_data.services[1]['organization_id'], second_organization_id)
+        self.assertEqual(parsed_data.services[0]['id'], f'{first_service_id}_{the_region}')
+        self.assertEqual(parsed_data.services[1]['id'], f'{second_service_id}_{the_region}')
+        self.assertEqual(parsed_data.services[0]['organization_id'], f'{first_organization_id}_{the_region}')
+        self.assertEqual(parsed_data.services[1]['organization_id'], f'{second_organization_id}_{the_region}')
 
         self.assertEqual(len(parsed_data.locations), 2)
         self.assertEqual(parsed_data.locations[0]['name'], first_name)
@@ -238,13 +241,14 @@ class EndToEndTest(TestCase):
         import_organization(open_referral_csv_data, collector, counters)
         result_from_db = Organization.objects.all()
         self.assertEqual(len(result_from_db), 2)
-        self.assertEqual({r.id for r in result_from_db}, {first_organization_id, second_organization_id})
+        self.assertEqual({r.id for r in result_from_db}, {
+            f'{first_organization_id}_{the_region}', f'{second_organization_id}_{the_region}' })
 
         # import location
 
         open_referral_csv_data = [[
             # id,organization_id,name,
-            r['id'], first_organization_id, r['name'],
+            r['id'], f'{first_organization_id}_{the_region}', r['name'],
             # alternate_name,description,transportation,
             '', '', '',
             # latitude,longitude
@@ -272,8 +276,10 @@ class EndToEndTest(TestCase):
         import_services(open_referral_csv_data, collector, counters)
         result_from_db = Service.objects.all()
         self.assertEqual(len(result_from_db), 2)
-        self.assertEqual({r.id for r in result_from_db}, {first_service_id, second_service_id})
-        self.assertEqual({r.organization_id for r in result_from_db}, {first_organization_id, second_organization_id})
+        self.assertEqual({r.id for r in result_from_db}, {f'{first_service_id}_{the_region}',
+                                                          f'{second_service_id}_{the_region}'})
+        self.assertEqual({r.organization_id for r in result_from_db}, {f'{first_organization_id}_{the_region}',
+                                                                       f'{second_organization_id}_{the_region}'})
 
         # import addresses
 
@@ -300,6 +306,7 @@ class EndToEndTest(TestCase):
         bc211_what_taxonomy_term = a_string().upper()
         the_organization_id = a_string()
         the_service_id = a_string()
+        the_region = a_string()
 
         # create and parse the bc211 csv data for a service with a taxonomy term
 
@@ -314,14 +321,14 @@ class EndToEndTest(TestCase):
                           with_field('ParentAgencyNum', the_organization_id).
                           with_field('TaxonomyTerm', bc211_what_taxonomy_term).
                           build())
-        parsed_data = parse(TestDataSink(), bc211_csv_data)
+        parsed_data = parse(TestDataSink(), bc211_csv_data, the_region)
 
         self.assertEqual(len(parsed_data.organizations), 1)
-        self.assertEqual(parsed_data.organizations[0]['id'], the_organization_id)
+        self.assertEqual(parsed_data.organizations[0]['id'], f'{the_organization_id}_{the_region}')
 
         self.assertEqual(len(parsed_data.services), 1)
-        self.assertEqual(parsed_data.services[0]['organization_id'], the_organization_id)
-        self.assertEqual(parsed_data.services[0]['id'], the_service_id)
+        self.assertEqual(parsed_data.services[0]['organization_id'], f'{the_organization_id}_{the_region}')
+        self.assertEqual(parsed_data.services[0]['id'], f'{the_service_id}_{the_region}')
 
         self.assertEquals(len(parsed_data.taxonomy_terms), 1)
         self.assertEquals(parsed_data.taxonomy_terms[0]['name'], bc211_what_taxonomy_term.lower())
@@ -329,7 +336,7 @@ class EndToEndTest(TestCase):
         taxonomy_term_id = parsed_data.taxonomy_terms[0]['id']
 
         self.assertEquals(len(parsed_data.services_taxonomy), 1)
-        self.assertEquals(parsed_data.services_taxonomy[0]['service_id'], the_service_id)
+        self.assertEquals(parsed_data.services_taxonomy[0]['service_id'], f'{the_service_id}_{the_region}')
         self.assertEquals(parsed_data.services_taxonomy[0]['taxonomy_id'], taxonomy_term_id)
 
         # import organization
@@ -347,7 +354,7 @@ class EndToEndTest(TestCase):
         import_organization(open_referral_csv_data, collector, counters)
         result_from_db = Organization.objects.all()
         self.assertEqual(len(result_from_db), 1)
-        self.assertEqual(result_from_db[0].id, the_organization_id)
+        self.assertEqual(result_from_db[0].id, f'{the_organization_id}_{the_region}')
 
         # import service
 
@@ -366,8 +373,8 @@ class EndToEndTest(TestCase):
         import_services(open_referral_csv_data, collector, counters)
         result_from_db = Service.objects.all()
         self.assertEqual(len(result_from_db), 1)
-        self.assertEqual(result_from_db[0].id, the_service_id)
-        self.assertEqual(result_from_db[0].organization_id, the_organization_id)
+        self.assertEqual(result_from_db[0].id, f'{the_service_id}_{the_region}')
+        self.assertEqual(result_from_db[0].organization_id, f'{the_organization_id}_{the_region}')
 
         # import taxonomy terms
 

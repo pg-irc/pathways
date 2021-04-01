@@ -16,7 +16,12 @@ class Command(BaseCommand):
                             metavar='file',
                             help='Path to CSV file containing BC-211 data')
         parser.add_argument('path', metavar='path', help='Path to output folder, which must already exist')
+        parser.add_argument('region', metavar='region', help='region id, such as bc or mb, added to all ids to avoid conflicts')
         parser.add_argument('--vocabulary', default=None, help='the vocabulary id for taxonomy terms, defaults to BC211 or AIRS')
 
     def handle(self, *args, **options):
-        parse(CsvFileSink(options['path']), options['file'], options['vocabulary'])
+        parse(CsvFileSink(options['path']),
+              options['file'],
+              options['region'],
+              options['vocabulary']
+            )

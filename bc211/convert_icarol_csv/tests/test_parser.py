@@ -13,40 +13,43 @@ logging.disable(logging.ERROR)
 
 
 class ParseOrganizationsTests(TestCase):
+    def setUp(self):
+        self.region = a_string()
+
     def test_can_parse_organization_id(self):
         the_id = a_string()
         data = Bc211CsvDataBuilder().as_organization().with_field('ResourceAgencyNum', the_id).build()
-        parsed_data = parse(TestDataSink(), data)
-        self.assertEqual(parsed_data.first_organization()['id'], the_id)
+        parsed_data = parse(TestDataSink(), data, self.region)
+        self.assertEqual(parsed_data.first_organization()['id'], f'{the_id}_{self.region}')
 
     def test_can_parse_organization_name(self):
         the_name = a_string()
         data = Bc211CsvDataBuilder().as_organization().with_field('PublicName', the_name).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_organization()['name'], the_name)
 
     def test_can_parse_organization_alternate_name(self):
         the_alternate_name = a_string()
         data = Bc211CsvDataBuilder().as_organization().with_field('AlternateName', the_alternate_name).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_organization()['alternate_name'], the_alternate_name)
 
     def test_can_parse_description(self):
         the_description = a_string()
         data = Bc211CsvDataBuilder().as_organization().with_field('AgencyDescription', the_description).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_organization()['description'], the_description)
 
     def test_can_parse_email(self):
         the_email = an_email_address()
         data = Bc211CsvDataBuilder().as_organization().with_field('EmailAddressMain', the_email).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_organization()['email'], the_email)
 
     def test_can_parse_url(self):
         the_url = a_website_address()
         data = Bc211CsvDataBuilder().as_organization().with_field('WebsiteAddress', the_url).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_organization()['url'], the_url)
 
     def test_parse_as_organization_if_parent_agency_is_zero(self):
@@ -56,8 +59,8 @@ class ParseOrganizationsTests(TestCase):
                 with_field('ResourceAgencyNum', the_id).
                 with_field('ParentAgencyNum', parent_id).
                 build())
-        parsed_data = parse(TestDataSink(), data)
-        self.assertEqual(parsed_data.first_organization()['id'], the_id)
+        parsed_data = parse(TestDataSink(), data, self.region)
+        self.assertEqual(parsed_data.first_organization()['id'], f'{the_id}_{self.region}')
 
     def test_can_parse_two_organizations(self):
         first_name = a_string()
@@ -65,13 +68,13 @@ class ParseOrganizationsTests(TestCase):
         data = (Bc211CsvDataBuilder().
                 as_organization().with_field('PublicName', first_name).next_row().
                 as_organization().with_field('PublicName', second_name).build())
-        parsed_data = parse(TestDataSink(), data).organizations
+        parsed_data = parse(TestDataSink(), data, self.region).organizations
         self.assertEqual(parsed_data[0]['name'], first_name)
         self.assertEqual(parsed_data[1]['name'], second_name)
 
     def test_records_with_status_inactive_are_marked(self):
         data = (Bc211CsvDataBuilder().as_organization().with_field('AgencyStatus', 'Inactive').build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.organizations), 1)
         self.assertRegex(parsed_data.organizations[0]['description'], r'^DEL0')
 
@@ -79,7 +82,7 @@ class ParseOrganizationsTests(TestCase):
         data = (Bc211CsvDataBuilder().
                 as_organization().with_field('AgencyDescription', 'DEL bla bla').
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.organizations), 1)
         self.assertEqual(parsed_data.organizations[0]['description'], 'DEL bla bla')
 
@@ -88,7 +91,7 @@ class ParseOrganizationsTests(TestCase):
                 as_organization().
                 with_field('AgencyDescription', 'DEL bla bla').
                 with_field('AgencyStatus', 'Inactive').build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.organizations), 1)
         self.assertEqual(parsed_data.organizations[0]['description'], 'DEL bla bla')
 
@@ -97,7 +100,7 @@ class ParseOrganizationsTests(TestCase):
                 as_organization().with_field('MailingStateProvince', 'YT').next_row().
                 as_organization().with_field('PhysicalStateProvince', 'YT').
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.organizations), 2)
         self.assertRegex(parsed_data.organizations[0]['description'], r'^DEL0 ')
         self.assertRegex(parsed_data.organizations[1]['description'], r'^DEL0')
@@ -107,7 +110,7 @@ class ParseOrganizationsTests(TestCase):
                 as_organization().with_field('MailingStateProvince', 'WA').next_row().
                 as_organization().with_field('PhysicalStateProvince', 'WA').
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.organizations), 2)
         self.assertRegex(parsed_data.organizations[0]['description'], r'^DEL0')
         self.assertRegex(parsed_data.organizations[1]['description'], r'^DEL0')
@@ -117,7 +120,7 @@ class ParseOrganizationsTests(TestCase):
                 as_organization().with_field('MailingStateProvince', 'WI').next_row().
                 as_organization().with_field('PhysicalStateProvince', 'WI').
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.organizations), 2)
         self.assertRegex(parsed_data.organizations[0]['description'], r'^DEL0')
         self.assertRegex(parsed_data.organizations[1]['description'], r'^DEL0')
@@ -127,7 +130,7 @@ class ParseOrganizationsTests(TestCase):
                 as_organization().with_field('MailingStateProvince', 'TX').next_row().
                 as_organization().with_field('PhysicalStateProvince', 'TX').
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.organizations), 2)
         self.assertRegex(parsed_data.organizations[0]['description'], r'^DEL0')
         self.assertRegex(parsed_data.organizations[1]['description'], r'^DEL0')
@@ -137,13 +140,16 @@ class ParseOrganizationsTests(TestCase):
                 as_organization().with_field('MailingStateProvince', 'TN').next_row().
                 as_organization().with_field('PhysicalStateProvince', 'TN').
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.organizations), 2)
         self.assertRegex(parsed_data.organizations[0]['description'], r'^DEL0')
         self.assertRegex(parsed_data.organizations[1]['description'], r'^DEL0')
 
 
 class ParseServicesTests(TestCase):
+    def setUp(self):
+        self.region = a_string()
+
     def test_parse_as_service_if_parent_agency_is_not_zero(self):
         parent_id = str(an_integer(min=1))
         the_id = str(an_integer(min=1))
@@ -151,8 +157,8 @@ class ParseServicesTests(TestCase):
                 with_field('ResourceAgencyNum', the_id).
                 with_field('ParentAgencyNum', parent_id).
                 build())
-        parsed_data = parse(TestDataSink(), data)
-        self.assertEqual(parsed_data.first_service()['id'], the_id)
+        parsed_data = parse(TestDataSink(), data, self.region)
+        self.assertEqual(parsed_data.first_service()['id'], f'{the_id}_{self.region}')
 
     def test_can_parse_last_verified_date_time(self):
         a_date = '9/15/2018 15:53'
@@ -160,7 +166,7 @@ class ParseServicesTests(TestCase):
                 as_service().
                 with_field('LastVerifiedOn', a_date).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_service()['last_verified_on-x'], '2018-09-15')
 
     def test_can_parse_last_verified_date(self):
@@ -169,7 +175,16 @@ class ParseServicesTests(TestCase):
                 as_service().
                 with_field('LastVerifiedOn', a_date).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
+        self.assertEqual(parsed_data.first_service()['last_verified_on-x'], '2018-09-15')
+
+    def test_can_parse_alternative_date_format(self):
+        a_date = '2018-09-15 0:00'
+        data = (Bc211CsvDataBuilder().
+                as_service().
+                with_field('LastVerifiedOn', a_date).
+                build())
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_service()['last_verified_on-x'], '2018-09-15')
 
     def test_last_verified_date_can_be_empty(self):
@@ -177,7 +192,7 @@ class ParseServicesTests(TestCase):
                 as_service().
                 with_field('LastVerifiedOn', '').
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertIsNone(parsed_data.first_service()['last_verified_on-x'])
 
     def test_if_id_is_missing_throw_error(self):
@@ -186,10 +201,13 @@ class ParseServicesTests(TestCase):
                 with_field('ParentAgencyNum', a_string()).
                 build())
         with self.assertRaises(CsvMissingIdParseException):
-            parse(TestDataSink(), data)
+            parse(TestDataSink(), data, self.region)
 
 
 class ParsePhoneNumbersTests(TestCase):
+    def setUp(self):
+        self.region = a_string()
+
     def test_default_phone_number_type(self):
         n = an_integer(min=1, max=5)
         data = (Bc211CsvDataBuilder().
@@ -197,7 +215,7 @@ class ParsePhoneNumbersTests(TestCase):
                 with_field(f'Phone{n}Number', a_phone_number()).
                 with_field(f'Phone{n}Type', '').
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_phone_number()['type'], f'Phone {n}')
 
     def test_can_parse_organization_phone_number(self):
@@ -206,7 +224,7 @@ class ParsePhoneNumbersTests(TestCase):
                 as_organization().
                 with_field('Phone1Number', the_number).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_phone_number()['number'], the_number)
 
     def test_can_parse_organization_phone_number_type(self):
@@ -216,7 +234,7 @@ class ParsePhoneNumbersTests(TestCase):
                 with_field('Phone1Type', the_type).
                 with_field('Phone1Number', a_phone_number()).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_phone_number()['type'], the_type)
 
     def test_can_parse_organization_phone_number_description(self):
@@ -226,7 +244,7 @@ class ParsePhoneNumbersTests(TestCase):
                 with_field('Phone1Name', the_phone_description).
                 with_field('Phone1Number', a_phone_number()).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_phone_number()['description'], the_phone_description)
 
     def test_set_index_on_phone_number_field_to_one(self):
@@ -243,7 +261,7 @@ class ParsePhoneNumbersTests(TestCase):
                 with_field('Phone1Number', first_number).
                 with_field('Phone2Number', second_number).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.phone_numbers[0]['number'], first_number)
         self.assertEqual(parsed_data.phone_numbers[1]['number'], second_number)
 
@@ -253,7 +271,7 @@ class ParsePhoneNumbersTests(TestCase):
                 as_organization().
                 with_field('PhoneFax', a_number).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.phone_numbers), 1)
         self.assertEqual(parsed_data.phone_numbers[0]['number'], a_number)
 
@@ -268,7 +286,7 @@ class ParsePhoneNumbersTests(TestCase):
                 with_field('Phone2Type', second_type).
                 with_field('PhoneFax', a_phone_number()).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.phone_numbers), 3)
         self.assertEqual(parsed_data.phone_numbers[0]['type'], first_type)
         self.assertEqual(parsed_data.phone_numbers[1]['type'], second_type)
@@ -276,18 +294,21 @@ class ParsePhoneNumbersTests(TestCase):
 
     def test_leaves_out_phone_numbers_with_no_values(self):
         data = Bc211CsvDataBuilder().as_organization().with_field('Phone1Number', '').build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.phone_numbers), 0)
 
 
 class ParseLocationsTests(TestCase):
+    def setUp(self):
+        self.region = a_string()
+
     def test_parses_organization_name_as_location_name(self):
         the_name = a_string()
         data = (Bc211CsvDataBuilder().
                 as_organization().
                 with_field('PublicName', the_name).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_location()['name'], the_name)
 
     def test_parses_organization_alternate_name_as_location_name(self):
@@ -296,7 +317,7 @@ class ParseLocationsTests(TestCase):
                 as_organization().
                 with_field('AlternateName', the_alternate_name).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_location()['alternate_name'], the_alternate_name)
 
     def test_parse_location_latitude(self):
@@ -305,7 +326,7 @@ class ParseLocationsTests(TestCase):
                 as_organization().
                 with_field('Latitude', str(the_latitude)).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_location()['latitude'], the_latitude)
 
     def test_parse_location_longitude(self):
@@ -314,7 +335,7 @@ class ParseLocationsTests(TestCase):
                 as_organization().
                 with_field('Longitude', str(the_longitude)).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_location()['longitude'], the_longitude)
 
 
@@ -340,6 +361,7 @@ class ParseCompleteRecordTests(TestCase):
         self.the_first_service_name = a_string()
         self.the_first_service_address = a_string()
         self.the_first_service_phone_number = a_phone_number()
+        self.region = a_string()
         data = (Bc211CsvDataBuilder().
                 as_organization().
                 with_field('ResourceAgencyNum', self.the_organization_id).
@@ -366,11 +388,11 @@ class ParseCompleteRecordTests(TestCase):
                 with_field('MailingAddress1', self.the_first_service_address).
                 with_field('Phone1Number', self.the_first_service_phone_number).
                 build())
-        self.parsed_data = parse(TestDataSink(), data)
+        self.parsed_data = parse(TestDataSink(), data, self.region)
 
     def test_organization_fields(self):
         self.assertEqual(len(self.parsed_data.organizations), 1)
-        self.assertEqual(self.parsed_data.first_organization()['id'], self.the_organization_id)
+        self.assertEqual(self.parsed_data.first_organization()['id'], f'{self.the_organization_id}_{self.region}')
         self.assertEqual(self.parsed_data.first_organization()['name'], self.the_organization_name)
         self.assertEqual(self.parsed_data.first_organization()['alternate_name'], self.the_alternate_name)
         self.assertEqual(self.parsed_data.first_organization()['description'], self.the_description)
@@ -379,7 +401,7 @@ class ParseCompleteRecordTests(TestCase):
 
     def test_service_fields(self):
         self.assertEqual(len(self.parsed_data.services), 1)
-        self.assertEqual(self.parsed_data.first_service()['id'], self.the_first_service_id)
+        self.assertEqual(self.parsed_data.first_service()['id'], f'{self.the_first_service_id}_{self.region}')
 
     def test_phone_number_fields(self):
         self.assertEqual(len(self.parsed_data.phone_numbers), 2)
@@ -389,7 +411,7 @@ class ParseCompleteRecordTests(TestCase):
 
     def test_location_fields(self):
         self.assertEqual(len(self.parsed_data.locations), 2)
-        self.assertEqual(self.parsed_data.first_location()['organization_id'], self.the_organization_id)
+        self.assertEqual(self.parsed_data.first_location()['organization_id'], f'{self.the_organization_id}_{self.region}')
         self.assertEqual(self.parsed_data.first_location()['name'], self.the_organization_name)
         self.assertEqual(self.parsed_data.first_location()['alternate_name'], self.the_alternate_name)
         self.assertEqual(self.parsed_data.first_location()['latitude'], self.the_latitude)
@@ -410,17 +432,20 @@ class ParseCompleteRecordTests(TestCase):
 
 
 class ParseTaxonomyTests(TestCase):
+    def setUp(self):
+        self.region = a_string()
+
     def test_parse_taxonomy_term(self):
         the_term = a_string()
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 1)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], the_term)
 
     def test_parse_taxonomy_term_with_space(self):
         the_term = 'Fire Services; Fire Stations'
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 2)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], 'fire-services')
         self.assertEqual(parsed_data.taxonomy_terms[1]['name'], 'fire-stations')
@@ -428,34 +453,34 @@ class ParseTaxonomyTests(TestCase):
     def test_parse_second_taxonomy_term_column(self):
         the_term = a_string()
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerms', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 1)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], the_term)
 
     def test_parse_third_taxonomy_term_column(self):
         the_term = a_string()
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTermsNotDeactivated', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 1)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], the_term)
 
     def test_parse_airs_taxonomy_term_column(self):
         the_term = a_string()
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyCodes', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 1)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], the_term)
 
     def test_can_pass_in_vocabulary_to_parser(self):
         the_vocabulary = a_string()
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyCodes', a_string()).build())
-        parsed_data = parse(TestDataSink(), data, the_vocabulary)
+        parsed_data = parse(TestDataSink(), data, self.region, the_vocabulary)
         self.assertEqual(parsed_data.taxonomy_terms[0]['vocabulary'], the_vocabulary)
 
     def test_does_not_split_airs_taxonomy_names_on_dash_or_dot(self):
         the_term = 'TA-3001.0750 * YB-9502.3300; TA-3003.0750 * YB-9504.1500;'
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyCodes', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 4)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], 'TA-3001.0750')
         self.assertEqual(parsed_data.taxonomy_terms[1]['name'], 'YB-9502.3300')
@@ -465,7 +490,7 @@ class ParseTaxonomyTests(TestCase):
     def test_split_taxonomy_terms_on_semicolon(self):
         the_term = 'one ; two ; three'
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyCodes', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 3)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], 'one')
         self.assertEqual(parsed_data.taxonomy_terms[1]['name'], 'two')
@@ -474,28 +499,28 @@ class ParseTaxonomyTests(TestCase):
     def test_do_not_split_taxonomy_terms_on_space(self):
         the_term = 'one two three'
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 1)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], 'one-two-three')
 
     def test_do_not_split_taxonomy_terms_on_slash(self):
         the_term = 'one/two/three'
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 1)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], 'one-two-three')
 
     def test_use_the_leaf_node_of_hierarchical_taxonomy_terms(self):
         the_term = 'root - node1 - node 2 - leaf'
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 1)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], 'leaf')
 
     def test_handle_two_hierarchical_terms(self):
         the_term = 'root - node1 - leaf1 ; root - node 2 - leaf2'
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 2)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], 'leaf1')
         self.assertEqual(parsed_data.taxonomy_terms[1]['name'], 'leaf2')
@@ -503,14 +528,14 @@ class ParseTaxonomyTests(TestCase):
     def test_change_terms_to_lower_case(self):
         the_term = 'One TWO three'
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 1)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], 'one-two-three')
 
     def test_strip_trailing_semicolon(self):
         the_term = a_string()
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term + ';').build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 1)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], the_term)
 
@@ -521,7 +546,7 @@ class ParseTaxonomyTests(TestCase):
                 as_service().
                 with_field('TaxonomyTerm', the_first_term + '; ' + the_second_term + '; ').
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 2)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], the_first_term)
         self.assertEqual(parsed_data.taxonomy_terms[1]['name'], the_second_term)
@@ -533,7 +558,7 @@ class ParseTaxonomyTests(TestCase):
                 as_service().
                 with_field('TaxonomyTerm', the_first_term + ' * ' + the_second_term + ';').
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 2)
         self.assertEqual(parsed_data.taxonomy_terms[0]['name'], the_first_term)
         self.assertEqual(parsed_data.taxonomy_terms[1]['name'], the_second_term)
@@ -541,25 +566,25 @@ class ParseTaxonomyTests(TestCase):
     def test_all_upper_case_term_in_TaxonomyTerm_column_is_part_of_taxonomy_called_bc211_what(self):
         the_term = a_string(from_character_string=string.ascii_uppercase)
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.taxonomy_terms[0]['vocabulary'], 'bc211-what')
 
     def test_all_upper_case_term_in_TaxonomyTerms_column_is_part_of_taxonomy_called_bc211_what(self):
         the_term = a_string(from_character_string=string.ascii_uppercase)
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerms', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.taxonomy_terms[0]['vocabulary'], 'bc211-what')
 
     def test_all_upper_case_term_in_TaxonomyTermsNotDeactivated_column_is_part_of_taxonomy_called_bc211_what(self):
         the_term = a_string(from_character_string=string.ascii_uppercase)
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTermsNotDeactivated', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.taxonomy_terms[0]['vocabulary'], 'bc211-what')
 
     def test_all_lower_case_term_is_part_of_taxonomy_called_bc211_why(self):
         the_term = a_string(from_character_string=string.ascii_lowercase)
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerms', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.taxonomy_terms[0]['vocabulary'], 'bc211-why')
 
     def test_all_first_letter_capitalized_is_part_of_taxonomy_called_bc211_who(self):
@@ -567,37 +592,37 @@ class ParseTaxonomyTests(TestCase):
         tail = a_string(from_character_string=string.ascii_lowercase)
         the_term = head + tail
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerms', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.taxonomy_terms[0]['vocabulary'], 'bc211-who')
 
     def test_term_from_TaxonomyCodes_column_is_part_of_taxonomy_called_airs(self):
         the_term = a_string()
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyCodes', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.taxonomy_terms[0]['vocabulary'], 'AIRS')
 
     def test_set_parent_name_to_empty_string(self):
         the_term = a_string()
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.taxonomy_terms[0]['parent_name'], '')
 
     def test_set_parent_id_to_bc211(self):
         the_term = a_string()
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.taxonomy_terms[0]['parent_id'], '')
 
     def test_compute_the_id(self):
         the_term = a_string()
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertGreater(len(parsed_data.taxonomy_terms[0]['id']), 0)
 
     def test_does_not_save_duplicate_terms(self):
         the_term = a_string()
         data = (Bc211CsvDataBuilder().as_service().with_field('TaxonomyTerm', the_term + ';' + the_term).build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.taxonomy_terms), 1)
 
     def test_create_service_taxonomy_row_with_service_id(self):
@@ -607,9 +632,9 @@ class ParseTaxonomyTests(TestCase):
                 with_field('ResourceAgencyNum', the_service_id).
                 with_field('TaxonomyTerm', a_string()).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.services_taxonomy), 1)
-        self.assertEqual(parsed_data.services_taxonomy[0]['service_id'], the_service_id)
+        self.assertEqual(parsed_data.services_taxonomy[0]['service_id'], f'{the_service_id}_{self.region}')
 
         the_taxonomy_term_id = parsed_data.taxonomy_terms[0]['id']
         self.assertEqual(parsed_data.services_taxonomy[0]['taxonomy_id'], the_taxonomy_term_id)
@@ -620,6 +645,7 @@ class ParseTaxonomyTests(TestCase):
 
 class AreTwoLocationsConsideredDuplicateTests(TestCase):
     def setUp(self):
+        self.region = a_string()
         self.builder = (Bc211CsvDataBuilder().
                         as_organization().
                         with_field('ResourceAgencyNum', a_string()).
@@ -646,96 +672,99 @@ class AreTwoLocationsConsideredDuplicateTests(TestCase):
 
     def test_two_locations_with_different_organization_id_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('ResourceAgencyNum', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
     def test_two_locations_with_different_public_names_id_are_not_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('PublicName', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 2)
 
     def test_two_locations_with_different_alternate_names_are_not_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('AlternateName', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 2)
 
     def test_two_locations_with_different_descriptions_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('AgencyDescription', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
     def test_two_locations_with_different_latitude_are_not_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('Latitude', str(a_latitude())).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 2)
 
     def test_two_locations_with_different_longitudes_are_not_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('Longitude', str(a_longitude())).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 2)
 
     def test_two_locations_with_different_address_line_1_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('MailingAddress1', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
     def test_two_locations_with_different_address_line_2_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('MailingAddress2', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
     def test_two_locations_with_different_address_line_3_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('MailingAddress3', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
     def test_two_locations_with_different_address_line_4_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('MailingAddress4', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
     def test_two_locations_with_different_mailing_city_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('MailingCity', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
     def test_two_locations_with_different_province_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('MailingStateProvince', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
     def test_two_locations_with_different_postal_code_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('MailingPostalCode', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
     def test_two_locations_with_different_mailing_country_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('MailingCountry', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
     def test_two_locations_with_different_physical_address_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('PhysicalAddress1', a_string()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
     def test_two_locations_with_different_phone_number_are_not_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('Phone1Number', a_phone_number()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 2)
 
     def test_two_locations_with_different_phone_number_type_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('Phone1Type', a_phone_number()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
     def test_two_locations_with_different_phone_number_names_are_duplicates(self):
         data = self.builder.duplicate_last_row().with_field('Phone1Name', a_phone_number()).build()
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 1)
 
 
 class HumanServiceOneToManyRelationshipsTests(TestCase):
+    def setUp(self):
+        self.region = a_string()
+
     def test_an_organization_with_two_locations(self):
         the_organization_id = a_string()
         data = (Bc211CsvDataBuilder().
@@ -750,10 +779,10 @@ class HumanServiceOneToManyRelationshipsTests(TestCase):
                 with_field('MailingAddress1', a_string()).
                 with_field('MailingCity', a_string()).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
 
         self.assertEqual(len(parsed_data.locations), 1)
-        self.assertEqual(parsed_data.locations[0]['organization_id'], the_organization_id)
+        self.assertEqual(parsed_data.locations[0]['organization_id'], f'{the_organization_id}_{self.region}')
 
     def test_an_organization_with_two_services(self):
         the_organization_id = a_string()
@@ -769,11 +798,11 @@ class HumanServiceOneToManyRelationshipsTests(TestCase):
                 with_field('ResourceAgencyNum', a_string()).
                 with_field('ParentAgencyNum', the_organization_id).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
 
         self.assertEqual(len(parsed_data.services), 2)
-        self.assertEqual(parsed_data.services[0]['organization_id'], the_organization_id)
-        self.assertEqual(parsed_data.services[1]['organization_id'], the_organization_id)
+        self.assertEqual(parsed_data.services[0]['organization_id'], f'{the_organization_id}_{self.region}')
+        self.assertEqual(parsed_data.services[1]['organization_id'], f'{the_organization_id}_{self.region}')
 
     def test_location_with_two_services(self):
         the_organization_id = a_string()
@@ -807,15 +836,15 @@ class HumanServiceOneToManyRelationshipsTests(TestCase):
                 with_field('MailingCity', the_city_line).
                 with_field('MailingStateProvince', the_province).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
 
         self.assertEqual(len(parsed_data.locations), 3)
         first_location_id = parsed_data.locations[1]['id']
         second_location_id = parsed_data.locations[2]['id']
 
         self.assertEqual(len(parsed_data.services_at_location), 2)
-        self.assertEqual(parsed_data.services_at_location[0]['service_id'], the_first_service_id)
-        self.assertEqual(parsed_data.services_at_location[1]['service_id'], the_second_service_id)
+        self.assertEqual(parsed_data.services_at_location[0]['service_id'], f'{the_first_service_id}_{self.region}')
+        self.assertEqual(parsed_data.services_at_location[1]['service_id'], f'{the_second_service_id}_{self.region}')
         self.assertEqual(parsed_data.services_at_location[0]['location_id'], first_location_id)
         self.assertEqual(parsed_data.services_at_location[1]['location_id'], second_location_id)
 
@@ -855,15 +884,15 @@ class HumanServiceOneToManyRelationshipsTests(TestCase):
                 with_field('MailingStateProvince', a_string()).
                 build())
 
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.locations), 3)
         # location at offset 0 is for the organization
         first_location_id = parsed_data.locations[1]['id']
         second_location_id = parsed_data.locations[2]['id']
 
         self.assertEqual(len(parsed_data.services_at_location), 2)
-        self.assertEqual(parsed_data.services_at_location[0]['service_id'], the_service_id)
-        self.assertEqual(parsed_data.services_at_location[1]['service_id'], the_service_id)
+        self.assertEqual(parsed_data.services_at_location[0]['service_id'], f'{the_service_id}_{self.region}')
+        self.assertEqual(parsed_data.services_at_location[1]['service_id'], f'{the_service_id}_{self.region}')
         self.assertEqual(parsed_data.services_at_location[0]['location_id'], first_location_id)
         self.assertEqual(parsed_data.services_at_location[1]['location_id'], second_location_id)
 
@@ -883,7 +912,7 @@ class HumanServiceOneToManyRelationshipsTests(TestCase):
                 with_field('Phone5Number', a_phone_number()).
                 with_field('Phone5Type', a_string()).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
 
         self.assertEqual(len(parsed_data.phone_numbers), 5)
         the_location_id = parsed_data.first_location()['id']
@@ -904,7 +933,7 @@ class HumanServiceOneToManyRelationshipsTests(TestCase):
                 with_field('Phone2Number', the_phone_number).
                 with_field('Phone2Type', a_string()).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
 
         self.assertEqual(len(parsed_data.phone_numbers), 1)
         self.assertEqual(parsed_data.phone_numbers[0]['number'], the_phone_number)
@@ -934,7 +963,7 @@ class HumanServiceOneToManyRelationshipsTests(TestCase):
                 with_field('PhysicalPostalCode', a_string()).
                 with_field('PhysicalCountry', a_string()).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         the_location_id = parsed_data.locations[0]['id']
 
         self.assertEqual(len(parsed_data.addresses), 2)
@@ -969,7 +998,7 @@ class HumanServiceOneToManyRelationshipsTests(TestCase):
                 with_field('MailingPostalCode', the_postal_code).
                 with_field('MailingCountry', the_country).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         the_first_location_id = parsed_data.locations[0]['id']
         the_second_location_id = parsed_data.locations[1]['id']
 
@@ -984,13 +1013,16 @@ class HumanServiceOneToManyRelationshipsTests(TestCase):
 
 
 class ParseAddressTests(TestCase):
+    def setUp(self):
+        self.region = a_string()
+
     def test_can_parse_address_line_one(self):
         the_address_line = a_string()
         data = (Bc211CsvDataBuilder().
                 as_organization().
                 with_field('MailingAddress1', the_address_line).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_address()['address_1'], the_address_line)
 
     def test_can_parse_remaining_address_lines(self):
@@ -1003,7 +1035,7 @@ class ParseAddressTests(TestCase):
                 with_field('MailingAddress3', address_line_3).
                 with_field('MailingAddress4', address_line_4).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_address()['address_2'], address_line_2)
         self.assertEqual(parsed_data.first_address()['address_3'], address_line_3)
         self.assertEqual(parsed_data.first_address()['address_4'], address_line_4)
@@ -1014,7 +1046,7 @@ class ParseAddressTests(TestCase):
                 as_organization().
                 with_field('MailingCity', the_city_line).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_address()['city'], the_city_line)
 
     def test_can_parse_address_state_province(self):
@@ -1023,7 +1055,7 @@ class ParseAddressTests(TestCase):
                 as_organization().
                 with_field('MailingStateProvince', the_province).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_address()['state_province'], the_province)
 
     def test_can_parse_address_postal_code(self):
@@ -1032,7 +1064,7 @@ class ParseAddressTests(TestCase):
                 as_organization().
                 with_field('MailingPostalCode', the_postal_code).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_address()['postal_code'], the_postal_code)
 
     def test_can_parse_address_country(self):
@@ -1041,7 +1073,7 @@ class ParseAddressTests(TestCase):
                 as_organization().
                 with_field('MailingCountry', the_country).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_address()['country'], the_country)
 
     def test_can_parse_physical_address(self):
@@ -1050,7 +1082,7 @@ class ParseAddressTests(TestCase):
                 as_organization().
                 with_field('PhysicalAddress1', the_address_line).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_address()['address_1'], the_address_line)
 
     def test_marks_physical_address_as_physical(self):
@@ -1058,7 +1090,7 @@ class ParseAddressTests(TestCase):
                 as_organization().
                 with_field('PhysicalAddress1', a_string()).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_address()['type'], 'physical_address')
 
     def test_marks_postal_address_as_postal(self):
@@ -1066,7 +1098,7 @@ class ParseAddressTests(TestCase):
                 as_organization().
                 with_field('MailingAddress1', a_string()).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_address()['type'], 'postal_address')
 
     def test_can_parse_both_physical_and_postal_address(self):
@@ -1077,7 +1109,7 @@ class ParseAddressTests(TestCase):
                 with_field('MailingAddress1', the_postal_address_line).
                 with_field('PhysicalAddress1', the_physical_address_line).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(parsed_data.first_address()['address_1'], the_postal_address_line)
         self.assertEqual(parsed_data.second_address()['address_1'], the_physical_address_line)
 
@@ -1088,7 +1120,7 @@ class ParseAddressTests(TestCase):
                 with_field('MailingAddress1', the_address_line).
                 with_field('PhysicalAddress1', the_address_line).
                 build())
-        parsed_data = parse(TestDataSink(), data)
+        parsed_data = parse(TestDataSink(), data, self.region)
         self.assertEqual(len(parsed_data.addresses), 2)
         self.assertEqual(parsed_data.first_address()['address_1'], the_address_line)
         self.assertEqual(parsed_data.second_address()['address_1'], the_address_line)

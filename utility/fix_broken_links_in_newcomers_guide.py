@@ -43,12 +43,18 @@ def fix_link(content, bad_link, good_link):
     return [found, content]
 
 
+def strip_trailing_slash(url):
+    while url.endswith('/'):
+        url = url[:-1]
+    return url
+
+
 def fix_links_in_file(path):
     dirty = False
     content = read_file_content(path)
     for line in fixed_links:
-        bad_link = line[0].strip()
-        good_link = line[2].strip()
+        bad_link = strip_trailing_slash(line[0].strip())
+        good_link = strip_trailing_slash(line[2].strip())
 
         if bad_link == '' or good_link == '' or good_link == 'OK':
             continue

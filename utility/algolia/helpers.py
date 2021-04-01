@@ -1,11 +1,13 @@
 import csv
 import json
 
+
 def parse_cities_csv(csv_path):
     with open(csv_path, mode='r') as file:
         csv_reader = csv.reader(file)
         city_to_latlong = {rows[0]: {'lng': float(rows[1]), 'lat': float(rows[2])} for rows in csv_reader}
         return city_to_latlong
+
 
 def read_phone_data(phone_data_path):
     result = {}

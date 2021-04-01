@@ -16,7 +16,7 @@ def parse_topic_files(file_specs):
         description = clean_text(spec[1])
 
         parsed_path = parse_file_path(path)
-        topic_id = parsed_path.id
+        topic_id = f'{parsed_path.id}_{parsed_path.region}'
 
         if parsed_path.type == 'topics':
             ensure_builder_exists_for_topic(builders, topic_id)
@@ -27,7 +27,7 @@ def parse_topic_files(file_specs):
 
 def parse_file_path(path):
     parsed_file_path = collections.namedtuple('parsed_file_path',
-                                              ['chapter', 'type', 'id', 'locale', 'title'])
+                                              ['region', 'chapter', 'type', 'id', 'locale', 'title'])
     split_path = path.split(os.sep)
     length = len(split_path)
     if length < 5:
@@ -37,7 +37,8 @@ def parse_file_path(path):
     title = get_title_from_file_name(name)
     locale = get_locale_from_file_name(name)
     topic_id = slugify(split_path[length - 2])
-    return parsed_file_path(chapter=split_path[length - 4],
+    return parsed_file_path(region=split_path[length - 5],
+                            chapter=split_path[length - 4],
                             type=split_path[length - 3],
                             id=topic_id,
                             title=title,
@@ -116,6 +117,10 @@ class TopicBuilder:
         self.topic['id'] = the_id
         return self
 
+    def set_region(self, region):
+        self.topic['region'] = region
+        return self
+
     def set_related_topics(self, related_topics):
         self.topic['relatedTopics'] = related_topics
         return self
@@ -160,6 +165,7 @@ def make_topic_map(builders):
 
 
 def add_properties_for_locale(builder, parsed_path, description):
+    region = parsed_path.region
     locale = parsed_path.locale
     chapter = parsed_path.chapter
     builder_chapter = builder.get_chapter()
@@ -169,6 +175,7 @@ def add_properties_for_locale(builder, parsed_path, description):
     builder.set_chapter(chapter)
     builder.set_title_in_locale(locale, parsed_path.title)
     builder.set_description_in_locale(locale, description)
+    builder.set_region(region)
 
 
 def parse_taxonomy_files(file_specs):
@@ -177,7 +184,7 @@ def parse_taxonomy_files(file_specs):
         path = spec[0]
         file_content = spec[1]
         parsed_path = parse_file_path(path)
-        content_id = parsed_path.id
+        content_id = f'{parsed_path.id}_{parsed_path.region}'
         content_type = parsed_path.type
         try:
             parsed_terms = parse_taxonomy_terms(file_content)
