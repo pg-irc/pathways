@@ -1,5 +1,5 @@
 language: python
-python: 3.7.6
+python: 3.7.10
 # See https://github.com/travis-ci/travis-ci/issues/6972.
 before_install:
   - sudo add-apt-repository --yes ppa:ubuntugis/ppa
