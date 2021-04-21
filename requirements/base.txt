@@ -20,7 +20,7 @@ argon2-cffi==20.1.0
 django-allauth==0.44.0
 
 # push notifications
-exponent-server-sdk==1.0.0
+exponent-server-sdk==2.0.0
 
 # postgreSQL database adapter
 # see http://initd.org/psycopg/docs/install.html#disabling-wheel-packages-for-psycopg-2-7
