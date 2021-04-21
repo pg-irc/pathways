@@ -5,15 +5,15 @@ wheel==0.36.2
 six==1.15.0
 
 # django
-django==3.1.5
+django==3.2
 django-environ==0.4.5
 django-model-utils==4.1.1
-django-cors-headers==3.6.0
+django-cors-headers==3.7.0
 django-parler==2.2
-djangorestframework==3.12.2
+djangorestframework==3.12.4
 drf_yasg2==1.19.4
 awesome-slugify==1.6.5
-polib==1.1.0
+polib==1.1.1
 
 # authentication: Used in testing and user registration
 argon2-cffi==20.1.0
@@ -29,10 +29,10 @@ psycopg2==2.8.6 --no-binary psycopg2
 
 # Natural language processing
 spacy==2.3.2
-scipy==1.5.2
+scipy==1.6.2
 textacy==0.10.1
 # see https://github.com/explosion/spaCy/issues/2995, resolves error "ValueError: 1792000 exceeds max_bin_len(1048576)"
-msgpack==1.0.0
+msgpack==1.0.2
 
 # static files
 whitenoise==5.2.0
@@ -42,4 +42,4 @@ django-redis==4.12.1
 redis==3.5.3
 
 # front end tech: Used in Django Admin
-django-crispy-forms==1.10.0
+django-crispy-forms==1.11.2
