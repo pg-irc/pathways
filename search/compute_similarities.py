@@ -2,7 +2,7 @@ import re
 import logging
 import spacy
 import sklearn.preprocessing
-from textacy.vsm import Vectorizer
+from textacy.representations import Vectorizer
 from django.utils.text import slugify
 from spacy.lang.en.stop_words import STOP_WORDS as SPACY_STOP_WORDS
 
@@ -64,13 +64,13 @@ def is_saving_intermediates_to_file(results_to_save, results_file):
 
 
 def compute_similarities(docs):
-    vectorizer = Vectorizer(tf_type='linear', apply_idf=True, idf_type='smooth', apply_dl=False)
+    vectorizer = Vectorizer(tf_type='linear', idf_type='smooth', dl_type=None)
     term_matrix = compute_term_matrix(vectorizer, docs)
     return compute_cosine_doc_similarities(term_matrix)
 
 
 def compute_similarities_and_save_intermediates(docs, topic_ids, service_ids, results_to_save, results_file):
-    vectorizer = Vectorizer(tf_type='linear', apply_idf=True, idf_type='smooth', apply_dl=False)
+    vectorizer = Vectorizer(tf_type='linear', idf_type='smooth', dl_type=None)
     term_matrix = compute_term_matrix(vectorizer, docs)
     write_intermediary_results_as_csv(vectorizer, term_matrix, topic_ids,
                                       service_ids, results_to_save, results_file)
@@ -78,7 +78,7 @@ def compute_similarities_and_save_intermediates(docs, topic_ids, service_ids, re
 
 
 def compute_term_matrix(vectorizer, docs):
-    nlp = spacy.load('en')
+    nlp = spacy.load('en_core_web_sm')
     spacy_docs = [nlp(doc) for doc in docs]
     tokenized_docs = ([token.lemma_.lower() for token in doc if not is_stop_word(token)] for doc in spacy_docs)
     return vectorizer.fit_transform(tokenized_docs)
