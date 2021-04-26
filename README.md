@@ -32,7 +32,7 @@ Install the required python libraries for local development, including the Engli
 python -m pip install --upgrade pip
 pip install wheel
 pip install -r requirements/local.txt
-python -m spacy download en
+python -m spacy download en_core_web_sm
 ```
 
 ## Psycopg2 on Mac
