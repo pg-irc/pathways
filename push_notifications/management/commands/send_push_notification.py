@@ -3,8 +3,9 @@ import re
 import logging
 from django.core.management.base import BaseCommand, CommandError
 from exponent_server_sdk import (DeviceNotRegisteredError, PushClient, PushMessage,
-                                 PushResponseError, PushServerError)
+                                 PushTicketError, PushServerError)
 from search.read_csv_data_from_file import read_csv_data_from_file
+from urllib.error import HTTPError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -121,5 +122,5 @@ def send_push_message(token, message, extra):
         # thrown when users no longer want to receive push notifications.
         LOGGER.warning('DeviceNotRegisteredError, remove this token from our database: %s', token)
 
-    except PushResponseError:
+    except PushTicketError:
         LOGGER.error('Error pushing notification: PushResponseError for %s', token)

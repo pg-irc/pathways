@@ -1,5 +1,5 @@
 language: python
-python: 3.7.6
+python: 3.7.10
 # See https://github.com/travis-ci/travis-ci/issues/6972.
 before_install:
   - sudo add-apt-repository --yes ppa:ubuntugis/ppa
@@ -23,7 +23,7 @@ install:
 before_script:
 - psql -c 'create database pathways_local;' -U postgres
 script:
-- python -m spacy download en
+- python -m spacy download en_core_web_sm
 - python manage.py migrate
 - python manage.py test
 deploy:

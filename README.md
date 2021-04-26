@@ -32,7 +32,7 @@ Install the required python libraries for local development, including the Engli
 python -m pip install --upgrade pip
 pip install wheel
 pip install -r requirements/local.txt
-python -m spacy download en
+python -m spacy download en_core_web_sm
 ```
 
 ## Psycopg2 on Mac
@@ -186,7 +186,7 @@ rm -r .venv-local/
 python3 -m venv .venv-local
 source ./.venv-local/bin/activate
 pip install -r requirements/local.txt
-python -m spacy download en
+python -m spacy download en_core_web_sm
 ```
 
 Then run the upgrade script for either local, rest or production environment, e.g.:
