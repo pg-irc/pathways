@@ -1,0 +1,8 @@
+* Change header names in CSV file to match the algolia headers
+* Filter file for services, and organizations separately
+* Convert services and organizations CSV to json
+* Add organization data to the service records
+
+csvtojons options:
+    --includeColumns: RegExp matched columns to include from input. e.g. --includeColumns=/(name|age)/
+    
