@@ -221,7 +221,7 @@ fi
 checkForSuccess "compute similarity scores"
 
 echo "adding manual similarity scores ..."
-./manage.py manage_manual_recommendations $ManualRecommendations
+./manage.py manage_manual_recommendations $ManualRecommendations --region bc
 checkForSuccess "add manual similarity scores"
 
 echo "saving database content to $OutputFile ..."

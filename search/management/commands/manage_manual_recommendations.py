@@ -27,10 +27,12 @@ class Command(BaseCommand):
                             help='path to folder containing per-topic files with recommendations')
         parser.add_argument('--reset_recommendations', action='store_true',
                             help='Remove all existing recommendations from database before importing')
+        parser.add_argument('region', metavar='region', help='Add regional postfix to service and topic primary keys')
 
     def handle(self, *args, **options):
         path = options['path']
         reset_recommendations = options['reset_recommendations']
+        region = options['region']
 
         if reset_recommendations:
             reset_all_existing_recommendations()
@@ -38,7 +40,7 @@ class Command(BaseCommand):
         csv_filenames = get_all_csv_filenames_from_folder(path)
         for filename in csv_filenames:
             try:
-                handle_recommendation_file(filename)
+                handle_recommendation_file(filename, region)
             except exceptions.ValidationError as error:
                 self.print_error(filename, error)
             except ValueError as error:
@@ -64,20 +66,20 @@ def get_all_csv_filenames_from_folder(path):
     return result
 
 
-def handle_recommendation_file(filename):
+def handle_recommendation_file(filename, region):
     topic_id = get_topic_id_from_filename(filename)
     csv_data = read_csv_data_from_file(filename)
-    change_records = parse_csv_data(topic_id, csv_data)
+    change_records = parse_csv_data(topic_id, region, csv_data)
     save_changes_to_database(change_records)
 
 
-def parse_csv_data(topic_id, csv_data):
+def parse_csv_data(topic_id, region, csv_data):
     header = csv_data[0]
     rows = csv_data[1:]
     valid_rows = remove_row_count_line(rows)
     service_id_index = get_index_for_header(header, 'service_id')
     exclude_index = get_index_for_header(header, 'Include/Exclude')
-    return build_change_records(topic_id, service_id_index, exclude_index, valid_rows)
+    return build_change_records(topic_id, service_id_index, exclude_index, region, valid_rows)
 
 
 def get_topic_id_from_filename(path):
@@ -89,10 +91,15 @@ def get_index_for_header(header_row, expected_header):
     return header_row.index(expected_header)
 
 
-def build_change_records(topic_id, service_id_index, exclude_index, rows):
+def build_change_records(topic_id, service_id_index, exclude_index, region, rows):
+    def add_region(region, the_id):
+        if region:
+            return f'{the_id}_{region}'
+        return the_id
+
     def make_record(line): return {
-        'topic_id': topic_id,
-        'service_id': line[service_id_index],
+        'topic_id': add_region(region, topic_id),
+        'service_id': add_region(region, line[service_id_index]),
         'exclude': line[exclude_index],
     }
     return list(map(make_record, rows))
@@ -127,7 +134,7 @@ def validate_service_id(record):
         LOGGER.warning('%s: Invalid service id', record['service_id'])
         return False
     return True
-    
+
 def filter_included_records(change_records):
     return filter(lambda record: record['exclude'] != 'Exclude', change_records)
 

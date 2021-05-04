@@ -8,6 +8,7 @@
 main/media/
 main/static/css/
 staticfiles/
+.idea/
 
 # Don't commit data files
 *.csv
