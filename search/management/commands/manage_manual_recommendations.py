@@ -27,7 +27,7 @@ class Command(BaseCommand):
                             help='path to folder containing per-topic files with recommendations')
         parser.add_argument('--reset_recommendations', action='store_true',
                             help='Remove all existing recommendations from database before importing')
-        parser.add_argument('region', metavar='region', help='Add regional postfix to service and topic primary keys')
+        parser.add_argument('--region', metavar='region', help='Add regional postfix to service and topic primary keys')
 
     def handle(self, *args, **options):
         path = options['path']
