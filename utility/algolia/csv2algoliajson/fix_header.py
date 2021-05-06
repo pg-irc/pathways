@@ -6,10 +6,17 @@
 # to invoke:
 
 # cat snippet.csv | \
+# iconv -t utf8 --byte-subst="$" | \
 # python fix_header.py | \
 # csvtojson --ignoreEmpty=true \
 #       --colParser='{"_geoloc.lng":"number","_geoloc.lat":"number"}'  > \
 # snippet-fixed.csv
+# mongoimport --db test --collection services --drop --jsonArray --file snippet-fixed.csv
+
+
+# Mongo
+# find all the records with zero parent id: { parent_id: "0" }
+# find all the records with non-zero parent id: { parent_id: { "$ne":"0" } }
 
 
 import sys
@@ -20,7 +27,8 @@ line_number = 0
 
 def fix(word):
     header_name_map = {
-        'ResourceAgencyNum': 'id',
+        'ResourceAgencyNum': '_id',
+        'ParentAgencyNum': 'parent_id',
         'PublicName': 'name',
         'AgencyDescription': 'description',
         'AlternateName': 'alternate_name',
@@ -74,6 +82,9 @@ def add_phone_number_fields(header_name_map):
 def fix_header(line):
     words = [fix(word) for word in line.split(',')]
     return ','.join(words)
+
+
+
 
 
 for line in sys.stdin:
