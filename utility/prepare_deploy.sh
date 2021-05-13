@@ -220,9 +220,13 @@ if [ "$mb211Path" != "" ]
 fi
 checkForSuccess "compute similarity scores"
 
-echo "adding manual similarity scores ..."
-./manage.py manage_manual_recommendations $ManualRecommendations
-checkForSuccess "add manual similarity scores"
+echo "adding manual similarity scores for bc..."
+./manage.py manage_manual_recommendations $ManualRecommendations --region bc
+checkForSuccess "add manual similarity scores for bc"
+
+echo "adding manual similarity scores for mb..."
+./manage.py manage_manual_recommendations "${ManualRecommendations}mb/"
+checkForSuccess "add manual similarity scores for mb"
 
 echo "saving database content to $OutputFile ..."
 ./manage.py dumpdata --natural-foreign --exclude auth.permission --exclude contenttypes --indent 4 > $OutputFile
