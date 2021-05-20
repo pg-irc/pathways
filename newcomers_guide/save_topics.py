@@ -5,7 +5,6 @@ from bc211.import_icarol_xml.taxonomy import create_taxonomy_term_active_record
 
 
 def save_topics(topics, counts):
-    Task.objects.all().delete()
     translation.activate('en')
     for _, topic in topics['taskMap'].items():
         record = Task()

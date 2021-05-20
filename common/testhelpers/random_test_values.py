@@ -67,3 +67,6 @@ def a_date():
 
 def a_country_code():
     return a_string(2, string.ascii_uppercase)
+
+def a_region_specific_id(region):
+    return '{0}_{1}'.format(a_string(), region)

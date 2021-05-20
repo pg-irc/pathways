@@ -68,3 +68,11 @@ def get_page_manual_parameter():
                               type=openapi.TYPE_STRING,
                               # 1 to 2 digit number
                               pattern=r'^[1-9][0-9]*$'))
+
+
+def get_region_filter_manual_parameter():
+    return (openapi.Parameter('region',
+                              openapi.IN_QUERY,
+                              description=('Filter services at location by a given region. Accepts a string representing a region. '
+                              'Example: "bc"'),
+                              type=openapi.TYPE_STRING))

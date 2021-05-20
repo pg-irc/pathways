@@ -6,8 +6,6 @@ LOGGER = logging.getLogger(__name__)
 
 
 def save_topic_similarities(ids, similarities, count):
-    TaskSimilarityScore.objects.all().delete()
-
     if count == 0:
         return
 
@@ -29,8 +27,6 @@ def compute_cutoff(scores, count):
 
 
 def save_topic_service_similarity_scores(topic_ids, service_ids, similarities, count):
-    TaskServiceSimilarityScore.objects.all().delete()
-
     if count == 0:
         return
 
