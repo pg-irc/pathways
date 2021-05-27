@@ -28,9 +28,9 @@ exponent-server-sdk==2.0.0
 psycopg2==2.8.6 --no-binary psycopg2
 
 # Natural language processing
-spacy==3.0.5
+spacy==2.3.2
 scipy==1.6.2
-textacy==0.11.0
+textacy==0.10.1
 # see https://github.com/explosion/spaCy/issues/2995, resolves error "ValueError: 1792000 exceeds max_bin_len(1048576)"
 msgpack==1.0.2
 
