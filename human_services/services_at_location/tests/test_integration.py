@@ -10,6 +10,7 @@ from newcomers_guide.tests.helpers import create_topic
 from common.testhelpers.random_test_values import a_string, a_latitude, a_longitude
 from django.test.testcases import LiveServerTestCase
 
+
 class ServicesAtLocationIntegrationTests(LiveServerTestCase):
     def test_get_service_from_server(self):
         if not os.path.isfile('./run_integration_tests'):
@@ -56,7 +57,6 @@ class ServicesAtLocationIntegrationTests(LiveServerTestCase):
 
     def test_only_return_services_related_to_given_topic(self):
         if not os.path.isfile('./run_integration_tests'):
-            print('Integration test not run, run ./utility/enable_integration_tests.sh to enable')
             return
 
         organization = OrganizationBuilder().create()
@@ -86,7 +86,6 @@ class ServicesAtLocationIntegrationTests(LiveServerTestCase):
 
     def test_return_services_ordered_by_distance_to_proximity_point(self):
         if not os.path.isfile('./run_integration_tests'):
-            print('Integration test not run, run ./utility/enable_integration_tests.sh to enable')
             return
 
         a_point = (12.3, 45.6)
@@ -128,7 +127,6 @@ class ServicesAtLocationIntegrationTests(LiveServerTestCase):
 
     def test_only_return_services_located_within_25_km_of_user_location(self):
         if not os.path.isfile('./run_integration_tests'):
-            print('Integration test not run, run ./utility/enable_integration_tests.sh to enable')
             return
 
         a_point = (-119.741616, 46.752271)
