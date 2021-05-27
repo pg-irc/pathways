@@ -1,0 +1,43 @@
+{
+    "service_id": "9507186",
+    "service_name": "'Am'ut Aboriginal Female Full-Time Attendance Program",
+    "service_description": "Offers a culturally-based  psychosocial addiction treatment program for self-identified Aboriginal female youth ages 12 to 18 who are involved with the justice system. The holistic residential program includes an educational component  life skills training  anger management  and a youth substance abuse management program. The 20-week program provides a safe and nurturing environment where young women are given opportunities to develop and enhance skills and assets related to successful community living and personal well-being. Open custody program  referral required from a probation officer.",
+    "last_verified_date": "2018-04-27",
+    "alternate_name": "",
+    "organization": {
+        "id": "9487719",
+        "name": "Elizabeth Fry Society of Greater Vancouver",
+        "website": "http://www.elizabethfry.com",
+        "email": "info@elizabethfry.com",
+        "service_count": 14
+    },
+    "address": {
+        "address": "n/a",
+        "city": "Surrey",
+        "state_province": "BC",
+        "postal_code": "",
+        "country": "CA"
+    },
+    "_geoloc": {
+        "lng": -0.55995,
+        "lat": 51.314759
+    },
+    "location_id": "d9b3850b56dcdbb70709f83ee4f4c9b2d5b7d3b0",
+    "phone_numbers": [
+        {
+            "phone_number": "604-930-0214",
+            "type": "Phone 1"
+        },
+        {
+            "phone_number": "604-930-0486",
+            "type": "Fax"
+        }
+    ],
+    "taxonomy_terms": [
+        "residential-substance-use-disorder-treatment-facilities",
+        "children",
+        "first-nations-communities",
+        "adolescents"
+    ],
+    "for_newcomers": 0
+}
