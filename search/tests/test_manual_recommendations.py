@@ -42,7 +42,7 @@ class TestBuildChangeRecords(TestCase):
         exclude_index = 1
         csv_data = [[self.service_id, 'Include']]
 
-        result = build_change_records(self.topic_id, service_id_index, exclude_index, csv_data)
+        result = build_change_records(self.topic_id, service_id_index, exclude_index, None, csv_data)
 
         self.assertEqual(result[0]['topic_id'], self.topic_id)
 
@@ -51,7 +51,7 @@ class TestBuildChangeRecords(TestCase):
         exclude_index = 4
         csv_data = [[0, 0, 0, self.service_id, 'Include']]
 
-        result = build_change_records(self.topic_id, service_id_index, exclude_index, csv_data)
+        result = build_change_records(self.topic_id, service_id_index, exclude_index, None, csv_data)
 
         self.assertEqual(result[0]['service_id'], self.service_id)
 
@@ -60,7 +60,7 @@ class TestBuildChangeRecords(TestCase):
         exclude_index = 4
         csv_data = [[0, 0, 0, self.service_id, 'Include']]
 
-        result = build_change_records(self.topic_id, service_id_index, exclude_index, csv_data)
+        result = build_change_records(self.topic_id, service_id_index, exclude_index, None, csv_data)
 
         self.assertEqual(result[0]['exclude'], 'Include')
 
@@ -74,10 +74,28 @@ class TestBuildChangeRecords(TestCase):
             [second_service, a_string()],
         ]
 
-        result = build_change_records(self.topic_id, service_id_index, exclude_index, csv_data)
+        result = build_change_records(self.topic_id, service_id_index, exclude_index, None, csv_data)
 
         self.assertEqual(result[0]['service_id'], first_service)
         self.assertEqual(result[1]['service_id'], second_service)
+
+    def test_appends_region_to_topic_id(self):
+        service_id_index = 0
+        exclude_index = 1
+        csv_data = [[self.service_id, 'Include']]
+
+        result = build_change_records(self.topic_id, service_id_index, exclude_index, 'bc', csv_data)
+
+        self.assertEqual(result[0]['topic_id'], self.topic_id + '_bc')
+
+    def test_appends_region_to_service_id(self):
+        service_id_index = 0
+        exclude_index = 1
+        csv_data = [[self.service_id, 'Include']]
+
+        result = build_change_records(self.topic_id, service_id_index, exclude_index, 'bc', csv_data)
+
+        self.assertEqual(result[0]['service_id'], self.service_id + '_bc')
 
     def test_ignores_last_line_from_database(self):
         first_service = a_string()
@@ -102,7 +120,7 @@ class TestBuildChangeRecords(TestCase):
             [first_service, a_string()],
         ]
 
-        result = parse_csv_data(topic_id, csv_data)
+        result = parse_csv_data(topic_id, None, csv_data)
 
         self.assertEqual(result[0]['service_id'], first_service)
 
