@@ -23,9 +23,7 @@ django-allauth==0.44.0
 exponent-server-sdk==2.0.0
 
 # postgreSQL database adapter
-# see http://initd.org/psycopg/docs/install.html#disabling-wheel-packages-for-psycopg-2-7
-# once we hit version 2,8 the --no-binary can be removed
-psycopg2==2.8.6 --no-binary psycopg2
+psycopg2==2.9.1
 
 # Natural language processing
 spacy==2.3.2
@@ -43,3 +41,7 @@ redis==3.5.3
 
 # front end tech: Used in Django Admin
 django-crispy-forms==1.11.2
+
+# fix dependency conflicts
+click==7.1.1
+websocket_client==0.59.0
