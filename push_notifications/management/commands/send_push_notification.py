@@ -14,9 +14,13 @@ class Command(BaseCommand):
     help = ('Send push notifications to a set of users identified by their expo push notification tokens')
 
     def add_arguments(self, parser):
+        parser.add_argument('title',
+                    metavar='title',
+                    help=('path to file containing title text for notification, '
+                            'comma separated, locale in first column, title in second column'))
         parser.add_argument('message',
                             metavar='message',
-                            help=('path to file containing text for notification, '
+                            help=('path to file containing message text for notification, '
                                   'comma separated, locale in first column, message in second column'))
         parser.add_argument('users',
                             metavar='users',
@@ -35,13 +39,17 @@ class Command(BaseCommand):
         users_csv = read_csv_data_from_file(users)
         valid_users = validate_users(users_csv)
 
+        title = options['title']
+        notification_titles = read_csv_data_from_file(title)
+        valid_notification_titles = validate_localized_notifications(notification_titles)
+
         message = options['message']
         notifications = read_csv_data_from_file(message)
         valid_notifications = validate_localized_notifications(notifications)
 
         url = options['url']
 
-        send_push_notifications(valid_users, valid_notifications, url)
+        send_push_notifications(valid_users, valid_notification_titles, valid_notifications, url)
 
 
 def validate_users(users):
@@ -78,14 +86,15 @@ def validate_localized_notifications(notifications):
     return result
 
 
-def send_push_notifications(users, localized_notifications, url):
+def send_push_notifications(users, localized_notification_titles, localized_notification_messages, url):
     for i in range(0, len(users)):
         user = users[i]
         token = user['token']
         locale = user['locale']
-        message = localized_notifications[locale]
+        title = localized_notification_titles[locale]
+        message = localized_notification_messages[locale]
         extra = build_extra_data(url)
-        send_push_message(token, message, extra)
+        send_push_message(token, title, message, extra)
         print_progress(i, len(users))
 
 
@@ -104,9 +113,9 @@ def build_extra_data(url):
     return None
 
 
-def send_push_message(token, message, extra):
+def send_push_message(token, title, message, extra):
     try:
-        response = PushClient().publish(PushMessage(to=token, body=message, data=extra))
+        response = PushClient().publish(PushMessage(to=token, title=title, body=message, data=extra))
 
     except PushServerError:
         LOGGER.error('Error pushing notification: PushServerError for %s', token)
